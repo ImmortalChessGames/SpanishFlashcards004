@@ -11,17 +11,23 @@
 <body>
 
 <div class="container">
-    <h2>Spanish ⇄ English Flashcards</h2>
     <div id="viewer">
-        <div class="controls">
-            <button id="prevBtn" class="btn-nav" disabled>← Previous</button>
-            <button id="translateBtn" class="btn-translate">Show Translation</button>
-            <button id="nextBtn" class="btn-nav">Next Random →</button>
-        </div>
+    <h2>Spanish ⇄ English Flashcards</h2>
         <div class="display-card">
-            <div id="spanishText" class="spanish-text">Loading...</div>            
+            <div id="spanishText" class="spanish-text">Loading...</div>
+            
+            <div class="action-row">
+                <button id="translateBtn" class="btn-translate">Show Translation</button>
+            </div>
+            
             <div id="englishText" class="english-text hidden"></div>
         </div>
+
+        <div class="controls">
+            <button id="prevBtn" class="btn-nav" disabled>← Previous</button>
+            <button id="nextBtn" class="btn-nav">Next Random →</button>
+        </div>
+
     </div>
 </div>
 
