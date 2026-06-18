@@ -100,7 +100,7 @@ async function translateText() {
     outputDiv.classList.remove('error');
 
     // Uses Google's public translation client engine endpoint
-    const url = `https://googleapis.com{encodeURIComponent(text)}`;
+    const url = `https://googleapis.com{' + encodeURIComponent(text) + '}`;
 
     try {
         const response = await fetch(url);
