@@ -12,32 +12,223 @@
 
 <div class="container">
     <div id="viewer">
-    <h2>Spanish ⇄ English Flashcards</h2>
-        <div class="display-card">
-            <div id="spanishText" class="spanish-text">Loading...</div>
-            
-            <div class="action-row">
-                <button id="translateBtn" class="btn-translate">Show Translation</button>
+        <h2>Spanish ⇄ English Flashcards</h2>
+        <div>
+          <div>
+            <div>
+                 <div class="display-card">
+
+                    <div id="wordBox" class="word-box"></div>
+                    <div id="spanishText"></div>
+                    <div class="action-row">
+                        <button id="translateBtn" class="btn-translate">Show Translation</button>
+                    </div>
+                    <div id="englishText" class="english-text hidden"></div>
+                    <div id="translationResponse"/>
+                </div>
+                <div class="controls">
+                    <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
+                    <button id="nextBtn" class="btn-nav">Next →</button>
+                </div>     
             </div>
-            
-            <div id="englishText" class="english-text hidden"></div>
-        </div>
+          </div>
+          <div>
+            <div>
+                <form id="wordForm">
+                    <label for="spanishWord">Spanish Word:</label>
+                    <input type="text" id="spanishWord" placeholder="e.g., gracias" required>
+                    
+                    <label for="englishTranslation">English Translation:</label>
+                    <input type="text" id="englishTranslation" placeholder="e.g., thank you" required>
+                    
+                    <button id='saveWordButton' type="submit">Save Word</button>
+                </form>
+                <div class="search-box">
+                    <label for="searchBar">🔍 Search & Browse Translations:</label>
+                    <input type="text" id="searchBar" placeholder="Type to filter Spanish or English words...">
+                    
+                    <ul id="wordList"></ul>
 
-        <div class="controls">
-            <button id="prevBtn" class="btn-nav" disabled>← Previous</button>
-            <button id="nextBtn" class="btn-nav">Next Random →</button>
+                    <!-- Pagination Controls -->
+                    <div class="pagination">
+                        <button id="prevPage" disabled>Previous</button>
+                        <span class="page-info" id="pageInfo">Showing 0 of 0</span>
+                        <button id="nextPage" disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+          </div>
         </div>
-
     </div>
 </div>
 
 <script>
+const STORAGE_KEY = 'spanish_vocab';
+    const ITEMS_PER_PAGE = 1000;
+    
+    let currentPage = 1;
+    let filteredList = []; // Holds items after search filter is applied
+
+    const wordForm = document.getElementById('wordForm');
+    const wordList = document.getElementById('wordList');
+    const searchBar = document.getElementById('searchBar');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+
+    // 1. Retrieve items from localStorage
+    function getVocabFromStorage() {
+        const localData = localStorage.getItem(STORAGE_KEY);
+        if (!localData) return [];
+        try {
+            return JSON.parse(localData);
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // 2. Sort array alphabetically by Spanish word
+    function sortAlphabetically(array) {
+        return array.sort((a, b) => a.spanish.localeCompare(b.spanish, 'es', { sensitivity: 'base' }));
+    }
+
+    // 3. Process data (Filter by search query, then paginate)
+    function updateDisplayData() {
+        const fullList = getVocabFromStorage();
+        const searchQuery = searchBar.value.toLowerCase().trim();
+
+        // Filter based on search input
+        if (searchQuery) {
+            filteredList = fullList.filter(item => 
+                item.spanish.toLowerCase().includes(searchQuery) || 
+                item.english.toLowerCase().includes(searchQuery)
+            );
+        } else {
+            filteredList = fullList;
+        }
+
+        // Always keep the filtered results alphabetized
+        sortAlphabetically(filteredList);
+
+        // Determine total pages
+        const totalItems = filteredList.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+
+        // Adjust bounds for current page
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        // Paginate slice
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        const pageItems = filteredList.slice(startIndex, endIndex);
+
+        // Render current page items
+        wordList.innerHTML = '';
+        if (pageItems.length === 0) {
+            wordList.innerHTML = '<li style="color: #888; justify-content: center;">No words found</li>';
+        } else {
+            pageItems.forEach((item) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span><strong>${item.spanish}</strong> ➔ ${item.english}</span>
+                    <button class="delete-btn" data-word="${item.spanish.replace(/"/g, '&quot;')}">Delete</button>
+                `;
+                wordList.appendChild(li);
+            });
+        }
+
+        // Update pagination buttons and text
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} total entries)`;
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
+    }
+
+    function saveWord(spanishVal, englishVal) {
+        if (spanishVal && englishVal) {
+            let currentVocab = getVocabFromStorage();
+            
+            // Check if Spanish word already exists to avoid exact duplicates
+            const exists = currentVocab.some(item => item.spanish.toLowerCase() === spanishVal.toLowerCase());
+            if (exists) {
+                //alert(`"${spanishVal}" is already in your dictionary!`);
+                return;
+            }
+
+            currentVocab.push({ spanish: spanishVal, english: englishVal });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(currentVocab));
+
+            wordForm.reset();
+            
+            // Go to page 1 to let the user see where it fits alphabetically or search it
+            currentPage = 1; 
+            updateDisplayData();
+        }
+    }
+
+
+    // 4. Save a new word
+    wordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const spanishVal = document.getElementById('spanishWord').value.trim();
+        const englishVal = document.getElementById('englishTranslation').value.trim();
+
+        saveWord(spanishVal, englishVal);
+    });
+
+    // 5. Delete an entry (Targeted by unique Spanish word instead of index due to sorting/pagination)
+    wordList.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-btn')) {
+            const wordToDelete = e.target.getAttribute('data-word');
+            let currentVocab = getVocabFromStorage();
+
+            currentVocab = currentVocab.filter(item => item.spanish !== wordToDelete);
+
+            if (currentVocab.length > 0) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentVocab));
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+            }
+
+            updateDisplayData();
+        }
+    });
+
+    // 6. Search input listener
+    searchBar.addEventListener('input', function() {
+        currentPage = 1; // Reset to first page when filtering
+        updateDisplayData();
+    });
+
+    // 7. Pagination Button Listeners
+    prevPageBtn.addEventListener('click', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            updateDisplayData();
+        }
+    });
+
+    nextPageBtn.addEventListener('click', function() {
+        const totalPages = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
+        if (currentPage < totalPages) {
+            currentPage++;
+            updateDisplayData();
+        }
+    });
+
+    // 8. Initial Load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDisplayData();
+    });
+
+
+
     let dataset = [];
     let history = [];
     let historyIndex = -1;
     let currentItem = null;
 
-    const spanishText = document.getElementById('spanishText');
     const englishText = document.getElementById('englishText');
     const statusIndicator = document.getElementById('statusIndicator');
     const translateBtn = document.getElementById('translateBtn');
@@ -81,13 +272,15 @@
     function displayCard(item) {
         currentItem = item;
         
-        spanishText.textContent = item.spanish;
         englishText.textContent = item.english;
+        document.getElementById('spanishText').innerText=item.spanish;
 
         englishText.classList.add('hidden');
         translateBtn.classList.remove('hidden');
         
         prevBtn.disabled = (historyIndex <= 0);
+
+        processSentence(item.spanish);
     }
 
     function showNextRandom() {
@@ -104,9 +297,168 @@
         historyIndex++;
         
         displayCard(item);
+
+        document.getElementById('translationResponse').innerHTML='';
     }
 
-function showPrevious() {if (historyIndex > 0) {historyIndex--;displayCard(history[historyIndex]);}}translateBtn.addEventListener('click', function() {englishText.classList.remove('hidden');translateBtn.classList.add('hidden');});nextBtn.addEventListener('click', showNextRandom);prevBtn.addEventListener('click', showPrevious); 
+function showPrevious() {
+  if (historyIndex > 0) {
+     historyIndex--;
+     displayCard(history[historyIndex]);
+     document.getElementById('translationResponse').innerHTML='';
+  }
+}
+
+translateBtn.addEventListener('click', function() {
+    englishText.classList.remove('hidden');
+    translateBtn.classList.add('hidden');
+});
+
+nextBtn.addEventListener('click', showNextRandom);
+prevBtn.addEventListener('click', showPrevious); 
+
+async function sendTranslationRequest(textValue) {
+
+    const uiDiv = document.getElementById('translationResponse');
+
+    if (!textValue) {
+        alert("Please provide input text.");
+        return;
+    }
+
+    uiDiv.innerHTML = "<em>Processing translation and parsing metadata...</em>";
+
+    const requestPayload = {
+        source: {
+            dialect: "es-ES",
+            text: textValue.toLowerCase()
+        },
+        target: {
+            dialect: "en-US"
+        }
+    };
+
+
+    const proxyUrl = `https://cors.io/?url=https://web-api.itranslateapp.com/v3/texts/translate`;
+
+    try {
+        const response = await fetch(proxyUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestPayload)
+        });
+
+        if (!response.ok) {
+            throw new Error("Proxy server returned HTTP status: " + response.status);
+        }
+        
+        const responseData = await response.json();
+
+        console.log(responseData);
+        parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
+
+    } catch(err) {
+        uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
+    }
+}
+
+function clickSaveWord() {
+    document.getElementById('saveWordButton').click();
+}
+
+function parseAndDisplayUnique(textValue, data, visualContainer) {
+    // 1. Initialize an array to keep items in their natural sequence
+    const orderedResults = [];
+
+    // 2. Safely capture the main target translation string first
+    if (data.target && data.target.text) {
+        orderedResults.push(data.target.text.toLowerCase().trim());
+    }
+
+    // 3. Traverse down to gather nested meaning text instances in natural order
+    if (data.target && data.target.meanings && Array.isArray(data.target.meanings)) {
+        data.target.meanings.forEach(meaning => {
+            if (meaning.entries && Array.isArray(meaning.entries)) {
+                meaning.entries.forEach(entry => {
+                    if (entry.text) {
+                        orderedResults.push(entry.text.trim().toLowerCase());
+                    }
+                });
+            }
+        });
+    }
+
+    // 4. Run the final data array through a Set structure to remove duplicates
+    const uniqueResults = [...new Set(orderedResults)];
+
+    // 5. Build clean layout tree lists 
+    if (uniqueResults.length === 0) {
+        visualContainer.innerHTML = "<p style='color:#718096;'>No translations were found in the response object.</p>";
+        return;
+    }
+
+    let oneLineTranslation = '';
+    let listHtml = "<ol class='translation-list'>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'>[Save]</a>"+"</li>";
+    uniqueResults.slice(0,2).forEach((word) => {
+
+        if(word.endsWith('.')) {
+            word = word.substring(0,word.length-1);
+        }
+
+        listHtml += "<li>" + word + "</li>";
+        oneLineTranslation += (word + "; ");
+    });
+    if(oneLineTranslation.length>0 && oneLineTranslation.endsWith("; ")) {
+        oneLineTranslation = oneLineTranslation.trim().substring(0,oneLineTranslation.trim().length-1);
+    }
+    listHtml += "</ol>";
+
+    document.getElementById('spanishWord').value=textValue;
+    document.getElementById('englishTranslation').value=oneLineTranslation;
+
+    visualContainer.innerHTML = listHtml;
+}
+
+function processSentence(input) {
+    const wordBox = document.getElementById('wordBox');
+
+    // Clear previous results
+    wordBox.innerHTML = '';
+
+    if (input === '') {
+        alert('Por favor, ingresa una frase primero.');
+        return;
+    }
+
+    // Split by spaces to find raw components
+    const rawWords = input.split(/\s+/);
+
+    rawWords.forEach(rawWord => {
+        // Extract punctuation from the clean word using a Spanish-friendly regex
+        // This preserves accents (á, é, í, ó, ú), umlauts (ü), and the ñ
+        const cleanWordMatch = rawWord.match(/[A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
+        
+        if (cleanWordMatch) {
+            const cleanWord = cleanWordMatch[0];
+            
+            // Create a span element for the clickable word
+            const span = document.createElement('span');
+            span.className = 'clickable-word';
+            span.textContent = rawWord; // Displays the word with its surrounding punctuation
+            
+            // Add click event that alerts only the cleaned word
+            span.addEventListener('click', () => {
+                sendTranslationRequest(cleanWord);
+            });
+
+            wordBox.appendChild(span);
+        }
+    });
+}
+
 
 
 initFlashcards();
