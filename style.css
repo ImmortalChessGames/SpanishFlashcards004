@@ -235,7 +235,7 @@
         font-size: 1.5rem;
         font-weight: 600;
         color: #055770;
-        margin-bottom: 20px;
+        margin-bottom: 0px;
     }
 
     .clickable-word {
@@ -555,7 +555,6 @@ h2 {
 }
 
 .quiz-btn:hover:not(:disabled) {
-    border-color: blue;
     background-color: #f8fafc;
 }
 
