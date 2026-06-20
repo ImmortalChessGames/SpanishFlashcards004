@@ -17,25 +17,26 @@
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Vocabulary</button>
+                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false" onclick="startQuiz();">Quiz</button>
             </div>
 
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
             <div id="panel-1" class="tab-panel active" role="tabpanel">
                 <div>
-                    <div class="display-card">
-                        <div id="wordBox" class="word-box"></div>
-                        <div id="spanishText"></div>
-                        <div class="action-row">
-                            <button id="translateBtn" class="btn-translate">Show Translation</button>
-                        </div>
-                        <div id="englishText" class="english-text hidden"></div>
-                        <div id="translationResponse"></div>
-                    </div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
                         <button id="nextBtn" class="btn-nav">Next →</button>
                     </div> 
+                    <div class="display-card">
+                        <div id="wordBox" class="word-box"></div>
+                        <div class="action-row">
+                            <button id="translateBtn" class="btn-translate">Show Translation</button>
+                        </div>
+                        <div id="translationResponse"></div>
+                        <div id="englishText" class="english-text hidden"></div>
+                        <div id="spanishText" style="margin: 15px;"></div>
+                    </div>
                       <!-- The Notification Pop-up -->
                       <!-- aria-live ensures screen readers announce this to visually impaired users -->
                       <div id="cartToast" class="toast" aria-live="polite">
@@ -71,7 +72,23 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- PANEL 3 -->
+            <div id="panel-3" class="tab-panel" role="tabpanel">
+                <div class="quiz-container">
+                <div id="quiz-box">
+                    <h2 id="question">Loading question...</h2>
+                    <div id="choices-container" class="choices-grid"></div>
+                </div>
+                <div id="score-box" class="hidden">
+                    <h2>Quiz Complete!</h2>
+                    <p id="final-score"></p>
+                    <button class="quiz-btn" id="restart-btn">Restart Quiz</button>
+                </div>
+                <p id="quiz-question-count" style="vertical-align:bottom;margin-top:100px;"/>
+            </div>
+            </div>
+
         </div> <!-- Closes .tabs-wrapper -->
     </div> <!-- Closes #viewer -->
 </div> <!-- Closes .container -->
@@ -89,6 +106,18 @@ const STORAGE_KEY = 'spanish_vocab';
     const prevPageBtn = document.getElementById('prevPage');
     const nextPageBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
+
+    let quizVocab = [];
+
+    function parseAndGetFirst(str, delim = ';') {
+      if (typeof str !== 'string') return '';
+      
+      // Split by semicolon and trim each item
+      const items = str.split(';').map(item => item.trim());
+      
+      // Return the first item
+      return items[0];
+    }
 
     // 1. Retrieve items from localStorage
     function getVocabFromStorage() {
@@ -149,6 +178,9 @@ const STORAGE_KEY = 'spanish_vocab';
                     <button class="delete-btn" data-word="${item.spanish.replace(/"/g, '&quot;')}">Delete</button>
                 `;
                 wordList.appendChild(li);
+             
+                let quizItem = { spanish: item.spanish, english: parseAndGetFirst(item.english)};
+                quizVocab.push(quizItem);
             });
         }
 
@@ -156,6 +188,8 @@ const STORAGE_KEY = 'spanish_vocab';
         pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} total entries)`;
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
+
+        startQuiz();
     }
 
     function saveWord(spanishVal, englishVal) {
@@ -170,6 +204,7 @@ const STORAGE_KEY = 'spanish_vocab';
             }
 
             currentVocab.push({ spanish: spanishVal, english: englishVal });
+            quizVocab.push({ spanish: spanishVal, english: parseAndGetFirst(englishVal) });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(currentVocab));
 
             wordForm.reset();
@@ -198,6 +233,7 @@ const STORAGE_KEY = 'spanish_vocab';
             let currentVocab = getVocabFromStorage();
 
             currentVocab = currentVocab.filter(item => item.spanish !== wordToDelete);
+            quizVocab = quizVocab.filter(item => item.spanish !== wordToDelete);
 
             if (currentVocab.length > 0) {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(currentVocab));
@@ -512,7 +548,123 @@ tabButtons.forEach(button => {
       }, 1000);
     }
 
-initFlashcards();
+    let quizData = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function generateQuiz(data, numChoices = 4) {
+        const quizQuestionCount = document.getElementById('quiz-question-count');
+        quizQuestionCount.innerText = 'There are a total of ' + data.length + ' questions';
+      return data.map((item) => {
+        const correctAnswer = item.english;
+        const distractors = data
+          .filter((obj) => obj.english !== correctAnswer)
+          .map((obj) => obj.english);
+        
+        const shuffledDistractors = shuffleArray([...distractors]).slice(0, numChoices - 1);
+        const allChoices = shuffleArray([...shuffledDistractors, correctAnswer]);
+
+        return {
+          spanishWord: item.spanish,
+          question: `${item.spanish}`,
+          choices: allChoices,
+          answer: correctAnswer
+        };
+      });
+    }
+
+    const quizBox = document.getElementById("quiz-box");
+    const scoreBox = document.getElementById("score-box");
+    const questionEl = document.getElementById("question");
+    const choicesContainer = document.getElementById("choices-container");
+    const finalScoreEl = document.getElementById("final-score");
+    const restartBtn = document.getElementById("restart-btn");
+
+    function startQuiz() {
+      score = 0;
+      currentQuestionIndex = 0;
+      quizVocab = quizVocab.filter((item, index, self) =>
+        index === self.findIndex(t => t.spanish === item.spanish)
+      );
+      quizData = shuffleArray(generateQuiz(quizVocab, 4)); 
+      scoreBox.classList.add("hidden");
+      quizBox.classList.remove("hidden");
+      showQuestion();
+    }
+
+    function showQuestion() {
+      choicesContainer.innerHTML = "";
+      const currentQuizItem = quizData[currentQuestionIndex];
+      questionEl.innerText = currentQuizItem.question;
+
+      currentQuizItem.choices.forEach(choice => {
+        const button = document.createElement("button");
+        button.classList.add('quiz-btn');
+        button.innerText = choice;
+        // Store answer in a custom dataset property for easy identification later
+        button.dataset.choiceValue = choice; 
+        button.addEventListener("click", (e) => handleAnswer(e.target, choice));
+        choicesContainer.appendChild(button);
+      });
+    }
+
+    function handleAnswer(selectedButton, selectedChoice) {
+      const currentQuizItem = quizData[currentQuestionIndex];
+      const allButtons = choicesContainer.querySelectorAll("button");
+      
+      // Disable all buttons immediately to block double clicking
+      allButtons.forEach(btn => btn.disabled = true);
+
+      let pauseMillis = 1000;
+
+      if (selectedChoice === currentQuizItem.answer) {
+        score++;
+        selectedButton.classList.add("correct-choice");
+      } else {
+        pauseMillis = 4000;
+        selectedButton.classList.add("incorrect-choice");
+        
+        // Find and highlight the correct button so the user learns from their mistake
+        allButtons.forEach(btn => {
+            if (btn.dataset.choiceValue === currentQuizItem.answer) {
+                btn.classList.add("correct-choice");
+            }
+        });
+      }
+
+      currentQuestionIndex++;
+
+      // Pause for 1.2 seconds so user can process the animations/feedback
+      setTimeout(() => {
+          if (currentQuestionIndex < quizData.length) {
+            showQuestion();
+          } else {
+            showResults();
+          }
+      }, pauseMillis);
+    }
+
+    function showResults() {
+      quizBox.classList.add("hidden");
+      scoreBox.classList.remove("hidden");
+      finalScoreEl.innerText = `You scored ${score} out of ${quizData.length}!`;
+    }
+
+    restartBtn.addEventListener("click", startQuiz);
+
+
+
+    initFlashcards();
+    startQuiz();
+
 </script>
 </body>
 </html>
