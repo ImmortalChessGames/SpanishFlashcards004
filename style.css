@@ -251,7 +251,7 @@
     }
 
     .clickable-word:hover {
-        background-color: var(--primary-color);
+        background-color: blue;
         color: white;
         transform: translateY(-2px);
     }
@@ -522,8 +522,6 @@ li:hover { background: #f1f3f9; }
     padding: 2.5rem;
     border-radius: 12px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    width: 60%;
-    max-width: 350px;
     text-align: center;
 }
 
@@ -557,7 +555,7 @@ h2 {
 }
 
 .quiz-btn:hover:not(:disabled) {
-    border-color: var(--primary);
+    border-color: blue;
     background-color: #f8fafc;
 }
 

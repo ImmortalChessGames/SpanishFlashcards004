@@ -393,7 +393,6 @@ async function sendTranslationRequest(textValue) {
         }
     };
 
-
     const proxyUrl = `https://cors.io/?url=https://web-api.itranslateapp.com/v3/texts/translate`;
 
     try {
@@ -602,18 +601,20 @@ tabButtons.forEach(button => {
 
     function showQuestion() {
       choicesContainer.innerHTML = "";
-      const currentQuizItem = quizData[currentQuestionIndex];
-      questionEl.innerText = currentQuizItem.question;
+      if(quizData && quizData.length>0) {
+          const currentQuizItem = quizData[currentQuestionIndex];
+          questionEl.innerText = currentQuizItem.question;
 
-      currentQuizItem.choices.forEach(choice => {
-        const button = document.createElement("button");
-        button.classList.add('quiz-btn');
-        button.innerText = choice;
-        // Store answer in a custom dataset property for easy identification later
-        button.dataset.choiceValue = choice; 
-        button.addEventListener("click", (e) => handleAnswer(e.target, choice));
-        choicesContainer.appendChild(button);
-      });
+          currentQuizItem.choices.forEach(choice => {
+            const button = document.createElement("button");
+            button.classList.add('quiz-btn');
+            button.innerText = choice;
+            // Store answer in a custom dataset property for easy identification later
+            button.dataset.choiceValue = choice; 
+            button.addEventListener("click", (e) => handleAnswer(e.target, choice));
+            choicesContainer.appendChild(button);
+          });
+      }
     }
 
     function handleAnswer(selectedButton, selectedChoice) {
