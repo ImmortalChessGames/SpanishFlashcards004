@@ -1012,7 +1012,7 @@ tabButtons.forEach(button => {
 async function loadData() {
   try {
     // Fetches the file and automatically runs JSON.parse() behind the scenes
-    const response = await fetch('./data.json');
+    const response = await fetch('./defaults.json');
     const data = await response.json(); 
     
     const rawExisting = localStorage.getItem(storageName);
