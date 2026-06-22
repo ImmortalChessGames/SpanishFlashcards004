@@ -177,16 +177,32 @@
     }
 
 /* 1. Only styles buttons inside the tab headers container */
+.tab-buttons {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 15px;
+    justify-content: space-between; /* Evenly spaces tabs across the container */
+}
+
 .tab-buttons .tab-btn {
-    width: auto; /* Overrides full-width behavior */
+    flex: 1; /* Forces all tabs to share the available screen width equally */
+    text-align: center; /* Centers the text within its dynamic share of space */
+    min-width: 0; /* Prevents long tab text from breaking the layout */
+    
     background: none;
     border: none;
     color: #64748b;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 10px 5px; /* Reduced side padding so text doesn't clip on small screens */
+    font-size: 15px; /* Slightly scaled down font for absolute mobile safety */
     cursor: pointer;
     margin-top: 0;
     border-bottom: 2px solid transparent;
+    
+    /* Elegant text truncation if a tab name happens to be exceptionally long */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
 }
 
 .tab-buttons .tab-btn.active {
@@ -194,6 +210,7 @@
     border-bottom: 2px solid #2563eb;
     background: none;
 }
+
 
 /* 2. Specific styles for Form Action buttons */
 #wordForm button[type="submit"],
