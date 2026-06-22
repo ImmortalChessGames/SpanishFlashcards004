@@ -277,6 +277,9 @@
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
+        const resultOutput = document.getElementById('ai-tutor-resultOutput');
+        resultOutput.innerHTML = '';
+
         startQuiz();
     }
 
@@ -358,8 +361,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         updateDisplayData();
     });
-
-
 
     let dataset = [];
     let history = [];
@@ -451,31 +452,30 @@
         document.getElementById('englishTranslation').value='';
     }
 
-function showPrevious() {
-  if (historyIndex > 0) {
-     historyIndex--;
-     displayCard(history[historyIndex]);
-     document.getElementById('translationResponse').innerHTML='';
-     document.getElementById('spanishWord').value='';
-     document.getElementById('englishTranslation').value='';
-  }
-}
-
-function speakSpanish() {
-    if (!textToSpeak) {
-        return;
+    function showPrevious() {
+      if (historyIndex > 0) {
+         historyIndex--;
+         displayCard(history[historyIndex]);
+         document.getElementById('translationResponse').innerHTML='';
+         document.getElementById('spanishWord').value='';
+         document.getElementById('englishTranslation').value='';
+      }
     }
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.lang = 'es-ES'; 
-      utterance.rate = 0.85; 
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert("Native browser speech synthesis is unsupported on this software platform.");
-    }
-}
 
+    function speakSpanish() {
+        if (!textToSpeak) {
+            return;
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+          utterance.lang = 'es-ES'; 
+          utterance.rate = 0.85; 
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("Native browser speech synthesis is unsupported on this software platform.");
+        }
+}
 
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
@@ -551,7 +551,7 @@ async function translateText(textToTranslate) {
     }
 }
 
-/* iTranslate API call
+
 async function sendTranslationRequest(textValue) {
 
     const uiDiv = document.getElementById('translationResponse');
@@ -596,10 +596,12 @@ async function sendTranslationRequest(textValue) {
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
 
     } catch(err) {
-        uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
+        console.log(err + ' switching to another provider.');
+        return translateText(textValue);
+//        uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
     }
 }
-*/
+
 
 function clickSaveWord() {
     document.getElementById('saveWordButton').click();
@@ -731,8 +733,8 @@ function processSentence(input) {
             
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
-               // sendTranslationRequest(cleanWord);
-                translateText(cleanWord);
+                sendTranslationRequest(cleanWord);
+                //translateText(cleanWord);
             });
 
             wordBox.appendChild(span);
@@ -1114,6 +1116,14 @@ async function loadData() {
             
             // Inject innerHTML so the CSS classes (.vocab-hl, .grammar-hl, .meaning-hl) function
             resultOutput.innerHTML = rawText;
+
+            const element = document.getElementById("ai-tutor-resultOutput");
+
+            // Align the inner element precisely to the top of its parent container
+            document.documentElement.scrollTo({
+              top: element.offsetTop - container.offsetTop,
+              behavior: "smooth"
+            });
 
           } catch (error) {
             console.error(error);
