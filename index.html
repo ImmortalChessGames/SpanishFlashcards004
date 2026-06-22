@@ -18,6 +18,7 @@
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Vocabulary</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false" onclick="startQuiz();">Quiz</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
             </div>
 
             <!-- Tab Content Panes -->
@@ -36,7 +37,19 @@
                         <div id="englishText" class="english-text hidden"></div>
                         <div id="translationResponse"></div>
                         <div id="spanishText" style="margin: 15px;"></div>
+                        <div id="ai-tutor-container">
+                          <div class="ai-tutor-card">
+                            <div class="ai-tutor-btn-group">
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explanation</button>
+                              <button id="speakBtn" class="ai-tutor-btn">Speak 🔊</button>
+                            </div>
+                          </div>
+                          <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
+                            <div id="ai-tutor-resultOutput" class="ai-tutor-response-block"></div>
+                          </div>
+                        </div>
                     </div>
+
                       <!-- The Notification Pop-up -->
                       <!-- aria-live ensures screen readers announce this to visually impaired users -->
                       <div id="cartToast" class="toast" aria-live="polite">
@@ -85,16 +98,42 @@
                     <p id="final-score"></p>
                     <button class="quiz-btn" id="restart-btn">Restart Quiz</button>
                 </div>
-                <p id="quiz-question-count" style="vertical-align:bottom;margin-top:100px;"/>
-            </div>
+                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:100px;"/>
+                </div>
             </div>
 
+            <!-- PANEL 4 -->
+            <div id="panel-4" class="tab-panel" role="tabpanel">
+                <div class="sm-wrapper">
+                    <div class="sm-container">
+                        <div class="sm-input-group">
+                            <label class="sm-label" for="sm-secret">Secret Passcode</label>
+                            <input type="password" id="sm-secret" class="sm-input" value="enter-your-secret-passcode-here" placeholder="Enter the secret pass code.">
+                        </div>
+                        <div class="sm-input-group">
+                            <label class="sm-label" for="sm-storageName">Local Storage Name</label>
+                            <input type="text" id="sm-storageName" class="sm-input" value="spanish_vocab">
+                        </div>
+
+                        <div class="sm-button-group">
+                            <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
+                            
+                            <div class="sm-file-upload-wrapper">
+                                <button type="button" class="sm-btn sm-btn-success">Import Local Storage</button>
+                                <input type="file" id="sm-importFile" accept=".json" onchange="smImportLocalStorage(event)">
+                            </div>
+                        </div>
+
+                        <div id="sm-status" class="sm-status"></div>
+                    </div>
+                </div>
+            </div>
         </div> <!-- Closes .tabs-wrapper -->
     </div> <!-- Closes #viewer -->
 </div> <!-- Closes .container -->
 
 <script>
-const STORAGE_KEY = 'spanish_vocab';
+    const DEFAULT_LOCAL_STORAGE_KEY = 'spanish_vocab';
     const ITEMS_PER_PAGE = 1000;
     
     let currentPage = 1;
@@ -106,8 +145,57 @@ const STORAGE_KEY = 'spanish_vocab';
     const prevPageBtn = document.getElementById('prevPage');
     const nextPageBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
+    const googleTranslateAPIUrl = `https://www.googleapis.com/language/translate/v2`;
 
+    const api1KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoEHhgC23MZ+zInz2AwJPYUQ5wLeTIGgvphRV9aU7NB7WtQ4WFrsVNCC1YY7BsqDQkXUhnPJPBSuPYSCb/GYAsHC9+bOPevpJAG8SCE6LSguglA==';
+    const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
+    const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
+
+    async function getDerivedKey() {
+        const secret = document.getElementById('sm-secret').value;
+        if(!secret || secret==='enter-your-secret-passcode-here') {
+          alert("Please replace 'enter-your-secret-passcode-here' in Settings with a valid secret pass code.");
+          return;
+        }
+        const encoder = new TextEncoder();
+        const baseKey = await window.crypto.subtle.importKey(
+            "raw", encoder.encode(secret), "PBKDF2", false, ["deriveKey"]
+        );
+        return window.crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+            baseKey,
+            { name: "AES-GCM", length: 256 },
+            false,
+            ["encrypt", "decrypt"]
+        );
+    }
+
+    async function decrypt(encrypted) {
+        try {
+            const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
+            const iv = combined.slice(16, 28);
+            const data = combined.slice(28);
+            const key = await getDerivedKey(salt);
+            const decrypted = await window.crypto.subtle.decrypt(
+                { name: "AES-GCM", iv: iv }, key, data
+            );
+            return new TextDecoder().decode(decrypted);
+        } catch (e) {
+            alert('Decryption failed. Incorrect password or broken text.');
+        }
+        return null;
+    }
+
+    function getStorageKey() {
+        const storageNameInput = document.getElementById('sm-storageName');
+        const storageName = storageNameInput ? storageNameInput.value.trim() : '';
+        if(storageName && storageName.length>0) {
+            return storageName;
+        } else {
+            return DEFAULT_LOCAL_STORAGE_KEY;
+        }
+    }
 
     function parseAndGetFirst(str, delim = ';') {
       if (typeof str !== 'string') return '';
@@ -121,7 +209,7 @@ const STORAGE_KEY = 'spanish_vocab';
 
     // 1. Retrieve items from localStorage
     function getVocabFromStorage() {
-        const localData = localStorage.getItem(STORAGE_KEY);
+        const localData = localStorage.getItem(getStorageKey());
         if (!localData) return [];
         try {
             return JSON.parse(localData);
@@ -137,6 +225,7 @@ const STORAGE_KEY = 'spanish_vocab';
 
     // 3. Process data (Filter by search query, then paginate)
     function updateDisplayData() {
+        quizVocab=[];
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
 
@@ -152,7 +241,6 @@ const STORAGE_KEY = 'spanish_vocab';
 
         // Always keep the filtered results alphabetized
         sortAlphabetically(filteredList);
-
         // Determine total pages
         const totalItems = filteredList.length;
         const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
@@ -186,6 +274,7 @@ const STORAGE_KEY = 'spanish_vocab';
 
         // Update pagination buttons and text
         pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} total entries)`;
+
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
@@ -199,13 +288,12 @@ const STORAGE_KEY = 'spanish_vocab';
             // Check if Spanish word already exists to avoid exact duplicates
             const exists = currentVocab.some(item => item.spanish.toLowerCase() === spanishVal.toLowerCase());
             if (exists) {
-                //alert(`"${spanishVal}" is already in your dictionary!`);
                 return;
             }
 
             currentVocab.push({ spanish: spanishVal, english: englishVal });
             quizVocab.push({ spanish: spanishVal, english: parseAndGetFirst(englishVal) });
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(currentVocab));
+            localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
 
             wordForm.reset();
             
@@ -236,9 +324,9 @@ const STORAGE_KEY = 'spanish_vocab';
             quizVocab = quizVocab.filter(item => item.spanish !== wordToDelete);
 
             if (currentVocab.length > 0) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentVocab));
+                localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
             } else {
-                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(getStorageKey());
             }
 
             updateDisplayData();
@@ -280,11 +368,14 @@ const STORAGE_KEY = 'spanish_vocab';
     let currentItem = null;
 
     const englishText = document.getElementById('englishText');
+    const spanishText = document.getElementById('spanishText');
     const statusIndicator = document.getElementById('statusIndicator');
     const translateBtn = document.getElementById('translateBtn');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const speakBtn = document.getElementById('speakBtn');
     const statTotal = document.getElementById('statTotal');
+    let textToSpeak = null;
 
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
@@ -323,14 +414,22 @@ const STORAGE_KEY = 'spanish_vocab';
         currentItem = item;
         
         englishText.textContent = item.english;
-        document.getElementById('spanishText').innerText=item.spanish;
+        spanishText.innerText=item.spanish;
 
         englishText.classList.add('hidden');
+        spanishText.classList.add('hidden');
+
         translateBtn.classList.remove('hidden');
         
         prevBtn.disabled = (historyIndex <= 0);
 
         processSentence(item.spanish);
+
+        if(item && item.spanish) {
+            textToSpeak = item.spanish;
+        } else {
+            textToSpeak = null;
+        }
     }
 
     function showNextRandom() {
@@ -363,6 +462,22 @@ function showPrevious() {
   }
 }
 
+function speakSpanish() {
+    if (!textToSpeak) {
+        return;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'es-ES'; 
+      utterance.rate = 0.85; 
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Native browser speech synthesis is unsupported on this software platform.");
+    }
+}
+
+
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
     translateBtn.classList.add('hidden');
@@ -370,7 +485,74 @@ translateBtn.addEventListener('click', function() {
 
 nextBtn.addEventListener('click', showNextRandom);
 prevBtn.addEventListener('click', showPrevious); 
+speakBtn.addEventListener('click', speakSpanish);
 
+function adaptGoogleToITranslate(googleResponse, targetLang) {
+    var googleList = (googleResponse && googleResponse.data && googleResponse.data.translations) || [];
+    
+    // Extract the detected source language from the first item
+    var firstItem = googleList[0] || {};
+    var detectedSource = firstItem.detectedSourceLanguage || "en";
+    
+    // Map individual translations into iTranslate's format
+    var convertedTranslations = googleList.map(function(item) {
+        return {
+            translation: item.translatedText || ""
+        };
+    });
+    
+    // Construct the payload with responseData and body nested at the top levels
+    var innerPayload = {
+        source: detectedSource,
+        target: targetLang || "es", 
+        translations: convertedTranslations
+    };
+
+    return {
+        responseData: innerPayload,
+        body: innerPayload
+    };
+}
+
+async function translateText(textToTranslate) {
+    if (!textToTranslate.trim()) return;
+    const trKey = await decrypt(api2KeyEncrypted);
+    if (!trKey) {
+      alert("Error (2) connecting .");
+      return;
+    }
+    const uiDiv = document.getElementById('translationResponse');
+    const payload = {
+        q: textToTranslate,
+        source: 'es', // Spanish
+        target: 'en', // English
+        format: 'text'
+    };
+    try {
+        const response = await fetch(googleTranslateAPIUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Goog-Api-Key': trKey
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const translatedText = data.data.translations[0].translatedText;
+            parseAndDisplayUnique_GoogleTranslate(textToTranslate, translatedText, uiDiv);
+        } else {
+            alert('Translation Error: ' + data.error.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to connect to the translation service.');
+    }
+}
+
+/* iTranslate API call
 async function sendTranslationRequest(textValue) {
 
     const uiDiv = document.getElementById('translationResponse');
@@ -411,12 +593,14 @@ async function sendTranslationRequest(textValue) {
         const responseData = await response.json();
 
         console.log(responseData);
+
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
 
     } catch(err) {
         uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
     }
 }
+*/
 
 function clickSaveWord() {
     document.getElementById('saveWordButton').click();
@@ -443,6 +627,48 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
                 });
             }
         });
+    }
+
+    // 4. Run the final data array through a Set structure to remove duplicates
+    const uniqueResults = [...new Set(orderedResults)];
+
+    // 5. Build clean layout tree lists 
+    if (uniqueResults.length === 0) {
+        visualContainer.innerHTML = "<p style='color:#718096;'>No translations were found in the response object.</p>";
+        return;
+    }
+
+    let oneLineTranslation = '';
+    let listHtml = "<ol class='translation-list'>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'>[Save]</a>"+"</li>";
+    uniqueResults.slice(0,5).forEach((word) => {
+
+        if(word.endsWith('.')) {
+            word = word.substring(0,word.length-1);
+        }
+
+        listHtml += "<li>" + word + "</li>";
+        oneLineTranslation += (word + "; ");
+    });
+    if(oneLineTranslation.length>0 && oneLineTranslation.endsWith("; ")) {
+        oneLineTranslation = oneLineTranslation.trim().substring(0,oneLineTranslation.trim().length-1);
+    }
+    listHtml += "</ol>";
+
+    document.getElementById('spanishWord').value=textValue;
+    document.getElementById('englishTranslation').value=oneLineTranslation;
+
+    visualContainer.innerHTML = listHtml;
+}
+
+
+function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visualContainer) {
+    // 1. Initialize an array to keep items in their natural sequence
+    const orderedResults = [];
+
+    // 2. Safely capture the main target translation string first
+    if (translatedText) {
+        orderedResults.push(translatedText.toLowerCase().trim());
     }
 
     // 4. Run the final data array through a Set structure to remove duplicates
@@ -506,7 +732,8 @@ function processSentence(input) {
             
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
-                sendTranslationRequest(cleanWord);
+               // sendTranslationRequest(cleanWord);
+                translateText(cleanWord);
             });
 
             wordBox.appendChild(span);
@@ -630,7 +857,7 @@ tabButtons.forEach(button => {
         score++;
         selectedButton.classList.add("correct-choice");
       } else {
-        pauseMillis = 4000;
+        pauseMillis = 5000;
         selectedButton.classList.add("incorrect-choice");
         
         // Find and highlight the correct button so the user learns from their mistake
@@ -661,7 +888,198 @@ tabButtons.forEach(button => {
 
     restartBtn.addEventListener("click", startQuiz);
 
+    // Scoped helper to update status message
+    function smShowStatus(message, isError = false) {
+        const statusDiv = document.getElementById('sm-status');
+        if (!statusDiv) return;
+        statusDiv.textContent = message;
+        statusDiv.style.color = isError ? 'var(--sm-error-color)' : 'var(--sm-text-muted)';
+    }
 
+    // Export the selected LocalStorage array as a pretty-printed JSON file
+    function smExportLocalStorage() {
+        const storageNameInput = document.getElementById('sm-storageName');
+        const storageName = storageNameInput ? storageNameInput.value.trim() : '';
+
+        if (!storageName) {
+            smShowStatus('Error: Please enter a Local Storage Name.', true);
+            return;
+        }
+
+        const data = localStorage.getItem(storageName);
+
+        if (!data) {
+            smShowStatus(`Error: No data found in Local Storage for "${storageName}".`, true);
+            return;
+        }
+
+        let outputData = data;
+
+        try {
+            const parsed = JSON.parse(data);
+            
+            // Enforce that the exported root is wrapped as an array if it isn't already
+            const arrayData = Array.isArray(parsed) ? parsed : [parsed];
+            outputData = JSON.stringify(arrayData, null, 2); 
+        } catch (e) {
+            console.warn('Data is not valid JSON. Exporting raw fallback.');
+            // If data is just raw text, wrap it into a valid JSON array format
+            outputData = JSON.stringify([data], null, 2);
+        }
+
+        const blob = new Blob([outputData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${storageName}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        smShowStatus(`Successfully exported "${storageName}.json" as Pretty Array!`);
+    }
+
+    // Load, merge arrays, and remove duplicates
+    function smImportLocalStorage(event) {
+        const storageNameInput = document.getElementById('sm-storageName');
+        const storageName = storageNameInput ? storageNameInput.value.trim() : '';
+        const files = event.target.files;
+
+        if (!storageName) {
+            smShowStatus('Error: Please enter a Local Storage Name before importing.', true);
+            event.target.value = '';
+            return;
+        }
+
+        if (!files || files.length === 0) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // Enforce that the imported root must be a JSON array
+                if (!Array.isArray(importedData)) {
+                    throw new Error('Root element of imported JSON must be an Array.');
+                }
+
+                let existingData = [];
+                const rawExisting = localStorage.getItem(storageName);
+                
+                if (rawExisting) {
+                    try {
+                        const parsedExisting = JSON.parse(rawExisting);
+                        existingData = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
+                    } catch (parseError) {
+                        console.warn('Existing data was not valid JSON array, resetting storage.');
+                        existingData = [];
+                    }
+                }
+
+                // Merge the two arrays together
+                const combinedData = [...existingData, ...importedData];
+
+                // Remove exact duplicates by filtering with a Set of stringified items
+                const seenItems = new Set();
+                const uniqueData = combinedData.filter(item => {
+                    // Stringify ensures accurate identification regardless of object depth or primitive types
+                    const stringifiedItem = JSON.stringify(item);
+                    if (seenItems.has(stringifiedItem)) {
+                        return false;
+                    }
+                    seenItems.add(stringifiedItem);
+                    return true;
+                });
+
+                // Save clean deduplicated array back to local storage
+                localStorage.setItem(storageName, JSON.stringify(uniqueData));
+                smShowStatus(`Merged arrays! Saved ${uniqueData.length} unique items to "${storageName}".`);
+            } catch (error) {
+                smShowStatus(`Error importing file: ${error.message}`, true);
+            } finally {
+                event.target.value = '';
+            }
+        };
+        reader.readAsText(files[0]);
+        updateDisplayData();
+    }
+
+(function() {
+      let textToSpeak = "";
+        
+      const spanishTextInput = document.getElementById('spanishText');
+      const submitBtn = document.getElementById('ai-tutor-submitBtn');
+      const outputCard = document.getElementById('ai-tutor-outputCard');
+      const resultOutput = document.getElementById('ai-tutor-resultOutput');
+
+      // Instructing system prompt to strictly use the new isolated prefix classes
+      // The instruction specifies explicit blocks so the parser can identify the sections cleanly
+      const systemInstruction = 
+        "You are an expert Spanish language master tutor. Given a word or phrase, break it down using the following 5 sections exactly as labeled:\n\n" +
+        "ENGLISH:\n" +
+        "Provide ONLY the dynamic clear target English translation. Wrap this meaning text in <span class=\"ai-tutor-meaning-hl\">...</span> tags.\n\n" +
+        "SPANISH:\n" +
+        "Provide ONLY the user's initial sentence. Wrap this text in <span class=\"ai-tutor-english-hl\">...</span> tags.\n\n" +
+        "VOCABULARY:\n\n" +
+        "Provide individual vocabulary breakdowns and phonetic pronunciation guides. Format each vocabulary entry as 'Word: Explanation'. Wrap each line in <span class=\"ai-tutor-vocab-hl\">...</span> tags with one entry per line.\n\n" +
+        "GRAMMAR:\n\n" +
+        "Provide clear grammar explanations or regional structure rules. Wrap each entry in <span class=\"ai-tutor-grammar-hl\">...</span> tags with one entry per line. Separate each entry by an empty line.\n\n" +
+        "EXAMPLES:\n\n" +
+        "Provide five real-world alternative example sentences using this word/phrase alongside their English translations to show real situational context. Wrap each sentence pair example in <span class=\"ai-tutor-example-hl\">...</span> tags with one entry per line. Separate each example by an empty line.\n\n" +
+        "CRITICAL: Prepend each bullet item with a &bull; ";
+
+      submitBtn.addEventListener('click', async () => {
+        const key = await decrypt(api1KeyEncrypted);
+        const text = spanishTextInput.innerText.trim();
+
+        if (!key) {
+          alert("Error (1) connecting.");
+          return;
+        }
+        if (!text) {
+          alert("Please enter a Spanish word or short phrase.");
+          return;
+        }
+
+        textToSpeak = text;
+        outputCard.classList.add('ai-tutor-active');
+        resultOutput.innerHTML = "<em>Loading explanation...</em>";
+        submitBtn.disabled = true;
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: `Break down this phrase: "${text}"` }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: { 
+                  temperature: 0.2,
+                  responseMimeType: "text/plain" 
+                }
+              })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+              throw new Error(data.error.message);
+            }
+
+            const rawText = data.candidates[0].content.parts[0].text;
+            
+            // Inject innerHTML so the CSS classes (.vocab-hl, .grammar-hl, .meaning-hl) function
+            resultOutput.innerHTML = rawText;
+
+          } catch (error) {
+            console.error(error);
+            resultOutput.innerHTML = "<span style='color:red;'>Error executing request. Please check your API key validity.</span><br><small>" + error.message + "</small>";
+          } finally {
+            submitBtn.disabled = false;
+          }
+        });
+    })();
 
     initFlashcards();
     startQuiz();

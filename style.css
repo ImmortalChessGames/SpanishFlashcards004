@@ -105,6 +105,12 @@
         background-color: #e67e22;
         color: white;
     }
+    .btn-speak {
+        background-color: #e67e22;
+        color: white;
+        padding: 5px 10px; 
+        font-size: 12px;
+    }
     .btn-status {
         font-size: 0.85rem;
         padding: 8px 16px;
@@ -253,6 +259,139 @@
     .clickable-word:hover {
         background-color: blue;
         color: white;
+    .sm-wrapper {
+        --sm-bg-color: #f8f9fa;
+        --sm-card-bg: #ffffff;
+        --sm-border-color: #ddd;
+        --sm-primary-color: #007bff;
+        --sm-primary-hover: #0056b3;
+        --sm-success-color: #28a745;
+        --sm-success-hover: #218838;
+        --sm-text-main: #333;
+        --sm-text-muted: #666;
+        --sm-error-color: #dc3545;
+
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .sm-wrapper * {
+        box-sizing: border-box;
+    }
+
+    .sm-container {
+        background-color: var(--sm-card-bg);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid var(--sm-border-color);
+    }
+
+    .sm-title {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: var(--sm-primary-color);
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .sm-input-group {
+        margin-bottom: 15px;
+    }
+
+    .sm-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.9em;
+        color: var(--sm-text-main);
+        text-align: left;
+    }
+
+    .sm-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--sm-border-color);
+        border-radius: 5px;
+        font-size: 0.95em;
+        color: var(--sm-text-main);
+        background-color: #fff;
+    }
+
+    .sm-input:focus {
+        border-color: var(--sm-primary-color);
+        outline: none;
+    }
+
+    .sm-button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .sm-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: 600;
+        font-size: 0.95em;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        text-align: center;
+    }
+
+    .sm-btn-primary {
+        background-color: var(--sm-primary-color);
+    }
+
+    .sm-btn-primary:hover {
+        background-color: var(--sm-primary-hover);
+    }
+
+    .sm-btn-success {
+        background-color: var(--sm-success-color);
+    }
+
+    .sm-btn-success:hover {
+        background-color: var(--sm-success-hover);
+    }
+
+    .sm-file-upload-wrapper {
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+    }
+
+    .sm-file-upload-wrapper input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
+
+    .sm-file-upload-wrapper .sm-btn {
+        width: 100%;
+    }
+
+    .sm-status {
+        margin-top: 15px;
+        font-size: 0.85em;
+        color: var(--sm-text-muted);
+        text-align: center;
+        min-height: 1.2em;
+    }
         transform: translateY(-2px);
     }
 
@@ -603,4 +742,283 @@ h2 {
 
 .hidden {
     display: none !important;
+}
+
+.sm-wrapper {
+    --sm-bg-color: #f8f9fa;
+    --sm-card-bg: #ffffff;
+    --sm-border-color: #ddd;
+    --sm-primary-color: #007bff;
+    --sm-primary-hover: #0056b3;
+    --sm-success-color: #28a745;
+    --sm-success-hover: #218838;
+    --sm-text-main: #333;
+    --sm-text-muted: #666;
+    --sm-error-color: #dc3545;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.sm-wrapper * {
+    box-sizing: border-box;
+}
+
+.sm-container {
+    background-color: var(--sm-card-bg);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid var(--sm-border-color);
+}
+
+.sm-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--sm-primary-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.sm-input-group {
+    margin-bottom: 15px;
+}
+
+.sm-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--sm-text-main);
+    text-align: left;
+}
+
+.sm-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--sm-border-color);
+    border-radius: 5px;
+    font-size: 0.95em;
+    color: var(--sm-text-main);
+    background-color: #fff;
+}
+
+.sm-input:focus {
+    border-color: var(--sm-primary-color);
+    outline: none;
+}
+
+.sm-button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.sm-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+}
+
+.sm-btn-primary {
+    background-color: var(--sm-primary-color);
+}
+
+.sm-btn-primary:hover {
+    background-color: var(--sm-primary-hover);
+}
+
+.sm-btn-success {
+    background-color: var(--sm-success-color);
+}
+
+.sm-btn-success:hover {
+    background-color: var(--sm-success-hover);
+}
+
+.sm-file-upload-wrapper {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+}
+
+.sm-file-upload-wrapper input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.sm-file-upload-wrapper .sm-btn {
+    width: 100%;
+}
+
+.sm-status {
+    margin-top: 15px;
+    font-size: 0.85em;
+    color: var(--sm-text-muted);
+    text-align: center;
+    min-height: 1.2em;
+}
+
+#ai-tutor-container {
+  --ai-tutor-bg-primary: #f8fafc;
+  --ai-tutor-card-bg: #ffffff;
+  --ai-tutor-text-main: #0f172a;
+  --ai-tutor-accent: #2563eb;
+  --ai-tutor-accent-hover: #1d4ed8;
+  --ai-tutor-border: #e2e8f0;
+  
+  /* Highlighting Colors */
+  --ai-tutor-hl-bg: #f1f5f9;
+  --ai-tutor-hl-english: #00008b; /* Slate Gray for English input text */
+  --ai-tutor-hl-vocab: #808000;   /* Crimson Red for vocabulary */
+  --ai-tutor-hl-grammar: #0369a1; /* Deep Blue for grammar points */
+  --ai-tutor-hl-meaning: #15803d; /* Forest Green for English translation */
+  --ai-tutor-hl-example: #7c3aed; /* Purple for situational examples */
+
+  font-family: system-ui, -apple-system, sans-serif; 
+  max-width: 600px; 
+  margin: 2rem auto; 
+  padding: 0 1rem; 
+  line-height: 1.6;
+  color: var(--ai-tutor-text-main);
+  text-align: left !important;
+}
+
+#ai-tutor-container .ai-tutor-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: left !important;
+}
+
+#ai-tutor-container .ai-tutor-card { 
+  background: var(--ai-tutor-card-bg); 
+  padding: 1.5rem; 
+  border-radius: 12px; 
+  border: 0px solid var(--ai-tutor-border);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+  margin-top: 1rem; 
+  box-sizing: border-box;
+  text-align: left !important;
+}
+
+#ai-tutor-container .ai-tutor-label { 
+  font-weight: 600; 
+  display: block; 
+  margin-bottom: 0.5rem; 
+  font-size: 0.9rem; 
+  text-transform: uppercase; 
+  color: #64748b;
+  text-align: left !important;
+}
+
+#ai-tutor-container .ai-tutor-input { 
+  width: 100%; 
+  padding: 0.75rem; 
+  border: 1px solid var(--ai-tutor-border); 
+  border-radius: 6px; 
+  box-sizing: border-box; 
+  margin-bottom: 1.25rem; 
+  font-size: 1rem;
+  text-align: left !important;
+}
+
+#ai-tutor-container .ai-tutor-btn-group { 
+  display: flex; 
+  gap: 0.5rem; 
+  flex-wrap: wrap; 
+}
+
+#ai-tutor-container .ai-tutor-btn { 
+  background: var(--ai-tutor-accent); 
+  color: white; 
+  border: none; 
+  padding: 0.75rem 1.25rem; 
+  font-size: 0.95rem; 
+  border-radius: 6px; 
+  cursor: pointer; 
+  font-weight: 500; 
+  flex: 1; 
+  min-width: 150px; 
+  transition: background 0.2s;
+}
+
+#ai-tutor-container .ai-tutor-btn:hover { 
+  background: var(--ai-tutor-accent-hover); 
+}
+
+#ai-tutor-container .ai-tutor-btn:disabled { 
+  background: #cbd5e1; 
+  cursor: not-allowed; 
+}
+
+#ai-tutor-container .ai-tutor-secondary-btn { 
+  background: #64748b; 
+}
+
+#ai-tutor-container .ai-tutor-secondary-btn:hover { 
+  background: #475569; 
+}
+
+#ai-tutor-container .ai-tutor-output-container { 
+  display: none; 
+}
+
+#ai-tutor-container .ai-tutor-output-container.ai-tutor-active { 
+  display: block; 
+}
+
+#ai-tutor-container .ai-tutor-response-block {
+  background: var(--ai-tutor-hl-bg);
+  padding: 1.25rem;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  border-left: 4px solid var(--ai-tutor-accent);
+  text-align: left !important;
+}
+
+/* Target Classes for AI Generation Parsing Styles */
+#ai-tutor-container .ai-tutor-english-hl { color: var(--ai-tutor-hl-english); font-weight: bold; }
+#ai-tutor-container .ai-tutor-vocab-hl { color: var(--ai-tutor-hl-vocab); font-weight: bold; }
+#ai-tutor-container .ai-tutor-grammar-hl { color: var(--ai-tutor-hl-grammar); font-weight: bold; }
+#ai-tutor-container .ai-tutor-example-hl { color: var(--ai-tutor-hl-example); font-weight: bold; }
+
+#ai-tutor-container .ai-tutor-meaning-hl { 
+  color: var(--ai-tutor-hl-meaning); 
+  font-weight: bold; 
+  background: #e8f5e9; 
+  padding: 0.1rem 0.3rem; 
+  border-radius: 4px; 
+}
+
+/* Interactive vocabulary words styles */
+#ai-tutor-container .ai-tutor-clickable-word {
+  color: var(--ai-tutor-hl-vocab);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+}
+#ai-tutor-container .ai-tutor-clickable-word:hover {
+  background-color: #fca5a5;
+  border-radius: 2px;
 }
