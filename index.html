@@ -27,13 +27,11 @@
                 <div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
+                        <button id="translateBtn" class="btn-nav-2">Show Translation</button>
                         <button id="nextBtn" class="btn-nav">Next →</button>
                     </div> 
                     <div class="display-card">
                         <div id="wordBox" class="word-box"></div>
-                        <div class="action-row">
-                            <button id="translateBtn" class="btn-translate">Show Translation</button>
-                        </div>
                         <div id="englishText" class="english-text hidden"></div>
                         <div id="translationResponse"></div>
                         <div id="spanishText" style="margin: 15px;"></div>
@@ -1121,7 +1119,7 @@ async function loadData() {
 
             // Align the inner element precisely to the top of its parent container
             document.documentElement.scrollTo({
-              top: element.offsetTop - container.offsetTop,
+              top: element.offsetTop - document.documentElement.offsetTop,
               behavior: "smooth"
             });
 
@@ -1134,7 +1132,7 @@ async function loadData() {
         });
     })();
 
-    loadData();
+   // loadData();
     initFlashcards();
     startQuiz();
 
