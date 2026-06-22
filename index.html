@@ -1014,7 +1014,8 @@ async function loadData() {
     // Fetches the file and automatically runs JSON.parse() behind the scenes
     const response = await fetch('./defaults.json');
     const data = await response.json(); 
-    
+    const storageNameInput = document.getElementById('sm-storageName');
+    const storageName = storageNameInput ? storageNameInput.value.trim() : '';
     const rawExisting = localStorage.getItem(storageName);
     if (rawExisting) {
         try {
