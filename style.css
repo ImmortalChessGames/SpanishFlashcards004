@@ -1015,7 +1015,6 @@ h2 {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.95rem;
   white-space: pre-wrap;
-  border-left: 4px solid var(--ai-tutor-accent);
   text-align: left !important;
 }
 
