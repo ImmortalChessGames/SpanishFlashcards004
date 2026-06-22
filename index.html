@@ -1016,6 +1016,8 @@ async function loadData() {
     const data = await response.json(); 
     const storageNameInput = document.getElementById('sm-storageName');
     const storageName = storageNameInput ? storageNameInput.value.trim() : '';
+
+    let existingData = [];
     const rawExisting = localStorage.getItem(storageName);
     if (rawExisting) {
         try {
