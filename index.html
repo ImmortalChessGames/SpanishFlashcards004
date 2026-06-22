@@ -53,6 +53,11 @@
                         <span class="toast-icon">✓</span>
                         <span class="toast-message">Saved successfully.</span>
                       </div>
+                    <div class="controls">
+                        <button id="prevBtn2" class="btn-nav" disabled>← Prev</button>
+                        <button id="translateBtn2" class="btn-nav-2">Show Translation</button>
+                        <button id="nextBtn2" class="btn-nav">Next →</button>
+                    </div>
                 </div>   
             </div>
 
@@ -371,6 +376,9 @@
     const translateBtn = document.getElementById('translateBtn');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const translateBtn2 = document.getElementById('translateBtn2');
+    const prevBtn2 = document.getElementById('prevBtn2');
+    const nextBtn2 = document.getElementById('nextBtn2');
     const speakBtn = document.getElementById('speakBtn');
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
@@ -418,8 +426,10 @@
         spanishText.classList.add('hidden');
 
         translateBtn.classList.remove('hidden');
+        translateBtn2.classList.remove('hidden');
         
         prevBtn.disabled = (historyIndex <= 0);
+        prevBtn2.disabled = (historyIndex <= 0);
 
         processSentence(item.spanish);
 
@@ -478,10 +488,18 @@
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
     translateBtn.classList.add('hidden');
+    translateBtn2.classList.add('hidden');
+});
+translateBtn2.addEventListener('click', function() {
+    englishText.classList.remove('hidden');
+    translateBtn.classList.add('hidden');
+    translateBtn2.classList.add('hidden');
 });
 
 nextBtn.addEventListener('click', showNextRandom);
 prevBtn.addEventListener('click', showPrevious); 
+nextBtn2.addEventListener('click', showNextRandom);
+prevBtn2.addEventListener('click', showPrevious); 
 speakBtn.addEventListener('click', speakSpanish);
 
 function adaptGoogleToITranslate(googleResponse, targetLang) {
@@ -1132,7 +1150,7 @@ async function loadData() {
         });
     })();
 
-   // loadData();
+    loadData();
     initFlashcards();
     startQuiz();
 
