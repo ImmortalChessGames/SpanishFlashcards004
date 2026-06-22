@@ -1009,39 +1009,45 @@ tabButtons.forEach(button => {
         updateDisplayData();
     }
 
-    function loadDefaultDictionary() {
-        let defaultDictionary = JSON.parse('./defaults.json');
-        if(defaultDictionary) {
-            const rawExisting = localStorage.getItem(storageName);
-            if (rawExisting) {
-                try {
-                    const parsedExisting = JSON.parse(rawExisting);
-                    existingData = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
-                } catch (parseError) {
-                    console.warn('Existing data was not valid JSON array, resetting storage.');
-                    existingData = [];
-                }
-            }
-
-            // Merge the two arrays together
-            const combinedData = [...existingData, ...defaultDictionary];
-
-            // Remove exact duplicates by filtering with a Set of stringified items
-            const seenItems = new Set();
-            const uniqueData = combinedData.filter(item => {
-                // Stringify ensures accurate identification regardless of object depth or primitive types
-                const stringifiedItem = JSON.stringify(item);
-                if (seenItems.has(stringifiedItem)) {
-                    return false;
-                }
-                seenItems.add(stringifiedItem);
-                return true;
-            });
-
-            // Save clean deduplicated array back to local storage
-            localStorage.setItem(storageName, JSON.stringify(uniqueData));           
+async function loadData() {
+  try {
+    // Fetches the file and automatically runs JSON.parse() behind the scenes
+    const response = await fetch('./data.json');
+    const data = await response.json(); 
+    
+    const rawExisting = localStorage.getItem(storageName);
+    if (rawExisting) {
+        try {
+            const parsedExisting = JSON.parse(rawExisting);
+            existingData = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
+        } catch (parseError) {
+            console.warn('Existing data was not valid JSON array, resetting storage.');
+            existingData = [];
         }
     }
+
+    // Merge the two arrays together
+    const combinedData = [...existingData, ...data];
+
+    // Remove exact duplicates by filtering with a Set of stringified items
+    const seenItems = new Set();
+    const uniqueData = combinedData.filter(item => {
+        // Stringify ensures accurate identification regardless of object depth or primitive types
+        const stringifiedItem = JSON.stringify(item);
+        if (seenItems.has(stringifiedItem)) {
+            return false;
+        }
+        seenItems.add(stringifiedItem);
+        return true;
+    });
+
+    // Save clean deduplicated array back to local storage
+    localStorage.setItem(storageName, JSON.stringify(uniqueData));           
+  } catch (error) {
+    console.error("Failed to parse JSON file:", error);
+  }
+}
+
 
 
 (function() {
@@ -1122,7 +1128,7 @@ tabButtons.forEach(button => {
 
     initFlashcards();
     startQuiz();
-    loadDefaultDictionary();
+    loadData();
 
 </script>
 </body>
