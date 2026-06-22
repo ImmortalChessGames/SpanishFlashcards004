@@ -226,7 +226,6 @@
     // 3. Process data (Filter by search query, then paginate)
     function updateDisplayData() {
         quizVocab=[];
-        document.getElementById('ai-tutor-resultOutput').replaceChildren();
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
 
@@ -453,6 +452,7 @@
         
         displayCard(item);
 
+        document.getElementById('ai-tutor-resultOutput').replaceChildren();
         document.getElementById('translationResponse').innerHTML='';
         document.getElementById('spanishWord').value='';
         document.getElementById('englishTranslation').value='';
@@ -462,6 +462,7 @@
       if (historyIndex > 0) {
          historyIndex--;
          displayCard(history[historyIndex]);
+         document.getElementById('ai-tutor-resultOutput').replaceChildren();
          document.getElementById('translationResponse').innerHTML='';
          document.getElementById('spanishWord').value='';
          document.getElementById('englishTranslation').value='';
