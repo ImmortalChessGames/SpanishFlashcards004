@@ -115,13 +115,12 @@
                             <label class="sm-label" for="sm-storageName">Local Storage Name</label>
                             <input type="text" id="sm-storageName" class="sm-input" value="___spanish_vocab___">
                         </div>
-                        <div class="sm-button-group">
-                            <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
-                            
+                        <div class="sm-button-group">                            
                             <div class="sm-file-upload-wrapper">
                                 <button type="button" class="sm-btn sm-btn-success">Import Local Storage</button>
                                 <input type="file" id="sm-importFile" accept=".json" onchange="smImportLocalStorage(event)">
                             </div>
+                            <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
                     </div>
@@ -1010,6 +1009,7 @@ tabButtons.forEach(button => {
         };
         reader.readAsText(files[0]);
         updateDisplayData();
+        window.location.reload();
     }
 
 async function loadData() {
