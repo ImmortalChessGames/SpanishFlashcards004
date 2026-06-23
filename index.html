@@ -27,7 +27,6 @@
                 <div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
-                        <button id="translateBtn" class="btn-nav-2">Show Translation</button>
                         <button id="nextBtn" class="btn-nav">Next →</button>
                     </div> 
                     <div class="display-card">
@@ -38,6 +37,7 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
+                              <button id="translateBtn" class="btn-nav-2">Show Translation</button>
                               <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explanation</button>
                               <button id="speakBtn" class="ai-tutor-btn">Speak 🔊</button>
                             </div>
@@ -55,7 +55,6 @@
                       </div>
                     <div class="controls">
                         <button id="prevBtn2" class="btn-nav" disabled>← Prev</button>
-                        <button id="translateBtn2" class="btn-nav-2">Show Translation</button>
                         <button id="nextBtn2" class="btn-nav">Next →</button>
                     </div>
                 </div>   
@@ -373,7 +372,6 @@
     const translateBtn = document.getElementById('translateBtn');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const translateBtn2 = document.getElementById('translateBtn2');
     const prevBtn2 = document.getElementById('prevBtn2');
     const nextBtn2 = document.getElementById('nextBtn2');
     const speakBtn = document.getElementById('speakBtn');
@@ -422,8 +420,7 @@
         englishText.classList.add('hidden');
         spanishText.classList.add('hidden');
 
-        translateBtn.classList.remove('hidden');
-        translateBtn2.classList.remove('hidden');
+        translateBtn.disabled=false;
         
         prevBtn.disabled = (historyIndex <= 0);
         prevBtn2.disabled = (historyIndex <= 0);
@@ -486,13 +483,7 @@
 
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
-    translateBtn.classList.add('hidden');
-    translateBtn2.classList.add('hidden');
-});
-translateBtn2.addEventListener('click', function() {
-    englishText.classList.remove('hidden');
-    translateBtn.classList.add('hidden');
-    translateBtn2.classList.add('hidden');
+    translateBtn.disabled=true;
 });
 
 nextBtn.addEventListener('click', showNextRandom);
@@ -1063,7 +1054,10 @@ async function loadData() {
   }
 }
 
-
+function saveWordFromExplanation(e) {
+    saveWord(e.innerText, e.title);
+    showToast();
+}
 
 (function() {
       let textToSpeak = "";
@@ -1077,14 +1071,14 @@ async function loadData() {
       // The instruction specifies explicit blocks so the parser can identify the sections cleanly
       const systemInstruction = 
         "You are an expert Spanish language master tutor. Given a word or phrase, break it down using the following 5 sections exactly as labeled:\n\n" +
-        "ENGLISH:\n" +
+        "ENGLISH:\n\n" +
         "Provide ONLY the dynamic clear target English translation. Wrap this meaning text in <span class=\"ai-tutor-meaning-hl\">...</span> tags.\n\n" +
-        "SPANISH:\n" +
+        "SPANISH:\n\n" +
         "Provide ONLY the user's initial sentence. Wrap this text in <span class=\"ai-tutor-english-hl\">...</span> tags.\n\n" +
         "VOCABULARY:\n\n" +
-        "Provide individual vocabulary breakdowns and phonetic pronunciation guides. Format each vocabulary entry as 'Word: Explanation'. Wrap each line in <span class=\"ai-tutor-vocab-hl\">...</span> tags with one entry per line.\n\n" +
+        "Provide individual vocabulary breakdowns. Inlude the original word as-is and also an additional entry in its infinitve form. Format each vocabulary entry as 'Word : Explanation'. Wrap each line in <span class=\"ai-tutor-vocab-hl\">...</span> tags with one entry per line.  Wrap each of these target spanish words individually in a `<span class=\"spanish-word\"><a href=\"#\" class=\"red-link\" title=Explanation onclick=\"saveWordFromExplanation(this);\">word</a></span>` tag. Do not add spaces inside the span tags. Do not use colons, but instead an equals sign with a space before and after it. Do not include pronunciation. Do not include grammatical notes. Only include Explanation. Make the Explanation (i.e. English translation) like it would appear in a dictionary plus its synonyms (separate each entry by a semicolon).\n\n" +
         "GRAMMAR:\n\n" +
-        "Provide clear grammar explanations or regional structure rules. Wrap each entry in <span class=\"ai-tutor-grammar-hl\">...</span> tags with one entry per line. Separate each entry by an empty line.\n\n" +
+        "Provide simple, clear and concise explanations of how the words tie together to make a meaning. Do not use grammar jargon and do not include pronunciations. Wrap each entry in <span class=\"ai-tutor-grammar-hl\">...</span> tags with one entry per line. Separate each entry by an empty line.\n\n" +
         "EXAMPLES:\n\n" +
         "Provide five real-world alternative example sentences using this word/phrase alongside their English translations to show real situational context. Wrap each sentence pair example in <span class=\"ai-tutor-example-hl\">...</span> tags with one entry per line. Separate each example by an empty line.\n\n" +
         "CRITICAL: Prepend each bullet item with a &bull; ";

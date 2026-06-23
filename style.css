@@ -983,6 +983,10 @@ h2 {
   transition: background 0.2s;
 }
 
+#ai-tutor-container .red-link {
+  color: red;
+}
+
 #ai-tutor-container .ai-tutor-btn:hover { 
   background: var(--ai-tutor-accent-hover); 
 }
