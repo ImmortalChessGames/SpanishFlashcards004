@@ -683,9 +683,7 @@ li:hover { background: #f1f3f9; }
 
 .quiz-container {
     background: var(--card-bg);
-    padding: 2.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
     text-align: center;
 }
 
