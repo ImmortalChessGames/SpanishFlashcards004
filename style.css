@@ -707,6 +707,8 @@ h2 {
 }
 
 .quiz-btn {
+    opacity: 0; 
+    animation: fadeIn 1s ease-in 0.5s forwards;
     background-color: var(--card-bg);
     color: var(--text);
     border: 2px solid var(--border);
@@ -727,14 +729,12 @@ h2 {
     border-color: var(--correct) !important;
     background-color: var(--correct-bg) !important;
     color: var(--correct) !important;
-    animation: pulse-green 0.4s ease-in-out;
 }
 
 .quiz-btn.incorrect-choice {
     border-color: var(--incorrect) !important;
     background-color: var(--incorrect-bg) !important;
     color: var(--incorrect) !important;
-    animation: shake 0.4s ease-in-out;
 }
 
 @keyframes pulse-green {

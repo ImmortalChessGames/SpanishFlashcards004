@@ -132,7 +132,7 @@
 
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
-    const ITEMS_PER_PAGE = 10000;
+    const ITEMS_PER_PAGE = 100;
     
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -221,6 +221,17 @@
         return array.sort((a, b) => a.spanish.localeCompare(b.spanish, 'es', { sensitivity: 'base' }));
     }
 
+    function getRandomSubset(arr, maxReturn = ITEMS_PER_PAGE) {
+      if (!Array.isArray(arr)) return [];
+      const targetLength = arr.length>=maxReturn ? maxReturn : arr.length;
+      const shuffled = [...arr];
+      for (let i = 0; i < targetLength; i++) {
+        const randomIdx = i + Math.floor(Math.random() * (shuffled.length - i));
+        [shuffled[i], shuffled[randomIdx]] = [shuffled[randomIdx], shuffled[i]];
+      }
+      return shuffled.slice(0, targetLength);
+    }
+
     // 3. Process data (Filter by search query, then paginate)
     function updateDisplayData() {
         quizVocab=[];
@@ -254,11 +265,12 @@
 
         // Render current page items
         wordList.innerHTML = '';
-        if(pageItems) {
-            if (pageItems.length === 0) {
+        if(filteredList) {
+            if (filteredList.length === 0) {
                 wordList.innerHTML = '<li style="color: #888; justify-content: center;">No words found</li>';
             } else {
-                pageItems.forEach((item) => {
+                const randomSubset = getRandomSubset(filteredList);
+                randomSubset.forEach((item) => {
                     const li = document.createElement('li');
                     li.innerHTML = `
                         <span><strong>${item.spanish}</strong> ➔ ${item.english}</span>
@@ -835,6 +847,10 @@ tabButtons.forEach(button => {
     function showQuestion() {
       choicesContainer.innerHTML = "";
       if(quizData && quizData.length>0) {
+
+          const quizQuestionCount = document.getElementById('quiz-question-count');
+          quizQuestionCount.innerText = 'Question ' + (currentQuestionIndex+1) + ' out of ' + quizData.length + '.';
+
           const currentQuizItem = quizData[currentQuestionIndex];
           questionEl.innerText = currentQuizItem.question;
 
