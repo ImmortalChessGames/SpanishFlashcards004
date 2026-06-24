@@ -234,6 +234,8 @@
 
     // 3. Process data (Filter by search query, then paginate)
     function updateDisplayData() {
+        const savedX = sessionStorage.getItem('scrollX');
+        const savedY = sessionStorage.getItem('scrollY');
         quizVocab=[];
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
@@ -299,6 +301,8 @@
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
         startQuiz();
+
+        window.scrollTo(savedX, savedY);
     }
 
     function saveWord(spanishVal, englishVal) {
