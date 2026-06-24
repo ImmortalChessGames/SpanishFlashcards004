@@ -234,8 +234,6 @@
 
     // 3. Process data (Filter by search query, then paginate)
     function updateDisplayData() {
-        const savedX = sessionStorage.getItem('scrollX');
-        const savedY = sessionStorage.getItem('scrollY');
         quizVocab=[];
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
@@ -301,8 +299,6 @@
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
         startQuiz();
-
-        window.scrollTo(savedX, savedY);
     }
 
     function saveWord(spanishVal, englishVal) {
@@ -1106,8 +1102,9 @@ async function loadData() {
   }
 }
 
-function saveWordFromExplanation(e) {
-    saveWord(e.innerText, e.title);
+function saveWordFromExplanation(event,elt) {
+    event.preventDefault();
+    saveWord(elt.innerText, elt.title);
     showToast();
 }
 
@@ -1128,7 +1125,7 @@ function saveWordFromExplanation(e) {
         "SPANISH:\n\n" +
         "Provide ONLY the user's initial sentence. Wrap this text in <span class=\"ai-tutor-english-hl\">...</span> tags.\n\n" +
         "VOCABULARY:\n\n" +
-        "Provide individual vocabulary breakdowns. Inlude the original word as-is and also an additional entry in its infinitve form. Format each vocabulary entry as 'Word : Explanation'. Wrap each line in <span class=\"ai-tutor-vocab-hl\">...</span> tags with one entry per line.  Wrap each of these target spanish words individually in a `<span class=\"spanish-word\"><a href=\"#\" class=\"red-link\" title=Explanation onclick=\"saveWordFromExplanation(this);\">word</a></span>` tag. Do not add spaces inside the span tags. Do not use colons, but instead an equals sign with a space before and after it. Do not include pronunciation. Do not include grammatical notes. Only include Explanation. Make the Explanation (i.e. English translation) like it would appear in a dictionary plus its synonyms (separate each entry by a semicolon).\n\n" +
+        "Provide individual vocabulary breakdowns. Inlude the original word as-is and also an additional entry in its infinitve form. Format each vocabulary entry as 'Word : Explanation'. Wrap each line in <span class=\"ai-tutor-vocab-hl\">...</span> tags with one entry per line.  Wrap each of these target spanish words individually in a `<span class=\"spanish-word\"><a href=\"#\" class=\"red-link\" title=Explanation onclick=\"saveWordFromExplanation(event,this);\">word</a></span>` tag. Do not add spaces inside the span tags. Do not use colons, but instead an equals sign with a space before and after it. Do not include pronunciation. Do not include grammatical notes. Only include Explanation. Make the Explanation (i.e. English translation) like it would appear in a dictionary plus its synonyms (separate each entry by a semicolon).\n\n" +
         "GRAMMAR:\n\n" +
         "Provide simple, clear and concise explanations of how the words tie together to make a meaning. Do not use grammar jargon and do not include pronunciations. Wrap each entry in <span class=\"ai-tutor-grammar-hl\">...</span> tags with one entry per line. Separate each entry by an empty line.\n\n" +
         "EXAMPLES:\n\n" +
