@@ -6,6 +6,7 @@
     <meta http-equiv="Cache-Control" content="max-age=31536000">
     <title>Spanish ⇄ English Flashcards</title>
     <script src="sentences.js"></script>
+    <script src="BattleOfStalingrad.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -422,8 +423,7 @@
       }
     }
 
-    function loadArticle(articleJsonFile) {
-        const articleDataset = loadLocalJsonFile(articleJsonFile);
+    function loadArticle(articleDataset) {
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
             history = [];
@@ -472,27 +472,29 @@
     }
 
     function displayCard(item) {
-        currentItem = item;
+        if(item) {
+            currentItem = item;
 
-        englishText.textContent = item.english;
-        spanishText.innerText=item.spanish;
+            englishText.textContent = item.english;
+            spanishText.innerText=item.spanish;
 
-        englishText.classList.add('hidden');
-        spanishText.classList.add('hidden');
+            englishText.classList.add('hidden');
+            spanishText.classList.add('hidden');
 
-        translateBtn.disabled=false;
-        
-        prevBtn.disabled = (historyIndex <= 0);
-        prevBtn2.disabled = (historyIndex <= 0);
-        nextBtn.disabled = (historyIndex >= dataset.length-1);
-        nextBtn2.disabled = (historyIndex >= dataset.length-1);
+            translateBtn.disabled=false;
+            
+            prevBtn.disabled = (historyIndex <= 0);
+            prevBtn2.disabled = (historyIndex <= 0);
+            nextBtn.disabled = (historyIndex >= dataset.length-1);
+            nextBtn2.disabled = (historyIndex >= dataset.length-1);
 
-        processSentence(item.spanish);
+            processSentence(item.spanish);
 
-        if(item && item.spanish) {
-            textToSpeak = item.spanish;
-        } else {
-            textToSpeak = null;
+            if(item && item.spanish) {
+                textToSpeak = item.spanish;
+            } else {
+                textToSpeak = null;
+            }
         }
     }
 
@@ -593,7 +595,7 @@ function reloadDataset(element) {
     }
     dataset = [];
     if(element.value==='BattleOfStalingrad.json') {
-        loadArticle(element.value);
+        loadArticle(battleOfStalingradJson);
     } else {
         initFlashcards();
     }
