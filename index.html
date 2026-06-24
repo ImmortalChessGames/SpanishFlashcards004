@@ -107,6 +107,13 @@
             <div id="panel-4" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container">
+                        <div class="sm-choose-dataset">
+                            <label class="sm-label" for="sm-myDropdown">Choose a dataset:</label>
+                            <select id="sm-chooseDataset" class="sm-input" onchange="reloadDataset(this)">
+                              <option value="defaultFlashcards" >Default</option>
+                              <option value="BattleOfStalingrad.json">Battle of Stalingrad</option>
+                            </select>
+                        </div>            
                         <div class="sm-input-group">
                             <label class="sm-label" for="sm-secret">Secret Passcode</label>
                             <input type="password" id="sm-secret" class="sm-input" value="enter-your-secret-passcode-here" placeholder="Enter the secret pass code.">
@@ -384,6 +391,7 @@
     });
 
     let dataset = [];
+    let flashcardsDataset = [];
     let history = [];
     let historyIndex = -1;
     let currentItem = null;
@@ -400,8 +408,39 @@
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
 
+
+    async function loadLocalJsonFile(jsonFile) {
+      try {
+        const response = await fetch(jsonFile);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error("Could not load JSON:", error);
+      }
+    }
+
+    function loadArticle(articleJsonFile) {
+        const articleDataset = loadLocalJsonFile(articleJsonFile);
+        if(articleDataset && articleDataset.length>0) {
+            dataset = articleDataset;
+            history = [];
+            historyIndex = -1;
+        }
+        showNext();
+    }
+
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
+        if(flashcardsDataset && flashcardsDataset.length>0) {
+            dataset = [...flashcardsDataset];
+            showNext();
+            document.getElementById('nextBtn').click();
+            return;
+        }
+
         dataset = [];
         history = [];
         historyIndex = -1;
@@ -416,16 +455,15 @@
             if (columns.length >= 4) {
                 const esId = columns[0].trim();
                 dataset.push({ 
-                    esId: esId,
                     spanish: columns[1].trim(),
-                    enId: columns[2].trim(),
                     english: columns[3].trim()
                 });
             }
         }
 
         if (dataset.length > 0) {
-            showNextRandom();
+            flashcardsDataset = [...dataset];
+            showNext();
         } else {
             alert("Embedded TSV data is empty or formatted incorrectly.");
         }
@@ -435,7 +473,7 @@
 
     function displayCard(item) {
         currentItem = item;
-        
+
         englishText.textContent = item.english;
         spanishText.innerText=item.spanish;
 
@@ -446,6 +484,8 @@
         
         prevBtn.disabled = (historyIndex <= 0);
         prevBtn2.disabled = (historyIndex <= 0);
+        nextBtn.disabled = (historyIndex >= dataset.length-1);
+        nextBtn2.disabled = (historyIndex >= dataset.length-1);
 
         processSentence(item.spanish);
 
@@ -456,7 +496,11 @@
         }
     }
 
-    function showNextRandom() {
+    function showNext() {
+        let randomize = true;
+        if(document.getElementById('sm-chooseDataset').value.endsWith('.json')) {
+            randomize = false;
+        }
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -464,8 +508,8 @@
         }
 
         const randomIndex = Math.floor(Math.random() * dataset.length);
-        const item = dataset[randomIndex];
-        
+        const item = dataset[randomize ? randomIndex : historyIndex+1];
+
         history.push(item);
         historyIndex++;
         
@@ -508,9 +552,9 @@ translateBtn.addEventListener('click', function() {
     translateBtn.disabled=true;
 });
 
-nextBtn.addEventListener('click', showNextRandom);
+nextBtn.addEventListener('click', showNext);
 prevBtn.addEventListener('click', showPrevious); 
-nextBtn2.addEventListener('click', showNextRandom);
+nextBtn2.addEventListener('click', showNext);
 prevBtn2.addEventListener('click', showPrevious); 
 speakBtn.addEventListener('click', speakSpanish);
 
@@ -540,6 +584,22 @@ function adaptGoogleToITranslate(googleResponse, targetLang) {
         body: innerPayload
     };
 }
+
+function reloadDataset(element) {
+    historyIndex = -1;
+    history = [];
+    if(!flashcardsDataset || flashcardsDataset.length<1) {
+        flashcardsDataset = [...dataset];
+    }
+    dataset = [];
+    if(element.value==='BattleOfStalingrad.json') {
+        loadArticle(element.value);
+    } else {
+        initFlashcards();
+    }
+   document.getElementsByClassName("tab-btn")[0].click();
+}
+
 
 async function translateText(textToTranslate) {
     if (!textToTranslate.trim()) return;
