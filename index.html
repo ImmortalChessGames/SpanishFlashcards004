@@ -8,6 +8,8 @@
     <script src="sentences.js"></script>
     <script src="BattleOfStalingrad.js"></script>
     <script src="SinkingOfLucitania.js"></script>
+    <script src="T34.js"></script>
+    <script src="MexicoCityStreetFood.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -115,6 +117,7 @@
                               <option value="defaultFlashcards" >Default</option>
                               <option value="BattleOfStalingrad.json">Battle of Stalingrad</option>
                               <option value="SinkingOfLucitania.json">Sinking of Lucitania</option>
+                              <option value="MexicoCityStreetFood.json">Mexico City Street Food</option>
                             </select>
                         </div>            
                         <div class="sm-input-group">
@@ -600,6 +603,10 @@ function reloadDataset(element) {
         loadArticle(battleOfStalingradJson);
     } else if(element.value==='SinkingOfLucitania.json') {
         loadArticle(sinkingOfLucitaniaJson);
+    } else if(element.value==='T34.json') {
+        loadArticle(t34Json);
+    } else if(element.value==='MexicoCityStreetFood.json') {
+        loadArticle(mexicoCityStreetFoodJson);
     } else {
         initFlashcards();
     }
