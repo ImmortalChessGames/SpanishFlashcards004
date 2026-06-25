@@ -1269,6 +1269,7 @@ async function loadData() {
   // load dynamic data sets
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
+alert(key);
       if(key && key.startsWith(getStorageKey()+"__dynamic__")) {
           console.log('Found dynamic data set: ' + key);
           const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
@@ -1335,6 +1336,7 @@ async function fetchGemmaResponse() {
 
         const topicStorageKey = getStorageKey() + "__dynamic__" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
         console.log('topStorageKey='+topicStorageKey);
+alert('topicStorageKey='+topicStorageKey);
         localStorage.setItem(topicStorageKey, responseText);
 
         const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
@@ -1342,6 +1344,7 @@ async function fetchGemmaResponse() {
             newOptionName = newOptionName.substring(0,30);
         }   
         console.log('newOptionName='+newOptionName);
+alert(newOptionName);
         document.getElementById("sm-chooseDataset").add(new Option("__dynamic__"+newOptionName, responseText), 1);
         
         showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.');
