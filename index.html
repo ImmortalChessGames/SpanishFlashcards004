@@ -572,7 +572,7 @@
     function showNext() {
         let randomize = true;
         const selectDataset = document.getElementById('sm-chooseDataset');
-        if(selectDataset.value.endsWith('.json') || selectDataset.value.startsWith('======')) {
+        if(selectDataset.value.endsWith('.json') || selectDataset.value.startsWith('++++++')) {
             randomize = false;
         }
         if (historyIndex < history.length - 1) {
@@ -676,7 +676,7 @@ function reloadDataset(element) {
         loadArticle(mexicoCityStreetFoodJson);
     } else if(element.value==='BlackHole.json') {
         loadArticle(blackHoleJson);
-    } else if(element.options[element.selectedIndex].text.startsWith('======')) {
+    } else if(element.options[element.selectedIndex].text.startsWith('++++++')) {
           const jsonObj = JSON.parse(element.value);
           loadArticle(jsonObj);
     } else {
@@ -1257,7 +1257,7 @@ async function loadData() {
           }   
           console.log('newOptionName='+key);
           const responseText = localStorage.getItem(key);
-          document.getElementById("sm-chooseDataset").add(new Option("======"+newOptionName, responseText), 1);
+          document.getElementById("sm-chooseDataset").add(new Option("++++++"+newOptionName, responseText), 1);
       }
     }
 }
@@ -1270,9 +1270,8 @@ function saveWordFromExplanation(event,elt) {
 
 async function fetchGemmaResponse() {
 
-    showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.');
-
     const key = await decrypt(api1KeyEncrypted);
+    showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.');
     const MODEL_NAME = 'gemma-4-31b-it';
     const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
     document.getElementById('gsv-status').innerText='';
@@ -1309,6 +1308,8 @@ async function fetchGemmaResponse() {
             responseText = responseText.substring(0,responseText.length()-1);
         }
         responseText = responseText.replaceAll('\'','"');
+        responseText = responseText.replaceAll('\\"','');
+
         let responseObj = JSON.parse(responseText);
         responseText = JSON.stringify(responseObj, null, 2);    
 
@@ -1321,7 +1322,7 @@ async function fetchGemmaResponse() {
             newOptionName = newOptionName.substring(0,30);
         }   
         console.log('newOptionName='+topicStorageKey);
-        document.getElementById("sm-chooseDataset").add(new Option("======"+newOptionName, responseText), 1);
+        document.getElementById("sm-chooseDataset").add(new Option("++++++"+newOptionName, responseText), 1);
         
         showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.');
 
