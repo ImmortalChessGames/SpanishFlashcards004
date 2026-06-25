@@ -1346,7 +1346,7 @@ alert(newOptionName);
         document.getElementById("sm-chooseDataset").add(new Option("__dynamic__"+newOptionName, responseText), 1);
         
         showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.');
-
+        document.getElementById('gsv-topic-input').value='';
         return responseText;
     }
 
