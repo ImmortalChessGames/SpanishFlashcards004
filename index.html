@@ -52,8 +52,9 @@
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
                               <button id="translateBtn" class="btn-nav-2">Show Translation</button>
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explanation</button>
                               <button id="speakBtn" class="ai-tutor-btn">Speak 🔊</button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn">Slow 🔊</button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explanation</button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -477,6 +478,7 @@
     const prevBtn2 = document.getElementById('prevBtn2');
     const nextBtn2 = document.getElementById('nextBtn2');
     const speakBtn = document.getElementById('speakBtn');
+    const speakSlowBtn = document.getElementById('speakSlowBtn');
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
 
@@ -619,7 +621,23 @@
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
         }
-}
+    }
+
+    function speakSlowSpanish() {
+        if (!textToSpeak) {
+            return;
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+          utterance.lang = 'es-ES'; 
+          utterance.rate = 0.60; 
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("Native browser speech synthesis is unsupported on this software platform.");
+        }
+    }
+
 
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
@@ -631,6 +649,8 @@ prevBtn.addEventListener('click', showPrevious);
 nextBtn2.addEventListener('click', showNext);
 prevBtn2.addEventListener('click', showPrevious); 
 speakBtn.addEventListener('click', speakSpanish);
+speakSlowBtn.addEventListener('click', speakSlowSpanish);
+
 
 function adaptGoogleToITranslate(googleResponse, targetLang) {
     var googleList = (googleResponse && googleResponse.data && googleResponse.data.translations) || [];
