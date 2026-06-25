@@ -767,7 +767,128 @@ h2 {
     display: none !important;
 }
 
-.sm-wrapper {
+.sm-wrapper {/* Unique Trigger Button Style */
+.msg-center-trigger-btn {
+  padding: 12px 24px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff !important;
+  background-color: #4f46e5 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.msg-center-trigger-btn:hover {
+  background-color: #4338ca !important;
+}
+
+/* --- Scope-Locked Popup Styles --- */
+
+/* Full-Screen Backdrop Overlay */
+#msg-center-scoped-root.msg-center-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 999999 !important; /* Forces layout priority */
+  
+  /* Hidden state defaults */
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease !important;
+}
+
+/* Inner Window Card Layout */
+#msg-center-scoped-root .msg-center-card {
+  box-sizing: border-box !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  background-color: #ffffff !important;
+  padding: 32px !important;
+  max-width: 400px !important;
+  width: 90% !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  text-align: center !important;
+  position: relative !important;
+  
+  /* Scale entry configuration */
+  transform: scale(0.9) !important;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Active Activation Classes */
+#msg-center-scoped-root.msg-center-overlay.msg-center-active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#msg-center-scoped-root.msg-center-overlay.msg-center-active .msg-center-card {
+  transform: scale(1) !important;
+}
+
+/* Card Child Elements Styling */
+#msg-center-scoped-root .msg-center-close-x {
+  position: absolute !important;
+  top: 16px !important;
+  right: 20px !important;
+  background: none !important;
+  border: none !important;
+  font-size: 24px !important;
+  color: #94a3b8 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+#msg-center-scoped-root .msg-center-close-x:hover {
+  color: #334155 !important;
+}
+
+#msg-center-scoped-root .msg-center-icon {
+  font-size: 40px !important;
+  margin-bottom: 12px !important;
+  line-height: 1 !important;
+}
+
+#msg-center-scoped-root .msg-center-title {
+  margin: 0 0 8px 0 !important;
+  color: #1e293b !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+
+#msg-center-scoped-root .msg-center-text {
+  margin: 0 0 24px 0 !important;
+  color: #64748b !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+#msg-center-scoped-root .msg-center-action-btn {
+  width: 100% !important;
+  padding: 12px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  background-color: #f1f5f9 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+#msg-center-scoped-root .msg-center-action-btn:hover {
+  background-color: #e2e8f0 !important;
+}
     --sm-bg-color: #f8f9fa;
     --sm-card-bg: #ffffff;
     --sm-border-color: #ddd;
@@ -1044,4 +1165,304 @@ h2 {
 #ai-tutor-container .ai-tutor-clickable-word:hover {
   background-color: #fca5a5;
   border-radius: 2px;
+}
+
+/* Scoped custom properties to prevent external CSS interference */
+#gsv-root-wrapper {
+    --gsv-primary: #2563eb;
+    --gsv-primary-hover: #1d4ed8;
+    --gsv-bg: #f8fafc;
+    --gsv-card-bg: #ffffff;
+    --gsv-text: #1e293b;
+    --gsv-border: #e2e8f0;
+    --gsv-highlight: #fef08a;
+    --gsv-highlight-hover: #fde047;
+    
+    font-family: system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: var(--gsv-text);
+    background-color: var(--gsv-bg);
+    padding: 30px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+#gsv-root-wrapper h1 {
+    text-align: center;
+    color: #0f172a;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+/* Control Input Panel Container */
+#gsv-root-wrapper .gsv-config-panel {
+    background: var(--gsv-card-bg);
+    border: 1px solid var(--gsv-border);
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#gsv-root-wrapper .gsv-form-group {
+    margin-bottom: 20px;
+}
+
+#gsv-root-wrapper label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #334155;
+}
+
+#gsv-root-wrapper input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--gsv-border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+#gsv-root-wrapper input[type="text"]:focus {
+    outline: 2px solid var(--gsv-primary);
+    border-color: transparent;
+}
+
+#gsv-root-wrapper .gsv-btn {
+    background-color: var(--gsv-primary);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+#gsv-root-wrapper .gsv-btn:hover {
+    background-color: var(--gsv-primary-hover);
+}
+
+#gsv-root-wrapper .gsv-btn:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+#gsv-root-wrapper .gsv-status-msg {
+    font-weight: 600;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Accordion Visual Infrastructure */
+#gsv-root-wrapper .gsv-accordion-section {
+    background: var(--gsv-card-bg);
+    border: 1px solid var(--gsv-border);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#gsv-root-wrapper .gsv-accordion-header {
+    width: 100%;
+    background: #f1f5f9;
+    padding: 15px 20px;
+    text-align: left;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gsv-text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+#gsv-root-wrapper .gsv-accordion-header:hover {
+    background: #e2e8f0;
+}
+
+#gsv-root-wrapper .gsv-accordion-header::after {
+    content: '▼';
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+#gsv-root-wrapper .gsv-accordion-section.gsv-is-active .gsv-accordion-header::after {
+    transform: rotate(180deg);
+}
+
+#gsv-root-wrapper .gsv-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+#gsv-root-wrapper .gsv-accordion-section.gsv-is-active .gsv-accordion-content {
+    max-height: 3000px;
+    overflow-y: auto;
+}
+
+#gsv-root-wrapper .gsv-inner-padding {
+    padding: 25px;
+}
+
+#gsv-root-wrapper .gsv-interactive-text {
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+}
+
+/* Tooltip Framework Mechanics */
+#gsv-root-wrapper .gsv-summary-trigger {
+    background-color: var(--gsv-highlight);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    position: relative;
+    display: inline;
+}
+
+#gsv-root-wrapper .gsv-summary-trigger:hover {
+    background-color: var(--gsv-highlight-hover);
+}
+
+#gsv-root-wrapper .gsv-summary-popup {
+    display: none;
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e293b;
+    color: #ffffff;
+    text-align: left;
+    padding: 12px;
+    border-radius: 6px;
+    width: 290px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    z-index: 9999;
+}
+
+#gsv-root-wrapper .gsv-summary-popup::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1e293b transparent transparent transparent;
+}
+
+#gsv-root-wrapper .gsv-summary-trigger:hover .gsv-summary-popup {
+    display: block;
+}
+
+#gsv-root-wrapper .gsv-full-text {
+    white-space: pre-line;
+    font-size: 1.05rem;
+}
+
+.msg-center-trigger-btn {
+  padding: 12px 24px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff !important;
+  background-color: #4f46e5 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+#msg-center-scoped-root.msg-center-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 999999 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease !important;
+}
+
+#msg-center-scoped-root .msg-center-card {
+  box-sizing: border-box !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  background-color: #ffffff !important;
+  padding: 32px !important;
+  max-width: 400px !important;
+  width: 90% !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  text-align: center !important;
+  position: relative !important;
+  transform: scale(0.9) !important;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+#msg-center-scoped-root.msg-center-overlay.msg-center-active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#msg-center-scoped-root.msg-center-overlay.msg-center-active .msg-center-card {
+  transform: scale(1) !important;
+}
+
+#msg-center-scoped-root .msg-center-close-x {
+  position: absolute !important;
+  top: 16px !important;
+  right: 20px !important;
+  background: none !important;
+  border: none !important;
+  font-size: 24px !important;
+  color: #94a3b8 !important;
+  cursor: pointer !important;
+}
+
+#msg-center-scoped-root .msg-center-icon {
+  font-size: 40px !important;
+  margin-bottom: 12px !important;
+}
+
+#msg-center-scoped-root .msg-center-title {
+  margin: 0 0 8px 0 !important;
+  color: #1e293b !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+
+#msg-center-scoped-root .msg-center-text {
+  margin: 0 0 24px 0 !important;
+  color: #64748b !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+#msg-center-scoped-root .msg-center-action-btn {
+  width: 100% !important;
+  padding: 12px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  background-color: #f1f5f9 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
 }

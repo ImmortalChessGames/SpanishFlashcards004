@@ -17,6 +17,16 @@
 
 <div class="container">
     <div id="viewer">
+        `<!-- Scoped Layout Engine Wrapper -->
+        <div id="msg-center-scoped-root" class="msg-center-overlay">
+          <div class="msg-center-card">
+            <button class="msg-center-close-x" onclick="closeDynamicPopup()">&times;</button>
+            <div id="msg-center-dynamic-icon" class="msg-center-icon">🔔</div>
+            <h2 id="msg-center-dynamic-title" class="msg-center-title">Notification</h2>
+            <p id="msg-center-dynamic-text" class="msg-center-text">Fallback body text message.</p>
+            <button class="msg-center-action-btn" onclick="closeDynamicPopup()">Dismiss</button>
+          </div>
+        </div>
         <div class="tabs-wrapper">
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
@@ -25,7 +35,6 @@
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
             </div>
-
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
             <div id="panel-1" class="tab-panel active" role="tabpanel">
@@ -112,6 +121,14 @@
             <div id="panel-4" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container">
+                        <div class="gsv-config-panel">
+                            <div class="gsv-form-group">
+                                <label class="sm-label" for="gsv-topic-input">Enter a Topic</label>
+                                <input type="text" id="gsv-topic-input" placeholder="e.g., Battle of Stalingrad, Photosynthesis, Black Holes">
+                            </div>
+                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchGemmaResponse();">Generate Article</button>
+                            <div id="gsv-status" class="gsv-status-msg"></div>
+                        </div>   
                         <div class="sm-choose-dataset">
                             <label class="sm-label" for="sm-myDropdown">Choose a dataset:</label>
                             <select id="sm-chooseDataset" class="sm-input" onchange="reloadDataset(this)">
@@ -122,7 +139,7 @@
                               <option value="MexicoCityStreetFood.json">Mexico City Street Food</option>
                               <option value="BlackHole.json">Black Hole</option>
                             </select>
-                        </div>            
+                        </div>       
                         <div class="sm-input-group">
                             <label class="sm-label" for="sm-secret">Secret Passcode</label>
                             <input type="password" id="sm-secret" class="sm-input" value="enter-your-secret-passcode-here" placeholder="Enter the secret pass code.">
@@ -165,6 +182,48 @@
     const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
     const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
+
+    // Global variable to keep track of our countdown timer instance
+    let msgCenterTimeoutId = null;
+
+    function showDynamicPopup(titleText, bodyText, emojiIcon = '🔔') {
+      const root = document.getElementById("msg-center-scoped-root");
+      const titleNode = document.getElementById("msg-center-dynamic-title");
+      const textNode = document.getElementById("msg-center-dynamic-text");
+      const iconNode = document.getElementById("msg-center-dynamic-icon");
+
+      if (root && titleNode && textNode && iconNode) {
+        // 1. Clear any active auto-close timer already running from a previous click
+        if (msgCenterTimeoutId) {
+          clearTimeout(msgCenterTimeoutId);
+        }
+
+        // 2. Inject the dynamic strings safely
+        titleNode.innerText = titleText;
+        textNode.innerText = bodyText;
+        iconNode.innerText = emojiIcon;
+        
+        // 3. Make the window visible
+        root.classList.add("msg-center-active");
+
+        // 4. Schedule the auto-close functionality for exactly 3000 milliseconds
+        msgCenterTimeoutId = setTimeout(() => {
+          closeDynamicPopup();
+        }, 3000);
+      }
+    }
+
+    function closeDynamicPopup() {
+      const root = document.getElementById("msg-center-scoped-root");
+      if (root) {
+        root.classList.remove("msg-center-active");
+      }
+      // Clear out the tracking handle once the window is safely closed
+      if (msgCenterTimeoutId) {
+        clearTimeout(msgCenterTimeoutId);
+        msgCenterTimeoutId = null;
+      }
+    }
 
     async function getDerivedKey() {
         const secret = document.getElementById('sm-secret').value;
@@ -209,6 +268,10 @@
         } else {
             return DEFAULT_LOCAL_STORAGE_KEY;
         }
+    }
+
+    function getTopicStorageKey(topic) {
+        return getStorageKey() + '-' + topic.toUpperCase().replaceAll(' ','_');
     }
 
     function parseAndGetFirst(str, delim = ';') {
@@ -508,7 +571,8 @@
 
     function showNext() {
         let randomize = true;
-        if(document.getElementById('sm-chooseDataset').value.endsWith('.json')) {
+        const selectDataset = document.getElementById('sm-chooseDataset');
+        if(selectDataset.value.endsWith('.json') || selectDataset.value.startsWith('======')) {
             randomize = false;
         }
         if (historyIndex < history.length - 1) {
@@ -612,12 +676,14 @@ function reloadDataset(element) {
         loadArticle(mexicoCityStreetFoodJson);
     } else if(element.value==='BlackHole.json') {
         loadArticle(blackHoleJson);
+    } else if(element.options[element.selectedIndex].text.startsWith('======')) {
+          const jsonObj = JSON.parse(element.value);
+          loadArticle(jsonObj);
     } else {
         initFlashcards();
     }
    document.getElementsByClassName("tab-btn")[0].click();
 }
-
 
 async function translateText(textToTranslate) {
     if (!textToTranslate.trim()) return;
@@ -1178,6 +1244,22 @@ async function loadData() {
   } catch (error) {
     console.error("Failed to parse JSON file:", error);
   }
+
+
+  // load dynamic data sets
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if(key && key.startsWith(getStorageKey())) {
+          console.log('Found dynamic data set: ' + key);
+          const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+          if(newOptionName.length > 30) {
+              newOptionName = newOptionName.substring(0,30);
+          }   
+          console.log('newOptionName='+key);
+          const responseText = localStorage.getItem(key);
+          document.getElementById("sm-chooseDataset").add(new Option("======"+newOptionName, responseText), 1);
+      }
+    }
 }
 
 function saveWordFromExplanation(event,elt) {
@@ -1185,6 +1267,70 @@ function saveWordFromExplanation(event,elt) {
     saveWord(elt.innerText, elt.title);
     showToast();
 }
+
+async function fetchGemmaResponse() {
+
+    showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.');
+
+    const key = await decrypt(api1KeyEncrypted);
+    const MODEL_NAME = 'gemma-4-31b-it';
+    const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
+    document.getElementById('gsv-status').innerText='';
+    const topicInput = document.getElementById('gsv-topic-input').value;
+    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation.";
+    const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use intermediate or advanced Spanish. Remove any all end of line \n characters from the resulting JSON.`;
+
+    const payload = {
+      contents: [{ parts: [{ text: userPrompt }] }],
+      systemInstruction: { parts: [{ text: systemInstruction }] }
+    };
+
+    const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `HTTP Server error ${response.status}`);
+    }
+
+    const data = await response.json();
+    if(data) {
+        let responseText = data.candidates?.[0]?.content?.parts?.[1]?.text;
+        if(!responseText) {
+            responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        }
+
+        if(responseText.startsWith('"')) {
+            responseText = responseText.substring(1,responseText.length());
+        }
+        if(responseText.endsWith('"')) {
+            responseText = responseText.substring(0,responseText.length()-1);
+        }
+        responseText = responseText.replaceAll('\'','"');
+        let responseObj = JSON.parse(responseText);
+        responseText = JSON.stringify(responseObj, null, 2);    
+
+        const topicStorageKey = getStorageKey() + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+        console.log('topStorageKey='+topicStorageKey);
+        localStorage.setItem(topicStorageKey, responseText);
+
+        const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+        if(newOptionName.length > 30) {
+            newOptionName = newOptionName.substring(0,30);
+        }   
+        console.log('newOptionName='+topicStorageKey);
+        document.getElementById("sm-chooseDataset").add(new Option("======"+newOptionName, responseText), 1);
+        
+        showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.');
+
+        return responseText;
+    }
+
+    return null;
+}
+
 
 (function() {
       let textToSpeak = "";
