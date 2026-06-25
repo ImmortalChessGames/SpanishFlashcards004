@@ -574,7 +574,7 @@
     function showNext() {
         let randomize = true;
         const selectDataset = document.getElementById('sm-chooseDataset');
-        if(selectDataset.value.endsWith('.json') || selectDataset.value.startsWith('++++++')) {
+        if(selectDataset.value.endsWith('.json') || selectDataset.value.startsWith('__dynamic__')) {
             randomize = false;
         }
         if (historyIndex < history.length - 1) {
@@ -696,7 +696,7 @@ function reloadDataset(element) {
         loadArticle(mexicoCityStreetFoodJson);
     } else if(element.value==='BlackHole.json') {
         loadArticle(blackHoleJson);
-    } else if(element.options[element.selectedIndex].text.startsWith('++++++')) {
+    } else if(element.options[element.selectedIndex].text.startsWith('__dynamic__')) {
           const jsonObj = JSON.parse(element.value);
           loadArticle(jsonObj);
     } else {
@@ -1277,7 +1277,7 @@ async function loadData() {
           }   
           console.log('newOptionName='+key);
           const responseText = localStorage.getItem(key);
-          document.getElementById("sm-chooseDataset").add(new Option("++++++"+newOptionName, responseText), 1);
+          document.getElementById("sm-chooseDataset").add(new Option("__dynamic__"+newOptionName, responseText), 1);
       }
     }
 }
@@ -1341,8 +1341,9 @@ async function fetchGemmaResponse() {
         if(newOptionName.length > 30) {
             newOptionName = newOptionName.substring(0,30);
         }   
-        console.log('newOptionName='+topicStorageKey);
-        document.getElementById("sm-chooseDataset").add(new Option("++++++"+newOptionName, responseText), 1);
+        console.log('newOptionName='+newOptionName);
+alert(newOptionName);
+        document.getElementById("sm-chooseDataset").add(new Option("__dynamic__"+newOptionName, responseText), 1);
         
         showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.');
 
