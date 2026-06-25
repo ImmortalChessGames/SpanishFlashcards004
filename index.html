@@ -1269,7 +1269,8 @@ async function loadData() {
   // load dynamic data sets
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if(key && key.startsWith(getStorageKey())) {
+alert(key);
+      if(key && key.startsWith(getStorageKey()+"__dynamic__")) {
           console.log('Found dynamic data set: ' + key);
           const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
           if(newOptionName.length > 30) {
@@ -1333,8 +1334,9 @@ async function fetchGemmaResponse() {
         let responseObj = JSON.parse(responseText);
         responseText = JSON.stringify(responseObj, null, 2);    
 
-        const topicStorageKey = getStorageKey() + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+        const topicStorageKey = getStorageKey() + "__dynamic__" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
         console.log('topStorageKey='+topicStorageKey);
+alert('topicStorageKey='+topicStorageKey);
         localStorage.setItem(topicStorageKey, responseText);
 
         const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
