@@ -10,6 +10,7 @@
     <script src="SinkingOfLucitania.js"></script>
     <script src="T34.js"></script>
     <script src="MexicoCityStreetFood.js"></script>
+    <script src="BlackHole.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -119,6 +120,7 @@
                               <option value="SinkingOfLucitania.json">Sinking of Lucitania</option>
                               <option value="T34.json">T-34 Tank</option>
                               <option value="MexicoCityStreetFood.json">Mexico City Street Food</option>
+                              <option value="BlackHole.json">Black Hole</option>
                             </select>
                         </div>            
                         <div class="sm-input-group">
@@ -608,6 +610,8 @@ function reloadDataset(element) {
         loadArticle(t34Json);
     } else if(element.value==='MexicoCityStreetFood.json') {
         loadArticle(mexicoCityStreetFoodJson);
+    } else if(element.value==='BlackHole.json') {
+        loadArticle(blackHoleJson);
     } else {
         initFlashcards();
     }
