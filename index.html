@@ -7,6 +7,7 @@
     <title>Spanish ⇄ English Flashcards</title>
     <script src="sentences.js"></script>
     <script src="BattleOfStalingrad.js"></script>
+    <script src="SinkingOfLucitania.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -113,6 +114,7 @@
                             <select id="sm-chooseDataset" class="sm-input" onchange="reloadDataset(this)">
                               <option value="defaultFlashcards" >Default</option>
                               <option value="BattleOfStalingrad.json">Battle of Stalingrad</option>
+                              <option value="SinkingOfLucitania.json">Sinking of Lucitania</option>
                             </select>
                         </div>            
                         <div class="sm-input-group">
@@ -596,6 +598,8 @@ function reloadDataset(element) {
     dataset = [];
     if(element.value==='BattleOfStalingrad.json') {
         loadArticle(battleOfStalingradJson);
+    } else if(element.value==='SinkingOfLucitania.json') {
+        loadArticle(sinkingOfLucitaniaJson);
     } else {
         initFlashcards();
     }
