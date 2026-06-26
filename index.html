@@ -127,6 +127,13 @@
                                 <label class="sm-label" for="gsv-topic-input">Enter a Topic</label>
                                 <input type="text" id="gsv-topic-input" placeholder="e.g., Battle of Stalingrad, Photosynthesis, Black Holes">
                             </div>
+                            <div class="gsv-form-group" style="margin-bottom:10px;">
+                                <label class="sm-label" for="ai-engine">Model to use:</label>
+                                <select name="ai-engine" id="ai-engine" class="sm-input">
+                                  <option value="gemini-3.1-flash-lite">Model A (Fast)</option>
+                                  <option value="gemma-4-31b-it">Model B (Slow)</option>
+                                </select>
+                            </div>
                             <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchGemmaResponse();">Generate Article</button>
                             <div id="gsv-status" class="gsv-status-msg"></div>
                         </div>   
@@ -1296,7 +1303,8 @@ async function fetchGemmaResponse() {
     } else {
         return;
     }
-    const MODEL_NAME = 'gemma-4-31b-it';
+//    const MODEL_NAME = 'gemma-4-31b-it';
+    const MODEL_NAME = document.getElementById('ai-engine').value;
     const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
     document.getElementById('gsv-status').innerText='';
     const topicInput = document.getElementById('gsv-topic-input').value;
@@ -1316,6 +1324,7 @@ async function fetchGemmaResponse() {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        showDynamicPopup('Error occurred.','Could not generate article due to : ' + errorData.error?.message + ', Status=' + response.status, 3000);
         throw new Error(errorData.error?.message || `HTTP Server error ${response.status}`);
     }
 
@@ -1332,6 +1341,7 @@ async function fetchGemmaResponse() {
         if(responseText.endsWith('"')) {
             responseText = responseText.substring(0,responseText.length()-1);
         }
+        responseText = responseText.replaceAll('\\n','');
         responseText = responseText.replaceAll('\'','"');
         responseText = responseText.replaceAll('\\"','');
 
