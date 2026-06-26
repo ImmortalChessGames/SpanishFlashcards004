@@ -1467,12 +1467,13 @@ h2 {
 
 .top-right-text {
   position: relative;        /* Pulls it out of normal flow to float it */
-  top: -20px;                 /* 12px down from the parent div's top edge */
+  top: -25px;                 /* 12px down from the parent div's top edge */
   right: 2px;               /* 12px left from the parent div's right edge */
   font-size: 16px;           /* 12px text size */
   text-align: right;         /* Right-justifies the text lines */
   line-height: 1.2;
   color: #aaaaaa;  
+  text-align: right;
 }
 
 .btn-link {
