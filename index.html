@@ -833,7 +833,7 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'><i class=\"fa-solid fa-floppy-disk\"></i></a>"+"</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'>[Save]</li>";
     uniqueResults.slice(0,5).forEach((word) => {
 
         if(word.endsWith('.')) {
