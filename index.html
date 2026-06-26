@@ -1387,6 +1387,16 @@ async function fetchGemmaResponse() {
     return null;
 }
 
+function displayIncognitoWarning() {
+    if (navigator.storage && navigator.storage.estimate) {
+      navigator.storage.estimate().then(estimate => {
+        if (estimate.quota < 5000000000) {
+          console.log("Likely Incognito Mode");
+          showDynamicPopup('Warning','The page will not work well in Private / Incognito mode.', 5000);
+        } 
+      });
+    }
+}
 
 (function() {
       let textToSpeak = "";
@@ -1475,7 +1485,7 @@ async function fetchGemmaResponse() {
     loadData();
     initFlashcards();
     startQuiz();
-
+    displayIncognitoWarning();
 </script>
 </body>
 </html>
