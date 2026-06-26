@@ -1366,7 +1366,7 @@ async function fetchGemmaResponse() {
                 if(!responseText) {
                     responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
-
+/*
                 if(responseText.startsWith('"')) {
                     responseText = responseText.substring(1,responseText.length());
                 }
@@ -1377,7 +1377,21 @@ async function fetchGemmaResponse() {
                 responseText = responseText.replaceAll('\'','"');
                 responseText = responseText.replaceAll('\\"','');
                 responseText = responseText.replaceAll('\\"s','s');
+                responseText = responseText
+                    .replace(/([\{\,]\s*)([a-zA-Z0-9_]+)(\s*:)/g, '$1"$2"$3') 
+                    .replace(/:\s*([^,\}]+)/g, ': "$1"'); 
 
+                responseText = responseText
+                  .replace(/"spanish"\s*:\s*""(.*?)"\s*,\s*"english"/g, (match, innerText) => {
+                    const sanitized = innerText.replace(/\\"/g, '"').replace(/"/g, '\\"');
+                    return `"spanish": "${sanitized}", "english"`;
+                  })
+                  
+                  .replace(/"english"\s*:\s*""(.*?)"\s*\}/g, (match, innerText) => {
+                    const sanitized = innerText.replace(/\\"/g, '"').replace(/"/g, '\\"');
+                    return `"english": "${sanitized}" }`;
+                  });
+*/
                 console.log(responseText);
 
                 let responseObj = JSON.parse(responseText);
@@ -1387,9 +1401,9 @@ async function fetchGemmaResponse() {
                 console.log('topStorageKey='+topicStorageKey);
                 localStorage.setItem(topicStorageKey, responseText);
 
-                const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
-                if(newOptionName.length > 30) {
-                    newOptionName = newOptionName.substring(0,30);
+                let newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
+                if(newOptionName.length > 50) {
+                    newOptionName = newOptionName.substring(0,50);
                 }   
                 console.log('newOptionName='+newOptionName);
                 document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
@@ -1403,13 +1417,17 @@ async function fetchGemmaResponse() {
           clearTimeout(timeoutId); // Ensure timer cleans up on error
 
           const isTimeout = error.name === 'AbortError';
-          console.warn(`Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`);
-
+          const warnMsg = `Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`;
+          console.warn(warnMsg);
+          showDynamicPopup('Warning.', warnMsg, 1500);
           // If we used all retries, throw the final error up to your application
           if (attempt === maxRetries) {
-            throw new Error(`Gemini API completely failed after ${maxRetries} attempts.`);
+            const errMsg = `Gemini API completely failed after ${maxRetries} attempts.`;
+            showDynamicPopup('Error', errMsg, 1500);
+            throw new Error(errMsg);
+          } else {
+              showDynamicPopup('Warning', warnMsg, 1500);
           }
-
           // Wait before trying again (2s, then 4s, etc.)
           console.log(`Waiting ${currentDelay / 1000}s before next attempt...`);
           await new Promise(resolve => setTimeout(resolve, currentDelay));
