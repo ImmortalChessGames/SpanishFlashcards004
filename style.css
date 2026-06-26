@@ -640,7 +640,7 @@ li:hover { background: #f1f3f9; }
     /* 1. Toast Container (Hidden by default off-screen) */
     .toast {
       position: fixed;
-      left: 70%;
+      left: 30%;
       background-color: #5E9A09;
       color: white;
       padding: 16px 24px;
