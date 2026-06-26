@@ -1511,7 +1511,7 @@ h2 {
   max-width: 300px; 
   
   /* Controls the thickness (making it thin/narrow) */
-  height: 6px; 
+  height: 8px; 
   margin-bottom: 10px;
   /* Removes default OS styling */
   -webkit-appearance: none;
@@ -1520,7 +1520,7 @@ h2 {
 
 /* Chrome, Safari, and Opera fill color */
 .narrow-progress::-webkit-progress-value {
-  background-color: #3b82f6;
+  background-color: purple;
   border-radius: 4px;
 }
 
@@ -1532,7 +1532,7 @@ h2 {
 
 /* Firefox fill color */
 .narrow-progress::-moz-progress-bar {
-  background-color: #3b82f6;
+  background-color: purple;
   border-radius: 4px;
 }
 
