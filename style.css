@@ -1504,3 +1504,35 @@ h2 {
 .btn-link:active {
   background-color: #004085;
 }
+
+.narrow-progress {
+  /* Controls the physical length of the bar */
+  width: 100%;
+  max-width: 300px; 
+  
+  /* Controls the thickness (making it thin/narrow) */
+  height: 6px; 
+  margin-bottom: 10px;
+  /* Removes default OS styling */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Chrome, Safari, and Opera fill color */
+.narrow-progress::-webkit-progress-value {
+  background-color: #3b82f6;
+  border-radius: 4px;
+}
+
+/* Chrome, Safari, and Opera track color */
+.narrow-progress::-webkit-progress-bar {
+  background-color: #e5e7eb;
+  border-radius: 4px;
+}
+
+/* Firefox fill color */
+.narrow-progress::-moz-progress-bar {
+  background-color: #3b82f6;
+  border-radius: 4px;
+}
+

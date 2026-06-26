@@ -46,6 +46,7 @@
                     </div> 
                     <div class="display-card">
                         <div id="wordBox" class="word-box"></div>
+                        <progress id="progress-bar" class="narrow-progress"></progress>
                         <div id="englishText" class="english-text hidden"></div>
                         <div id="translationResponse"></div>
                         <div id="spanishText" style="margin: 15px;"></div>
@@ -188,6 +189,7 @@
 
     const api1KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoEHhgC23MZ+zInz2AwJPYUQ5wLeTIGgvphRV9aU7NB7WtQ4WFrsVNCC1YY7BsqDQkXUhnPJPBSuPYSCb/GYAsHC9+bOPevpJAG8SCE6LSguglA==';
     const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
+    const api3KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoBl3w4dnl5l1/a+xjpVKCrXxul2ROtEcogoGEktfZUDEJwvjmuhCJVrVvfzC7cipF6msKIC/NluiNzZWtqGYWJeEE8hsXhZWE5w9UiLIsfvq3Q==';
     const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
 
@@ -506,6 +508,7 @@
     function loadArticle(articleDataset) {
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
+            document.getElementById('progress-bar').max=100;
             history = [];
             historyIndex = -1;
         }
@@ -578,25 +581,41 @@
         }
     }
 
+    function updateProgressBar(v,max) {
+        let newValue = 100;
+        if(v==0) {
+          newValue = 0;
+        } else if(v==max) {
+          newValue = 100;
+        } else {
+         newValue = (v/(1.0*max))*100.0;
+        }
+        document.getElementById('progress-bar').value = newValue;
+    }
+
     function showNext() {
         let randomize = true;
         const selectDataset = document.getElementById('sm-chooseDataset');
         if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('~~')) {
             randomize = false;
         }
-        document.getElementById('top-right-text').textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('~~','');
+        document.getElementById('top-right-text').textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('~~','').replaceAll('_',' ');
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
+            updateProgressBar(historyIndex, dataset.length-1);
             return;
         }
         const randomIndex = Math.floor(Math.random() * dataset.length);
-        const item = dataset[randomize ? randomIndex : historyIndex+1];
+        const indx = randomize ? randomIndex : historyIndex+1;
+        const item = dataset[indx];
 
         history.push(item);
         historyIndex++;
-        
+ 
         displayCard(item);
+
+        updateProgressBar(historyIndex, dataset.length-1);
 
         document.getElementById('ai-tutor-resultOutput').replaceChildren();
         document.getElementById('translationResponse').innerHTML='';
@@ -608,6 +627,7 @@
       if (historyIndex > 0) {
          historyIndex--;
          displayCard(history[historyIndex]);
+         updateProgressBar(historyIndex,dataset.length-1);
          document.getElementById('ai-tutor-resultOutput').replaceChildren();
          document.getElementById('translationResponse').innerHTML='';
          document.getElementById('spanishWord').value='';
@@ -1297,13 +1317,12 @@ function saveWordFromExplanation(event,elt) {
 
 async function fetchGemmaResponse() {
 
-    const key = await decrypt(api1KeyEncrypted);
+    const key = await decrypt(api3KeyEncrypted);
     if(key) {
         showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.', 3000);
     } else {
         return;
     }
-//    const MODEL_NAME = 'gemma-4-31b-it';
     const MODEL_NAME = document.getElementById('ai-engine').value;
     const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
     document.getElementById('gsv-status').innerText='';
