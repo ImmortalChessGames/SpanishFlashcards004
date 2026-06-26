@@ -39,9 +39,7 @@
             <!-- PANEL 1 -->
             <div id="panel-1" class="tab-panel active" role="tabpanel">
                 <div>
-                    <div class="page-title-div">
-                        <p id="data-set-title"></p>
-                    </div>
+                    <div id="top-right-text" class="top-right-text">Individual Sentences</div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
                         <button id="nextBtn" class="btn-nav">Next →</button>
@@ -55,9 +53,8 @@
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
                               <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explain</button>
-                              <button id="translateBtn" class="ai-tutor-btn">English</button>
-                              <button id="speakBtn" class="ai-tutor-btn">Speak 🔊</button>
-                              <button id="speakSlowBtn" class="ai-tutor-btn">Slow 🔊</button>
+                              <button id="translateBtn" class="ai-tutor-btn">Translate</button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn">Speak 🔊</button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -136,7 +133,7 @@
                         <div class="sm-choose-dataset">
                             <label class="sm-label" for="sm-myDropdown">Choose a dataset:</label>
                             <select id="sm-chooseDataset" class="sm-input" onchange="reloadDataset(this)">
-                              <option value="defaultFlashcards" >Default</option>
+                              <option value="defaultFlashcards" >Individual Sentences</option>
                               <option value="BattleOfStalingrad.json">Battle of Stalingrad</option>
                               <option value="SinkingOfLucitania.json">Sinking of Lucitania</option>
                               <option value="T34.json">T-34 Tank</option>
@@ -480,7 +477,7 @@
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn2 = document.getElementById('prevBtn2');
     const nextBtn2 = document.getElementById('nextBtn2');
-    const speakBtn = document.getElementById('speakBtn');
+    //const speakBtn = document.getElementById('speakBtn');
     const speakSlowBtn = document.getElementById('speakSlowBtn');
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
@@ -580,6 +577,7 @@
         if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('~~')) {
             randomize = false;
         }
+        document.getElementById('top-right-text').textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('~~','');
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -633,7 +631,7 @@
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(textToSpeak);
           utterance.lang = 'es-ES'; 
-          utterance.rate = 0.60; 
+          utterance.rate = 0.70; 
           window.speechSynthesis.speak(utterance);
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
@@ -650,7 +648,7 @@ nextBtn.addEventListener('click', showNext);
 prevBtn.addEventListener('click', showPrevious); 
 nextBtn2.addEventListener('click', showNext);
 prevBtn2.addEventListener('click', showPrevious); 
-speakBtn.addEventListener('click', speakSpanish);
+//speakBtn.addEventListener('click', speakSpanish);
 speakSlowBtn.addEventListener('click', speakSlowSpanish);
 
 
@@ -688,7 +686,6 @@ function reloadDataset(element) {
         flashcardsDataset = [...dataset];
     }
     dataset = [];
-
     if(element.value==='BattleOfStalingrad.json') {
         loadArticle(battleOfStalingradJson);
     } else if(element.value==='SinkingOfLucitania.json') {
@@ -836,7 +833,7 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'>[Save]</a>"+"</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'><i class=\"fa-solid fa-floppy-disk\"></i></a>"+"</li>";
     uniqueResults.slice(0,5).forEach((word) => {
 
         if(word.endsWith('.')) {
@@ -1273,7 +1270,7 @@ async function loadData() {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if(key && key.startsWith(getStorageKey()+"~~")) {
-          console.log('Found dynamic data set: ' + key);
+          console.log('Found dynamic ' + key);
           const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
           if(newOptionName.length > 30) {
               newOptionName = newOptionName.substring(0,30);
