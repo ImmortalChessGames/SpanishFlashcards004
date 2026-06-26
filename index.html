@@ -1328,60 +1328,93 @@ async function fetchGemmaResponse() {
     document.getElementById('gsv-status').innerText='';
     const topicInput = document.getElementById('gsv-topic-input').value;
     const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation.";
-    const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use intermediate or advanced Spanish. Remove any all end of line \n characters from the resulting JSON.`;
+    const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use intermediate or advanced Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
 
     const payload = {
       contents: [{ parts: [{ text: userPrompt }] }],
       systemInstruction: { parts: [{ text: systemInstruction }] }
     };
 
-    const response = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+    const maxRetries = 5;
+    let currentDelay = 2000; // Start with a 2-second wait on failure
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        showDynamicPopup('Error occurred.','Could not generate article due to : ' + errorData.error?.message + ', Status=' + response.status, 3000);
-        throw new Error(errorData.error?.message || `HTTP Server error ${response.status}`);
-    }
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        // 1. Set up the AbortController for the timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); 
 
-    const data = await response.json();
-    if(data) {
-        let responseText = data.candidates?.[0]?.content?.parts?.[1]?.text;
-        if(!responseText) {
-            responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        try {
+
+            const response = await fetch(API_BASE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: controller.signal 
+            });
+
+            clearTimeout(timeoutId); 
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                showDynamicPopup('Error occurred.','Could not generate article due to : ' + errorData.error?.message + ', Status=' + response.status, 3000);
+                throw new Error(errorData.error?.message || `HTTP Server error ${response.status}`);
+            }
+
+            const data = await response.json();
+            if(data) {
+                let responseText = data.candidates?.[0]?.content?.parts?.[1]?.text;
+                if(!responseText) {
+                    responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                }
+
+                if(responseText.startsWith('"')) {
+                    responseText = responseText.substring(1,responseText.length());
+                }
+                if(responseText.endsWith('"')) {
+                    responseText = responseText.substring(0,responseText.length()-1);
+                }
+                responseText = responseText.replaceAll('\\n','');
+                responseText = responseText.replaceAll('\'','"');
+                responseText = responseText.replaceAll('\\"','');
+                responseText = responseText.replaceAll('\\"s','s');
+
+                console.log(responseText);
+
+                let responseObj = JSON.parse(responseText);
+                responseText = JSON.stringify(responseObj, null, 2);    
+
+                const topicStorageKey = getStorageKey() + "~~" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
+                console.log('topStorageKey='+topicStorageKey);
+                localStorage.setItem(topicStorageKey, responseText);
+
+                const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
+                if(newOptionName.length > 30) {
+                    newOptionName = newOptionName.substring(0,30);
+                }   
+                console.log('newOptionName='+newOptionName);
+                document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
+                
+                showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.', 3000);
+                document.getElementById('gsv-topic-input').value='';
+
+                return responseText;
+            }
+        } catch (error) {
+          clearTimeout(timeoutId); // Ensure timer cleans up on error
+
+          const isTimeout = error.name === 'AbortError';
+          console.warn(`Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`);
+
+          // If we used all retries, throw the final error up to your application
+          if (attempt === maxRetries) {
+            throw new Error(`Gemini API completely failed after ${maxRetries} attempts.`);
+          }
+
+          // Wait before trying again (2s, then 4s, etc.)
+          console.log(`Waiting ${currentDelay / 1000}s before next attempt...`);
+          await new Promise(resolve => setTimeout(resolve, currentDelay));
+          currentDelay *= 2; 
         }
-
-        if(responseText.startsWith('"')) {
-            responseText = responseText.substring(1,responseText.length());
-        }
-        if(responseText.endsWith('"')) {
-            responseText = responseText.substring(0,responseText.length()-1);
-        }
-        responseText = responseText.replaceAll('\\n','');
-        responseText = responseText.replaceAll('\'','"');
-        responseText = responseText.replaceAll('\\"','');
-
-        let responseObj = JSON.parse(responseText);
-        responseText = JSON.stringify(responseObj, null, 2);    
-
-        const topicStorageKey = getStorageKey() + "~~" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
-        console.log('topStorageKey='+topicStorageKey);
-        localStorage.setItem(topicStorageKey, responseText);
-
-        const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
-        if(newOptionName.length > 30) {
-            newOptionName = newOptionName.substring(0,30);
-        }   
-        console.log('newOptionName='+newOptionName);
-        document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
-        
-        showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.', 3000);
-        document.getElementById('gsv-topic-input').value='';
-
-        return responseText;
     }
 
     return null;
