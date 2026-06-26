@@ -39,6 +39,9 @@
             <!-- PANEL 1 -->
             <div id="panel-1" class="tab-panel active" role="tabpanel">
                 <div>
+                    <div class="page-title-div">
+                        <p id="data-set-title"></p>
+                    </div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
                         <button id="nextBtn" class="btn-nav">Next →</button>
@@ -51,10 +54,10 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
-                              <button id="translateBtn" class="btn-nav-2">Show Translation</button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explain</button>
+                              <button id="translateBtn" class="ai-tutor-btn">English</button>
                               <button id="speakBtn" class="ai-tutor-btn">Speak 🔊</button>
                               <button id="speakSlowBtn" class="ai-tutor-btn">Slow 🔊</button>
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explanation</button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -187,7 +190,7 @@
     // Global variable to keep track of our countdown timer instance
     let msgCenterTimeoutId = null;
 
-    function showDynamicPopup(titleText, bodyText, emojiIcon = '🔔') {
+    function showDynamicPopup(titleText, bodyText, ms, emojiIcon = '🔔') {
       const root = document.getElementById("msg-center-scoped-root");
       const titleNode = document.getElementById("msg-center-dynamic-title");
       const textNode = document.getElementById("msg-center-dynamic-text");
@@ -210,7 +213,7 @@
         // 4. Schedule the auto-close functionality for exactly 3000 milliseconds
         msgCenterTimeoutId = setTimeout(() => {
           closeDynamicPopup();
-        }, 3000);
+        }, ms);
       }
     }
 
@@ -256,7 +259,7 @@
             );
             return new TextDecoder().decode(decrypted);
         } catch (e) {
-            alert('Decryption failed. Incorrect password or broken text.');
+            console.log('Decryption failed. Incorrect password or broken text.');
         }
         return null;
     }
@@ -272,7 +275,7 @@
     }
 
     function getTopicStorageKey(topic) {
-        return getStorageKey() + '-' + topic.toUpperCase().replaceAll(' ','_');
+        return getStorageKey() + '-' + topic.replaceAll(' ','_');
     }
 
     function parseAndGetFirst(str, delim = ';') {
@@ -574,7 +577,7 @@
     function showNext() {
         let randomize = true;
         const selectDataset = document.getElementById('sm-chooseDataset');
-        if(selectDataset.value.endsWith('.json') || selectDataset.value.startsWith('^^')) {
+        if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('~~')) {
             randomize = false;
         }
         if (historyIndex < history.length - 1) {
@@ -582,7 +585,6 @@
             displayCard(history[historyIndex]);
             return;
         }
-
         const randomIndex = Math.floor(Math.random() * dataset.length);
         const item = dataset[randomize ? randomIndex : historyIndex+1];
 
@@ -686,6 +688,7 @@ function reloadDataset(element) {
         flashcardsDataset = [...dataset];
     }
     dataset = [];
+
     if(element.value==='BattleOfStalingrad.json') {
         loadArticle(battleOfStalingradJson);
     } else if(element.value==='SinkingOfLucitania.json') {
@@ -696,7 +699,7 @@ function reloadDataset(element) {
         loadArticle(mexicoCityStreetFoodJson);
     } else if(element.value==='BlackHole.json') {
         loadArticle(blackHoleJson);
-    } else if(element.options[element.selectedIndex].text.startsWith('^^')) {
+    } else if(element.options[element.selectedIndex].text.startsWith('~~')) {
           const jsonObj = JSON.parse(element.value);
           loadArticle(jsonObj);
     } else {
@@ -795,9 +798,9 @@ async function sendTranslationRequest(textValue) {
 }
 
 
-function clickSaveWord() {
+function clickSaveWord(word) {
     document.getElementById('saveWordButton').click();
-    showToast();
+    showToast('Saved successfully.');
 }
 
 function parseAndDisplayUnique(textValue, data, visualContainer) {
@@ -913,7 +916,7 @@ function processSentence(input) {
     rawWords.forEach(rawWord => {
         // Extract punctuation from the clean word using a Spanish-friendly regex
         // This preserves accents (á, é, í, ó, ú), umlauts (ü), and the ñ
-        const cleanWordMatch = rawWord.match(/[A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
+        const cleanWordMatch = rawWord.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         
         if (cleanWordMatch) {
             const cleanWord = cleanWordMatch[0];
@@ -1269,15 +1272,15 @@ async function loadData() {
   // load dynamic data sets
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if(key && key.startsWith(getStorageKey()+"^^")) {
+      if(key && key.startsWith(getStorageKey()+"~~")) {
           console.log('Found dynamic data set: ' + key);
-          const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+          const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
           if(newOptionName.length > 30) {
               newOptionName = newOptionName.substring(0,30);
           }   
           console.log('newOptionName='+key);
           const responseText = localStorage.getItem(key);
-          document.getElementById("sm-chooseDataset").add(new Option("^^"+newOptionName, responseText), 1);
+          document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
       }
     }
 }
@@ -1285,13 +1288,17 @@ async function loadData() {
 function saveWordFromExplanation(event,elt) {
     event.preventDefault();
     saveWord(elt.innerText, elt.title);
-    showToast();
+    showToast(elt.innerText + ' saved successfully.');
 }
 
 async function fetchGemmaResponse() {
 
     const key = await decrypt(api1KeyEncrypted);
-    showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.');
+    if(key) {
+        showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.', 3000);
+    } else {
+        return;
+    }
     const MODEL_NAME = 'gemma-4-31b-it';
     const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
     document.getElementById('gsv-status').innerText='';
@@ -1334,18 +1341,18 @@ async function fetchGemmaResponse() {
         let responseObj = JSON.parse(responseText);
         responseText = JSON.stringify(responseObj, null, 2);    
 
-        const topicStorageKey = getStorageKey() + "^^" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+        const topicStorageKey = getStorageKey() + "~~" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
         console.log('topStorageKey='+topicStorageKey);
         localStorage.setItem(topicStorageKey, responseText);
 
-        const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().replaceAll(' ','_');
+        const newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
         if(newOptionName.length > 30) {
             newOptionName = newOptionName.substring(0,30);
         }   
         console.log('newOptionName='+newOptionName);
-        document.getElementById("sm-chooseDataset").add(new Option("^^"+newOptionName, responseText), 1);
+        document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
         
-        showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.');
+        showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.', 3000);
         document.getElementById('gsv-topic-input').value='';
 
         return responseText;
@@ -1384,7 +1391,7 @@ async function fetchGemmaResponse() {
         const text = spanishTextInput.innerText.trim();
 
         if (!key) {
-          alert("Error (1) connecting.");
+          console.log("Error (1) connecting.");
           return;
         }
         if (!text) {
