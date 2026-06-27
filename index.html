@@ -40,14 +40,8 @@
             <!-- PANEL 1 -->
             <div id="panel-1" class="tab-panel active" role="tabpanel">
                 <div>
-                    <div id="top-right-text" class="top-right-text">
+                    <div id="top-right-text" class="top-right-text" onclick="readArticle();" >
                         Individual Sentences 
-                    </div>
-                    <div class="audio-player-section">
-                      <!-- Clickable div container instead of a button -->
-                      <div id="read-full-article" class="speaker-clickable" onclick="readArticle();" tabindex="0">
-                        <i class="icon">🔊</i>
-                      </div>
                     </div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
@@ -673,7 +667,14 @@
         if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('>')) {
             randomize = false;
         }
-        document.getElementById('top-right-text').textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ');
+        const speakerMode = dataset.length < 100;
+        const topRightTextElt = document.getElementById('top-right-text');
+        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
+        if(speakerMode === true) {
+            topRightTextElt.style='cursor: pointer;';
+        } else {
+            topRightTextElt.style='cursor: default;';
+        }
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -1560,14 +1561,14 @@ function displayIncognitoWarning() {
 
 // Call this function when you want to hide it and disable clicks
 function turnFullArticleOffSpeaker() {
-  const speaker = document.getElementById('read-full-article');
-  speaker.classList.add('is-hidden');
+ // const speaker = document.getElementById('read-full-article');
+ // speaker.classList.add('is-hidden');
 }
 
 // Call this function when you want to bring it back and make it clickable again
 function turnFullArticleOnSpeaker() {
-  const speaker = document.getElementById('read-full-article');
-  speaker.classList.remove('is-hidden');
+ // const speaker = document.getElementById('read-full-article');
+//  speaker.classList.remove('is-hidden');
 }
 
 (function() {
