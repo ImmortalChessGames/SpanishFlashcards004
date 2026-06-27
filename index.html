@@ -158,7 +158,7 @@
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.85"class="speech-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.75"class="speech-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -186,6 +186,7 @@
 
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
+    const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
     const ITEMS_PER_PAGE = 20;
     
     let currentPage = 1;
@@ -325,6 +326,7 @@
             );
             return new TextDecoder().decode(decrypted);
         } catch (e) {
+            showDynamicPopup('Error','Password is wrong.', 3000);
             console.log('Decryption failed. Incorrect password or broken text.');
         }
         return null;
@@ -338,10 +340,6 @@
         } else {
             return DEFAULT_LOCAL_STORAGE_KEY;
         }
-    }
-
-    function getTopicStorageKey(topic) {
-        return getStorageKey() + '-' + topic.replaceAll(' ','_');
     }
 
     function parseAndGetFirst(str, delim = ';') {
@@ -544,7 +542,6 @@
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn2 = document.getElementById('prevBtn2');
     const nextBtn2 = document.getElementById('nextBtn2');
-    //const speakBtn = document.getElementById('speakBtn');
     const speakSlowBtn = document.getElementById('speakSlowBtn');
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
@@ -673,10 +670,10 @@
     function showNext() {
         let randomize = true;
         const selectDataset = document.getElementById('sm-chooseDataset');
-        if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('~~')) {
+        if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('>')) {
             randomize = false;
         }
-        document.getElementById('top-right-text').textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('~~','').replaceAll('_',' ');
+        document.getElementById('top-right-text').textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ');
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -835,7 +832,7 @@ function reloadDataset(element) {
         loadArticle(mexicoCityStreetFoodJson);
     } else if(element.value==='BlackHole.json') {
         loadArticle(blackHoleJson);
-    } else if(element.options[element.selectedIndex].text.startsWith('~~')) {
+    } else if(element.options[element.selectedIndex].text.startsWith('>')) {
           const jsonObj = JSON.parse(element.value);
           loadArticle(jsonObj);
     } else {
@@ -873,6 +870,7 @@ async function translateText(textToTranslate) {
         if (response.ok) {
             const translatedText = data.data.translations[0].translatedText;
             parseAndDisplayUnique_GoogleTranslate(textToTranslate, translatedText, uiDiv);
+            document.getElementById('translationResponse').scrollIntoView();
         } else {
             alert('Translation Error: ' + data.error.message);
         }
@@ -925,6 +923,8 @@ async function sendTranslationRequest(textValue) {
         console.log(responseData);
 
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
+
+        document.getElementById('translationResponse').scrollIntoView();
 
     } catch(err) {
         console.log(err + ' switching to another provider.');
@@ -1073,20 +1073,20 @@ function processSentence(input) {
     });
 }
 
-// Grab all tab buttons and all content panels
-const tabButtons = document.querySelectorAll('.tab-btn');
-const tabPanels = document.querySelectorAll('.tab-panel');
+    // Grab all tab buttons and all content panels
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
 
-tabButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    tabButtons.forEach(btn => btn.classList.remove('active'));
-    tabPanels.forEach(panel => panel.classList.remove('active'));
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabPanels.forEach(panel => panel.classList.remove('active'));
 
-    button.classList.add('active');
-    const targetPanel = document.querySelector(button.getAttribute('data-target'));
-    targetPanel.classList.add('active'); // This triggers 'display: block' safely from your CSS file
-  });
-});
+        button.classList.add('active');
+        const targetPanel = document.querySelector(button.getAttribute('data-target'));
+        targetPanel.classList.add('active'); // This triggers 'display: block' safely from your CSS file
+      });
+    });
 
 
     let toastTimeout;
@@ -1369,7 +1369,6 @@ async function loadData() {
     const data = await response.json(); 
     const storageNameInput = document.getElementById('sm-storageName');
     const storageName = storageNameInput ? storageNameInput.value.trim() : '';
-
     let existingData = [];
     const rawExisting = localStorage.getItem(storageName);
     if (rawExisting) {
@@ -1403,28 +1402,35 @@ async function loadData() {
   } catch (error) {
     console.error("Failed to parse JSON file:", error);
   }
-
-
   // load dynamic data sets
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if(key && key.startsWith(getStorageKey()+"~~")) {
-          console.log('Found dynamic ' + key);
-          let newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
-          if(newOptionName.length > 30) {
-              newOptionName = newOptionName.substring(0,30);
-          }   
-          console.log('newOptionName='+key);
-          const responseText = localStorage.getItem(key);
-          document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
+    console.log('Loading dynamic stories');
+    const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
+    if(storiesMapJson && storiesMapJson.length>0) {
+        const storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
+        if(storiesMap && storiesMap.size>0) {
+            for (const [key, responseText] of storiesMap) {
+               if(key && key.length>0 && responseText && responseText.length>10) {
+                console.log('Found dynamic ' + key);
+                let newOptionName = key;
+                if(newOptionName.length > 50) {
+                    newOptionName = newOptionName.substring(0,50);
+                }   
+                console.log('newOptionName='+newOptionName);
+                document.getElementById("sm-chooseDataset").add(new Option(">> "+newOptionName, responseText), 1);
+             }
+          }
       }
-    }
+  } 
 }
 
 function saveWordFromExplanation(event,elt) {
     event.preventDefault();
     saveWord(elt.innerText, elt.title);
     showToast(elt.innerText + ' saved successfully.');
+}
+
+function generateTopicMapKey(topicInput) {
+    return topicInput;
 }
 
 async function fetchGemmaResponse() {
@@ -1484,19 +1490,35 @@ async function fetchGemmaResponse() {
                 let responseObj = JSON.parse(responseText);
                 responseText = JSON.stringify(responseObj, null, 2);    
 
-                const topicStorageKey = getStorageKey() + "~~" + topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
-                console.log('topStorageKey='+topicStorageKey);
-                localStorage.setItem(topicStorageKey, responseText);
+                const topicMapKey = generateTopicMapKey(topicInput);
+                const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
+                let storiesMap;
+                if(storiesMapJson && storiesMapJson.length>0) {
+                    storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
+                } else {
+                    storiesMap = new Map();
+                }
 
-                let newOptionName = topicInput.replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
+                if(storiesMap) {
+                    storiesMap.set(topicMapKey, responseText);
+                    const json = JSON.stringify(Object.fromEntries(storiesMap));
+                    localStorage.setItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY, json);
+                }
+
+                let newOptionName = generateTopicMapKey(topicInput);
                 if(newOptionName.length > 50) {
                     newOptionName = newOptionName.substring(0,50);
                 }   
                 console.log('newOptionName='+newOptionName);
-                document.getElementById("sm-chooseDataset").add(new Option("~~"+newOptionName, responseText), 1);
-                
+                const selectElt = document.getElementById("sm-chooseDataset");
+                const newOptionKey = ">> "+newOptionName;
+                selectElt.add(new Option(newOptionKey, responseText), 1);
+                selectElt.value=responseText;                
+
                 showDynamicPopup('Finished generating article.','Finished generating article for topic: ' + topicInput + '. See the dataset dropdown under the Settings tab.', 3000);
                 document.getElementById('gsv-topic-input').value='';
+                selectElt.dispatchEvent(new Event('change', { bubbles: true }));
+                document.getElementsByClassName("tab-btn")[0].click();
 
                 return responseText;
             }
