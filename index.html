@@ -12,6 +12,7 @@
     <script src="MexicoCityStreetFood.js"></script>
     <script src="BlackHole.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
 
@@ -39,7 +40,15 @@
             <!-- PANEL 1 -->
             <div id="panel-1" class="tab-panel active" role="tabpanel">
                 <div>
-                    <div id="top-right-text" class="top-right-text">Individual Sentences</div>
+                    <div id="top-right-text" class="top-right-text">
+                        Individual Sentences 
+                    </div>
+                    <div class="audio-player-section">
+                      <!-- Clickable div container instead of a button -->
+                      <div id="read-full-article" class="speaker-clickable" onclick="readArticle();" tabindex="0">
+                        <i class="icon">🔊</i>
+                      </div>
+                    </div>
                     <div class="controls">
                         <button id="prevBtn" class="btn-nav" disabled>← Prev</button>
                         <button id="nextBtn" class="btn-nav">Next →</button>
@@ -97,18 +106,16 @@
                 <div>
                     <form id="wordForm">
                         <label for="spanishWord">Spanish Word:</label>
-                        <input type="text" id="spanishWord" placeholder="e.g., gracias" required>
+                        <input type="text" id="spanishWord" name="spanishWord" placeholder="e.g., gracias" required>
                         
                         <label for="englishTranslation">English Translation:</label>
-                        <input type="text" id="englishTranslation" placeholder="e.g., thank you" required>
+                        <input type="text" id="englishTranslation" name="englishTranslation" placeholder="e.g., thank you" required>
                         
                         <button id="saveWordButton" type="submit">Save Word</button>
                     </form>
                     <div class="search-box">
                         <input type="text" id="searchBar" placeholder="Type to filter Spanish or English words...">
-                        
                         <ul id="wordList"></ul>
-
                         <!-- Pagination Controls -->
                         <div class="pagination">
                             <button id="prevPage" type="button" disabled>Previous</button>
@@ -149,6 +156,11 @@
                               <option value="BlackHole.json">Black Hole</option>
                             </select>
                         </div>       
+                        <div class="sm-input-group">
+                          <label class="sm-label" for="rate-slider">Speech speed:</label>
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.85"class="speech-slider">
+                          <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
+                        </div>
                         <div class="sm-input-group">
                             <label class="sm-label" for="sm-secret">Secret Passcode</label>
                             <input type="password" id="sm-secret" class="sm-input" value="enter-your-secret-passcode-here" placeholder="Enter the secret pass code.">
@@ -195,6 +207,54 @@
 
     // Global variable to keep track of our countdown timer instance
     let msgCenterTimeoutId = null;
+
+    // 1. TOP LEVEL: Voice management and loading
+    let currentVoice = null;
+
+    function getConsistentVoice(langCode = 'en-US') {
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoices = ['Google US English', 'Microsoft David', 'Samantha', 'Alex'];
+
+      for (const name of preferredVoices) {
+        const found = voices.find(v => v.name.includes(name) && v.lang === langCode);
+        if (found) return found;
+      }
+      return voices.find(v => v.lang === langCode) || voices.find(v => v.default);
+    }
+
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = () => {
+        currentVoice = getConsistentVoice('en-US');
+      };
+    }
+
+    // 2. DOM Elements
+    const rateSlider = document.getElementById('rate-slider');
+    const rateValueDisplay = document.getElementById('rate-value');
+    const speakBtn = document.getElementById('speak-btn');
+
+    // 3. Update text label instantly when user slides the input
+    rateSlider.addEventListener('input', (event) => {
+      rateValueDisplay.textContent = `${event.target.value}x`;
+    });
+
+    // 4. Trigger speech using the exact slider value
+    speakBtn.addEventListener('click', () => {
+      // Cancel any speech that is currently playing to prevent overlaps
+      window.speechSynthesis.cancel();
+
+      if (!currentVoice) {
+        currentVoice = getConsistentVoice('en-US');
+      }
+
+      const textToSpeak = document.getElementById('spanishText').innerText.trim();
+      const utterance = new SpeechSynthesisUtterance(textToSpeak && textToSpeak.length>0 ? textToSpeak : "Hay esta nada aqui.");
+      
+      utterance.voice = currentVoice;
+      utterance.rate = parseFloat(rateSlider.value); // Pulls value directly from the slider
+
+      window.speechSynthesis.speak(utterance);
+    });
 
     function showDynamicPopup(titleText, bodyText, ms, emojiIcon = '🔔') {
       const root = document.getElementById("msg-center-scoped-root");
@@ -425,8 +485,6 @@
         }
     }
 
-
-    // 4. Save a new word
     wordForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -491,7 +549,6 @@
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
 
-
     async function loadLocalJsonFile(jsonFile) {
       try {
         const response = await fetch(jsonFile);
@@ -505,6 +562,24 @@
       }
     }
 
+    function readArticle() {
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            console.log("Speech stopped.");
+        } else {
+            let text = '';
+            if(dataset && dataset.length>0 && dataset.length<50) {
+                for (const p of dataset) {
+                    text += (p.spanish + ' ... \n\n');                
+                }        
+            }
+            if(text) {
+                readArticleOutloud(text);
+            }
+        } 
+    }
+
+
     function loadArticle(articleDataset) {
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
@@ -513,10 +588,12 @@
             historyIndex = -1;
         }
         showNext();
+        turnFullArticleOnSpeaker();
     }
 
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
+        turnFullArticleOffSpeaker();
         if(flashcardsDataset && flashcardsDataset.length>0) {
             dataset = [...flashcardsDataset];
             showNext();
@@ -635,15 +712,50 @@
       }
     }
 
-    function speakSpanish() {
-        if (!textToSpeak) {
+    function getConsistentVoice(langCode = 'en-US') {
+      const voices = window.speechSynthesis.getVoices();
+      
+      // Preferred voice names in order of quality/availability
+      const preferredVoices = [
+        'Google US English',
+        'Microsoft David',
+        'Samantha',
+        'Alex'
+      ];
+
+      // 1. Try to find an exact match from our preferred list
+      for (const name of preferredVoices) {
+        const found = voices.find(v => v.name.includes(name) && v.lang === langCode);
+        if (found) return found;
+      }
+
+      // 2. Fallback: Find any voice matching the requested language
+      const langMatch = voices.find(v => v.lang === langCode);
+      if (langMatch) return langMatch;
+
+      // 3. Ultimate Fallback: Return the browser default
+      return voices.find(v => v.default) || voices[0];
+    }
+
+    function handleUndefinedSpeechSynthesis() {
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = () => {
+            const selectedVoice = getConsistentVoice('en-US');
+            console.log("Selected voice for consistency:", selectedVoice.name);
+          };
+        }
+    }
+
+    function readArticleOutloud(articleText) {
+        if (!articleText) {
             return;
         }
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+          const utterance = new SpeechSynthesisUtterance(articleText);
           utterance.lang = 'es-ES'; 
-          utterance.rate = 0.85; 
+          utterance.rate = rateSlider.value; 
+          utterance.voice = getConsistentVoice('en-US'); 
           window.speechSynthesis.speak(utterance);
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
@@ -658,13 +770,13 @@
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(textToSpeak);
           utterance.lang = 'es-ES'; 
-          utterance.rate = 0.70; 
+          utterance.rate = rateSlider.value; 
+          utterance.voice = getConsistentVoice('en-US'); 
           window.speechSynthesis.speak(utterance);
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
         }
     }
-
 
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
@@ -675,7 +787,6 @@ nextBtn.addEventListener('click', showNext);
 prevBtn.addEventListener('click', showPrevious); 
 nextBtn2.addEventListener('click', showNext);
 prevBtn2.addEventListener('click', showPrevious); 
-//speakBtn.addEventListener('click', speakSpanish);
 speakSlowBtn.addEventListener('click', speakSlowSpanish);
 
 
@@ -713,6 +824,7 @@ function reloadDataset(element) {
         flashcardsDataset = [...dataset];
     }
     dataset = [];
+
     if(element.value==='BattleOfStalingrad.json') {
         loadArticle(battleOfStalingradJson);
     } else if(element.value==='SinkingOfLucitania.json') {
@@ -821,10 +933,10 @@ async function sendTranslationRequest(textValue) {
     }
 }
 
-
-function clickSaveWord(word) {
+function clickSaveWord(e) {
     document.getElementById('saveWordButton').click();
     showToast('Saved successfully.');
+    e.preventDefault();
 }
 
 function parseAndDisplayUnique(textValue, data, visualContainer) {
@@ -860,7 +972,7 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'>[Save]</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</li>";
     uniqueResults.slice(0,5).forEach((word) => {
 
         if(word.endsWith('.')) {
@@ -902,7 +1014,7 @@ function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visual
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord();'>[Save]</a>"+"</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</a>"+"</li>";
     uniqueResults.slice(0,5).forEach((word) => {
 
         if(word.endsWith('.')) {
@@ -1298,7 +1410,7 @@ async function loadData() {
       const key = localStorage.key(i);
       if(key && key.startsWith(getStorageKey()+"~~")) {
           console.log('Found dynamic ' + key);
-          const newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
+          let newOptionName = key.replaceAll(getStorageKey(),'').replace(/[^a-zA-Z0-9\s]/g, "").replaceAll(' ','_');
           if(newOptionName.length > 30) {
               newOptionName = newOptionName.substring(0,30);
           }   
@@ -1366,32 +1478,7 @@ async function fetchGemmaResponse() {
                 if(!responseText) {
                     responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
-/*
-                if(responseText.startsWith('"')) {
-                    responseText = responseText.substring(1,responseText.length());
-                }
-                if(responseText.endsWith('"')) {
-                    responseText = responseText.substring(0,responseText.length()-1);
-                }
-                responseText = responseText.replaceAll('\\n','');
-                responseText = responseText.replaceAll('\'','"');
-                responseText = responseText.replaceAll('\\"','');
-                responseText = responseText.replaceAll('\\"s','s');
-                responseText = responseText
-                    .replace(/([\{\,]\s*)([a-zA-Z0-9_]+)(\s*:)/g, '$1"$2"$3') 
-                    .replace(/:\s*([^,\}]+)/g, ': "$1"'); 
 
-                responseText = responseText
-                  .replace(/"spanish"\s*:\s*""(.*?)"\s*,\s*"english"/g, (match, innerText) => {
-                    const sanitized = innerText.replace(/\\"/g, '"').replace(/"/g, '\\"');
-                    return `"spanish": "${sanitized}", "english"`;
-                  })
-                  
-                  .replace(/"english"\s*:\s*""(.*?)"\s*\}/g, (match, innerText) => {
-                    const sanitized = innerText.replace(/\\"/g, '"').replace(/"/g, '\\"');
-                    return `"english": "${sanitized}" }`;
-                  });
-*/
                 console.log(responseText);
 
                 let responseObj = JSON.parse(responseText);
@@ -1447,6 +1534,18 @@ function displayIncognitoWarning() {
         } 
       });
     }
+}
+
+// Call this function when you want to hide it and disable clicks
+function turnFullArticleOffSpeaker() {
+  const speaker = document.getElementById('read-full-article');
+  speaker.classList.add('is-hidden');
+}
+
+// Call this function when you want to bring it back and make it clickable again
+function turnFullArticleOnSpeaker() {
+  const speaker = document.getElementById('read-full-article');
+  speaker.classList.remove('is-hidden');
 }
 
 (function() {
@@ -1533,10 +1632,21 @@ function displayIncognitoWarning() {
         });
     })();
 
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = () => {
+        const selectedVoice = getConsistentVoice('en-US');
+        console.log("Selected voice for consistency:", selectedVoice.name);
+      };
+    }
+
+    turnFullArticleOffSpeaker();
+    handleUndefinedSpeechSynthesis();
     loadData();
     initFlashcards();
     startQuiz();
     displayIncognitoWarning();
+
+
 </script>
 </body>
 </html>
