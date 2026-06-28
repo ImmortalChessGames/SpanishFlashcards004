@@ -873,7 +873,9 @@ async function sendTranslationRequest(textValue) {
 
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
 
-        document.getElementById('wordBox').scrollIntoView();
+        setTimeout(() => {
+          document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
+        }, 50); 
 
     } catch(err) {
         console.log(err + ' switching to another provider.');
