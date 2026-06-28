@@ -871,16 +871,35 @@ async function sendTranslationRequest(textValue) {
 
         console.log(responseData);
 
-        parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
+        let finalBodyData;
+        try {
+          finalBodyData = (typeof responseData.body === 'string') 
+            ? JSON.parse(responseData.body) 
+            : (responseData.body || responseData); 
+        } catch(parseError) {
+          finalBodyData = responseData; // Fallback to raw data if parsing fails
+        }
 
-        setTimeout(() => {
-          document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
-        }, 50); 
+        parseAndDisplayUnique(textValue, finalBodyData, uiDiv);
+
+        setTimeout(() => { 
+          const wordBox = document.getElementById('wordBox');
+          if (wordBox) {
+            // Detect user 'Reduce Motion' accessibility preferences
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            // Native iOS Safe cross-browser layout execution
+            wordBox.scrollIntoView({ 
+              behavior: reduceMotion ? 'auto' : 'smooth', 
+              block: 'nearest' 
+            }); 
+          }
+        }, 150); // Increased to 150ms to allow iOS rendering engine to paint innerHTML changes
+        
 
     } catch(err) {
         console.log(err + ' switching to another provider.');
         return translateText(textValue);
-//        uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
     }
 }
 
