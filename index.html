@@ -206,23 +206,6 @@
     // 1. TOP LEVEL: Voice management and loading
     let currentVoice = null;
 
-    function getConsistentVoice(langCode = 'en-US') {
-      const voices = window.speechSynthesis.getVoices();
-      const preferredVoices = ['Google US English', 'Microsoft David', 'Samantha', 'Alex'];
-
-      for (const name of preferredVoices) {
-        const found = voices.find(v => v.name.includes(name) && v.lang === langCode);
-        if (found) return found;
-      }
-      return voices.find(v => v.lang === langCode) || voices.find(v => v.default);
-    }
-
-    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = () => {
-        currentVoice = getConsistentVoice('en-US');
-      };
-    }
-
     // 2. DOM Elements
     const rateSlider = document.getElementById('rate-slider');
     const rateValueDisplay = document.getElementById('rate-value');
@@ -238,17 +221,11 @@
       // Cancel any speech that is currently playing to prevent overlaps
       window.speechSynthesis.cancel();
 
-      if (!currentVoice) {
-        currentVoice = getConsistentVoice('en-US');
-      }
-
       const textToSpeak = document.getElementById('spanishText').innerText.trim();
       const utterance = new SpeechSynthesisUtterance(textToSpeak && textToSpeak.length>0 ? textToSpeak : "Hay esta nada aqui.");
-      
-      utterance.voice = currentVoice;
-      utterance.rate = parseFloat(rateSlider.value); // Pulls value directly from the slider
-
-      window.speechSynthesis.speak(utterance);
+      utterance.lang = 'es-ES'; 
+      utterance.rate = rateSlider.value; 
+      window.speechSynthesis.speak(utterance);      
     });
 
     function showDynamicPopup(titleText, bodyText, ms, emojiIcon = '🔔') {
@@ -561,7 +538,8 @@
             let text = '';
             if(dataset && dataset.length>0 && dataset.length<50) {
                 for (const p of dataset) {
-                    text += (p.spanish + ' ... \n\n');                
+                    //text += (p.spanish + ' ... \n\n');                
+                    text += (p.spanish + '\n\n');
                 }        
             }
             if(text) {
@@ -710,40 +688,6 @@
       }
     }
 
-    function getConsistentVoice(langCode = 'en-US') {
-      const voices = window.speechSynthesis.getVoices();
-      
-      // Preferred voice names in order of quality/availability
-      const preferredVoices = [
-        'Google US English',
-        'Microsoft David',
-        'Samantha',
-        'Alex'
-      ];
-
-      // 1. Try to find an exact match from our preferred list
-      for (const name of preferredVoices) {
-        const found = voices.find(v => v.name.includes(name) && v.lang === langCode);
-        if (found) return found;
-      }
-
-      // 2. Fallback: Find any voice matching the requested language
-      const langMatch = voices.find(v => v.lang === langCode);
-      if (langMatch) return langMatch;
-
-      // 3. Ultimate Fallback: Return the browser default
-      return voices.find(v => v.default) || voices[0];
-    }
-
-    function handleUndefinedSpeechSynthesis() {
-        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
-          speechSynthesis.onvoiceschanged = () => {
-            const selectedVoice = getConsistentVoice('en-US');
-            console.log("Selected voice for consistency:", selectedVoice.name);
-          };
-        }
-    }
-
     function readArticleOutloud(articleText) {
         if (!articleText) {
             return;
@@ -753,7 +697,6 @@
           const utterance = new SpeechSynthesisUtterance(articleText);
           utterance.lang = 'es-ES'; 
           utterance.rate = rateSlider.value; 
-          utterance.voice = getConsistentVoice('en-US'); 
           window.speechSynthesis.speak(utterance);
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
@@ -769,7 +712,6 @@
           const utterance = new SpeechSynthesisUtterance(textToSpeak);
           utterance.lang = 'es-ES'; 
           utterance.rate = rateSlider.value; 
-          utterance.voice = getConsistentVoice('en-US'); 
           window.speechSynthesis.speak(utterance);
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
@@ -1655,15 +1597,7 @@ function turnFullArticleOnSpeaker() {
         });
     })();
 
-    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = () => {
-        const selectedVoice = getConsistentVoice('en-US');
-        console.log("Selected voice for consistency:", selectedVoice.name);
-      };
-    }
-
     turnFullArticleOffSpeaker();
-    handleUndefinedSpeechSynthesis();
     loadData();
     initFlashcards();
     startQuiz();
