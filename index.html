@@ -660,6 +660,7 @@
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
+            document.getElementById('translationResponse').innerHTML='';
             updateProgressBar(historyIndex, dataset.length-1);
             return;
         }
@@ -678,7 +679,7 @@
         document.getElementById('translationResponse').innerHTML='';
         document.getElementById('spanishWord').value='';
         document.getElementById('englishTranslation').value='';
-        document.getElementById('wordBox').innerHTML = '';
+
     }
 
     function showPrevious() {
@@ -690,7 +691,6 @@
          document.getElementById('translationResponse').innerHTML='';
          document.getElementById('spanishWord').value='';
          document.getElementById('englishTranslation').value='';
-         document.getElementById('wordBox').innerHTML = '';
       }
     }
 
