@@ -292,6 +292,8 @@
         --sm-primary-hover: #0056b3;
         --sm-success-color: #28a745;
         --sm-success-hover: #218838;
+        --sm-delete-all-vocab-color: #ff0000;
+        --sm-load-default-vocab-color: #800080;
         --sm-text-main: #333;
         --sm-text-muted: #666;
         --sm-error-color: #dc3545;
@@ -987,7 +989,12 @@ h2 {
 .sm-btn-success {
     background-color: var(--sm-success-color);
 }
-
+.sm-btn-delete-all-vocab {
+    background-color: var(--sm-delete-all-vocab-color);
+}
+.sm-btn-load-default-vocab {
+    background-color: var(--sm-load-default-vocab-color);
+}
 .sm-btn-success:hover {
     background-color: var(--sm-success-hover);
 }

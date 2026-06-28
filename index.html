@@ -141,7 +141,7 @@
                         </div>   
                         <div class="sm-choose-dataset">
                             <label class="sm-label" for="sm-myDropdown">Choose a dataset:</label>
-                            <select id="sm-chooseDataset" class="sm-input" onchange="reloadDataset(this)">
+                            <select id="sm-chooseDataset" class="sm-input" onchange="reloadVocabDataset(this)">
                               <option value="defaultFlashcards" >Individual Sentences</option>
                               <option value="BattleOfStalingrad.json">Battle of Stalingrad</option>
                               <option value="SinkingOfLucitania.json">Sinking of Lucitania</option>
@@ -169,6 +169,10 @@
                                 <input type="file" id="sm-importFile" accept=".json" onchange="smImportLocalStorage(event)">
                             </div>
                             <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
+                        </div>
+                        <div class="sm-button-group">                      
+                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load Default Vocabulary</button>
+                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
                     </div>
@@ -339,7 +343,7 @@
         return array.sort((a, b) => a.spanish.localeCompare(b.spanish, 'es', { sensitivity: 'base' }));
     }
 
-    function getRandomSubset(arr, maxReturn = 100) {
+    function getRandomSubset(arr, maxReturn = 30) {
       if (!Array.isArray(arr)) return [];
       const targetLength = arr.length>=maxReturn ? maxReturn : arr.length;
       const shuffled = [...arr];
@@ -757,7 +761,7 @@ function adaptGoogleToITranslate(googleResponse, targetLang) {
     };
 }
 
-function reloadDataset(element) {
+function reloadVocabDataset(element) {
     historyIndex = -1;
     history = [];
     if(!flashcardsDataset || flashcardsDataset.length<1) {
@@ -1305,11 +1309,9 @@ function processSentence(input) {
         window.location.reload();
     }
 
-async function loadData() {
+async function loadVocabData(loadDefaults) {
   try {
     // Fetches the file and automatically runs JSON.parse() behind the scenes
-    const response = await fetch('./defaults.json');
-    const data = await response.json(); 
     const storageNameInput = document.getElementById('sm-storageName');
     const storageName = storageNameInput ? storageNameInput.value.trim() : '';
     let existingData = [];
@@ -1323,25 +1325,30 @@ async function loadData() {
             existingData = [];
         }
     }
+    if(loadDefaults) {
+        console.log("Loading default vocabulary words.");
+        const response = await fetch('./defaults.json');
+        const data = await response.json(); 
+        // Merge the two arrays together (if there's no existing data)
+        const combinedData = (existingData && existingData.length>0) ? existingData :
+            [...existingData, ...data];
 
-    // Merge the two arrays together (if there's no existing data)
-    const combinedData = (existingData && existingData.length>0) ? existingData :
-        [...existingData, ...data];
-
-    // Remove exact duplicates by filtering with a Set of stringified items
-    const seenItems = new Set();
-    const uniqueData = combinedData.filter(item => {
-        // Stringify ensures accurate identification regardless of object depth or primitive types
-        const stringifiedItem = JSON.stringify(item);
-        if (seenItems.has(stringifiedItem)) {
-            return false;
-        }
-        seenItems.add(stringifiedItem);
-        return true;
-    });
-
-    // Save clean deduplicated array back to local storage
-    localStorage.setItem(storageName, JSON.stringify(uniqueData));           
+        // Remove exact duplicates by filtering with a Set of stringified items
+        const seenItems = new Set();
+        const uniqueData = combinedData.filter(item => {
+            // Stringify ensures accurate identification regardless of object depth or primitive types
+            const stringifiedItem = JSON.stringify(item);
+            if (seenItems.has(stringifiedItem)) {
+                return false;
+            }
+            seenItems.add(stringifiedItem);
+            return true;
+        });
+        // Save clean deduplicated array back to local storage
+        localStorage.setItem(storageName, JSON.stringify(uniqueData)); 
+    } else {
+        console.log("Not loading default vocabulary words.");
+    }
   } catch (error) {
     console.error("Failed to parse JSON file:", error);
   }
@@ -1365,6 +1372,28 @@ async function loadData() {
       }
   } 
 }
+
+function smLoadDefaultVocabulary() {
+    loadVocabData(true);
+}
+function smDeleteAllVocabulary() {
+    const userApproved = confirm("Are you sure you want to delete all of your vocabulary words?");
+    if (userApproved) {
+        console.log("Deleting all vocabulary words.");
+        localStorage.setItem(getStorageKey(), []);
+        loadVocabData(false);
+        startQuiz();
+        const questionElt = document.getElementById('question');
+        const loadingQuestionText = 'Loading question...';
+        questionElt.textContent=loadingQuestionText;
+        questionElt.innerText=loadingQuestionText;
+        updateDisplayData();
+    } else {
+        // Code to run if the user clicked "Cancel"
+        console.log("Not going to delete all vocabulary words.");
+    }
+}
+
 
 function saveWordFromExplanation(event,elt) {
     event.preventDefault();
@@ -1598,7 +1627,7 @@ function turnFullArticleOnSpeaker() {
     })();
 
     turnFullArticleOffSpeaker();
-    loadData();
+    loadVocabData(false);
     initFlashcards();
     startQuiz();
     displayIncognitoWarning();
