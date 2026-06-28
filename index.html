@@ -678,6 +678,7 @@
         document.getElementById('translationResponse').innerHTML='';
         document.getElementById('spanishWord').value='';
         document.getElementById('englishTranslation').value='';
+        document.getElementById('wordBox').innerHTML = '';
     }
 
     function showPrevious() {
@@ -689,6 +690,7 @@
          document.getElementById('translationResponse').innerHTML='';
          document.getElementById('spanishWord').value='';
          document.getElementById('englishTranslation').value='';
+         document.getElementById('wordBox').innerHTML = '';
       }
     }
 
@@ -871,7 +873,7 @@ async function sendTranslationRequest(textValue) {
 
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
 
-        document.getElementById('translationResponse').scrollIntoView();
+        document.getElementById('wordBox').scrollIntoView();
 
     } catch(err) {
         console.log(err + ' switching to another provider.');
