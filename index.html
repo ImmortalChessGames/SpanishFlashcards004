@@ -1374,8 +1374,13 @@ async function loadVocabData(loadDefaults) {
 }
 
 function smLoadDefaultVocabulary() {
+    console.log("Loading vocabulary words.");
     loadVocabData(true);
+    startQuiz();
+    updateDisplayData();
+    showDynamicPopup('Success','Successfully loaded default vocabulary words.', 3000);
 }
+
 function smDeleteAllVocabulary() {
     const userApproved = confirm("Are you sure you want to delete all of your vocabulary words?");
     if (userApproved) {
@@ -1388,6 +1393,7 @@ function smDeleteAllVocabulary() {
         questionElt.textContent=loadingQuestionText;
         questionElt.innerText=loadingQuestionText;
         updateDisplayData();
+        showDynamicPopup('Success','Successfully deleted all vocabulary words.', 3000);
     } else {
         // Code to run if the user clicked "Cancel"
         console.log("Not going to delete all vocabulary words.");
