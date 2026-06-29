@@ -1586,3 +1586,27 @@ h2 {
   display: none;
 }
 
+
+/* Streak Counter Styles */
+.streak-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(lightGray);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  margin: 2.5rem 0 0.5rem 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.streak-dot {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.streak-dot.active {
+  animation: pulse-green 0.4s ease-out;
+}

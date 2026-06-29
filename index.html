@@ -32,7 +32,7 @@
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false" onclick="startQuiz();">Quiz</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false" onclick="resetQuizProgress();">Quiz</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
             </div>
@@ -81,17 +81,27 @@
 
             <!-- PANEL 2 -->
             <div id="panel-2" class="tab-panel" role="tabpanel">
-                <div class="quiz-container">
-                <div id="quiz-box">
-                    <h2 id="question">Loading question...</h2>
-                    <div id="choices-container" class="choices-grid"></div>
-                </div>
-                <div id="score-box" class="hidden">
-                    <h2>Quiz Complete!</h2>
-                    <p id="final-score"></p>
-                    <button class="quiz-btn" id="restart-btn">Restart Quiz</button>
-                </div>
-                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:50px;"/>
+                <div id="quiz-container" class="quiz-container">
+                    <div id="quiz-box">
+                        <h2 id="question">Loading question...</h2>
+                        <div id="choices-container" class="choices-grid"></div>
+                        <div id="streak-counter"></div> 
+                        <div>
+                            <select id="level-select" style="max-width: 150px; align-items: end; background-color:#FCFCE3;" class="sm-input" onchange="loadNextQuestion()">
+                              <option value="random">Random</option>
+                              <option value="easy">Easy</option>
+                              <option value="intermediate">Intermediate</option>
+                              <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="score-box" class="hidden">
+                        <h2>Quiz Complete!</h2>
+                        <p id="final-score"></p>
+                        <button class="quiz-btn" id="restart-btn">Restart Quiz</button>
+                    </div>
+                    <p id="quiz-question-count-2" style="vertical-align:bottom;margin-top:50px;"/>
+                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:10px;"/>
                 </div>
             </div>
 
@@ -186,7 +196,9 @@
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
     const ITEMS_PER_PAGE = 20;
-    
+    const MASTERY_STREAK_NEEDED = 4;
+    const QUESTIONS_PER_QUIZ = 30;
+
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
 
@@ -214,6 +226,321 @@
     const rateSlider = document.getElementById('rate-slider');
     const rateValueDisplay = document.getElementById('rate-value');
     const speakBtn = document.getElementById('speak-btn');
+
+    let quizData = [];
+    let currentQuestionIndex = -1;
+    let score = 0;
+
+    function generateQuizWords() {
+      try {
+        currentQuestionIndex = -1;
+        const allWords = masterData;
+        if (!Array.isArray(allWords) || allWords.length === 0) return [];
+
+        // Shuffle the array elements randomly
+        const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+
+        // Slice out exactly 30 words from the shuffled list
+
+        const quizWords = shuffled.slice(0, QUESTIONS_PER_QUIZ);
+
+        const quizQuestionCount = document.getElementById('quiz-question-count');
+        if(quizQuestionCount) {
+            quizQuestionCount.innerText = 'There are a total of ' + quizWords.length + ' questions';
+        }
+
+        return quizWords;
+      } catch (error) {
+        console.error("Error generating quiz:", error);
+        return [];
+      }
+    }
+
+    // 1. GLOBAL SETTINGS & KEYS
+    const PROGRESS_KEY = 'quiz_x_progress';
+    let masterData = [];          // Holds original raw vocabulary database
+    let currentQuestionObj = null; // Holds the active question configuration
+    let isProcessingAnswer = false; // Prevents double-clicking choices during feedback animation
+
+    // 2. LOCAL STORAGE MANAGEMENT & PROGRESS TRACKING
+    function getAllProgress() {
+        return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+    }
+
+    function recordUserAnswer(spanishWord, isCorrect) {
+        const progress = getAllProgress();
+        
+        if (!progress[spanishWord]) {
+            progress[spanishWord] = { cs: 0, tw: 0 };
+        }
+
+        if (isCorrect) {
+            progress[spanishWord].cs += 1;
+        } else {
+            progress[spanishWord].cs = 0; // Reset streak instantly on wrong answer
+            progress[spanishWord].tw += 1;
+        }
+
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+
+        return progress[spanishWord].cs; // Return updated streak for immediate rendering
+    }
+
+    // THE RESET FUNCTION: Clears metrics and forces a layout refresh
+    function resetQuizProgress() {
+        //if (confirm("Are you sure you want to reset all tracking progress? This will put all mastered words back into rotation.")) {
+        //    localStorage.removeItem(PROGRESS_KEY);
+        //    isProcessingAnswer = false;
+            score = 0;
+            currentQuestionIndex = -1;
+            scoreBox.classList.add("hidden");
+            quizBox.classList.remove("hidden");
+            quizVocab = generateQuizWords();
+            loadNextQuestion(); 
+        //}
+    }
+
+    // totalStreak = ts
+    // totalIncorrect = tw
+
+    // 3. WEIGHTED SELECTION LOGIC
+    function getWordWeight(streak, tw, level) {
+        let weight = 1.0; 
+
+        switch(level) {
+            case 'easy':
+                weight = 1.0 + (tw * 3.0) - (streak * 0.3);
+                break;
+            case 'intermediate':
+                weight = 1.0 + (tw * 1.5) - (streak * 0.2);
+                break;
+            case 'advanced':
+                weight = 1.0 + (streak * 1.5) - (tw * 0.5);
+                break;
+            case 'random':
+            default:
+                weight = 1.0;
+                break;
+        }
+
+        return Math.max(0.1, weight);
+    }
+
+    function pickNextSpanishWord(data, level = 'random') {
+        const progress = getAllProgress();
+
+        // Remove any word that has achieved 3 consecutive correct streaks
+        const availableWords = data.filter(item => {
+            const itemProgress = progress[item.spanish];
+            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+        });
+
+        if (availableWords.length === 0) return null; // Win state reached
+
+        let totalWeight = 0;
+        const weightedItems = availableWords.map(item => {
+            const itemProgress = progress[item.spanish] || { cs: 0, tw: 0 };
+            const weight = getWordWeight(itemProgress.cs, itemProgress.tw, level);
+            totalWeight += weight;
+            return { item, weight };
+        });
+
+        let randomRoll = Math.random() * totalWeight;
+        for (const entry of weightedItems) {
+            randomRoll -= entry.weight;
+            if (randomRoll <= 0) {
+                return entry.item;
+            }
+        }
+        return weightedItems[weightedItems.length - 1].item;
+    }
+
+
+    // 4. MULTIPLE CHOICE QUESTION GENERATOR (SINGLE ITEM)
+    function generateSingleQuestion(selectedWordItem, fullData, numChoices = 4) {
+        const correctAnswer = parseAndGetFirst(selectedWordItem.english);
+        
+        const distractors = fullData
+            .filter((obj) => parseAndGetFirst(obj.english) !== correctAnswer)
+            .map((obj) => parseAndGetFirst(obj.english));
+ 
+        const shuffledDistractors = shuffleArray([...distractors]).slice(0, numChoices - 1);
+        const allChoices = shuffleArray([...shuffledDistractors, correctAnswer]);
+
+        return {
+            spanishWord: selectedWordItem.spanish,
+            question: `${selectedWordItem.spanish}`,
+            choices: allChoices,
+            answer: correctAnswer
+        };
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+
+    // 5. GAME ENGINE CONTROL LOOP & UI DOM RENDERER
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex >= quizVocab.length) {
+          endQuiz(score, quizVocab.length);
+          return; // Stop the execution of this function
+        }
+
+        isProcessingAnswer = false; 
+
+        const levelSelector = document.getElementById('level-select');
+        const chosenLevel = levelSelector ? levelSelector.value : 'random'; 
+
+        const nextWordItem = pickNextSpanishWord(masterData, chosenLevel);
+
+        if (!nextWordItem) {
+            document.getElementById('question').innerText = "🎉 ¡Felicidades!";
+            document.getElementById('choices-container').innerHTML = "";
+            document.getElementById('streak-counter').innerHTML = "";
+            document.getElementById('quiz-question-count').innerText = "Mastered all words!";
+            return;
+        }
+
+        currentQuestionObj = generateSingleQuestion(nextWordItem, masterData);
+
+        const progress = getAllProgress();
+        const remainingCount = masterData.filter(item => !(progress[item.spanish]?.cs >= MASTERY_STREAK_NEEDED)).length;
+        
+        const quizQuestionCount = document.getElementById('quiz-question-count');
+        if (quizQuestionCount) {
+            quizQuestionCount.innerText = `Words left to master: ${remainingCount} (Out of ${masterData.length})`;
+        }
+
+        const quizQuestionCount2 = document.getElementById('quiz-question-count-2');
+        if(quizQuestionCount2) {
+            quizQuestionCount2.innerText = 'Question ' + (currentQuestionIndex+1) + ' out of ' + quizVocab.length + '.';
+        }
+
+
+        renderQuestionToUI(currentQuestionObj);
+    }
+
+    function endQuiz(score, totalQuestions) {
+      showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
+      showDynamicPopup('Quiz Completed','Loading a new quiz.', 2000);
+      resetQuizProgress();
+    }
+
+    function renderQuestionToUI(questionObj) {
+        document.getElementById('question').innerText = questionObj.question;
+
+        // Build the beautiful visual streak tracker component
+        const progress = getAllProgress();
+        const currentWordProgress = progress[questionObj.spanishWord] || { cs: 0 };
+        const currentStreak = currentWordProgress.cs;
+
+        const streakContainer = document.getElementById('streak-counter');
+        if (streakContainer) {
+            streakContainer.className = "streak-container";
+            let streakHTML = `<span></span>`;
+            for (let i = 1; i <= MASTERY_STREAK_NEEDED; i++) {
+                if (i <= currentStreak) {
+                    streakHTML += `<span class="streak-dot active">🔥</span>`;
+                } else {
+                    streakHTML += `<span class="streak-dot" style="opacity: 0.25;">⭕</span>`;
+                }
+            }
+            streakContainer.innerHTML = streakHTML;
+        }
+
+        // Populate buttons cleanly
+        const container = document.getElementById('choices-container');
+        container.innerHTML = ''; 
+
+        questionObj.choices.forEach(choiceText => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-btn'; 
+            btn.innerText = choiceText;
+            
+            // Inline override style to cancel standard text visibility delay transitions if needed
+            btn.style.opacity = "1"; 
+            btn.style.animation = "none";
+
+            btn.addEventListener('click', (e) => handleAnswerSubmit(choiceText, e.target));
+            container.appendChild(btn);
+        });
+    }
+
+    // 6. IN-LINE ANIMATION FEEDBACK CONTROLLER
+    function handleAnswerSubmit(userSelectedAnswer, clickedButtonElement) {
+        if (isProcessingAnswer || !currentQuestionObj) return;
+        isProcessingAnswer = true; // Lock choice buttons immediately during validation phase
+
+        console.log('quiz_word_progress:' + localStorage.getItem(PROGRESS_KEY));
+
+        const isCorrect = (userSelectedAnswer === currentQuestionObj.answer);
+        
+        if(isCorrect) {
+            score++;
+        }
+
+        // Disable all option choices concurrently to block additional input registrations
+        const allButtons = document.querySelectorAll('#choices-container .quiz-btn');
+        allButtons.forEach(btn => btn.disabled = true);
+
+        // Apply native CSS visual design feedback classes
+        if (isCorrect) {
+            clickedButtonElement.classList.add('correct-choice');
+        } else {
+            clickedButtonElement.classList.add('incorrect-choice');
+            
+            // Highlight the correct answer option implicitly so user learns from error
+            allButtons.forEach(btn => {
+                if (btn.innerText === currentQuestionObj.answer) {
+                    btn.classList.add('correct-choice');
+                }
+            });
+        }
+
+        // Save tracking results and capture streak change context
+        const updatedStreak = recordUserAnswer(currentQuestionObj.spanishWord, isCorrect);
+
+        // Update streak indicators inside the view layout container instantly
+        const streakDots = document.querySelectorAll('.streak-dot');
+        if (isCorrect) {
+            if (streakDots[updatedStreak - 1]) {
+                streakDots[updatedStreak - 1].innerHTML = "🔥";
+                streakDots[updatedStreak - 1].style.opacity = "1";
+                streakDots[updatedStreak - 1].classList.add('active');
+            }
+        } else {
+            // Flash streak loss immediately on failure back to placeholder styles
+            streakDots.forEach(dot => {
+                dot.innerHTML = "⚪";
+                dot.style.opacity = "0.25";
+                dot.classList.remove('active');
+            });
+        }
+
+        // Gracefully wait 1.2 seconds for layout animation sequence execution before auto-advancing
+        setTimeout(() => {
+            loadNextQuestion();
+        }, isCorrect ? 1000 : 3500);
+    }
+
+    // 7. INITIALIZATION HOOK
+    function initQuizApplication(vocabularyDatabase) {
+        masterData = vocabularyDatabase;
+        
+        const restartBtn = document.getElementById('restart-btn');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', resetQuizProgress);
+        }
+        quizVocab = generateQuizWords();
+        loadNextQuestion();
+    }
 
     // 3. Update text label instantly when user slides the input
     rateSlider.addEventListener('input', (event) => {
@@ -420,7 +747,7 @@
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
-        startQuiz();
+        resetQuizProgress();
     }
 
     function saveWord(spanishVal, englishVal) {
@@ -445,6 +772,34 @@
         }
     }
 
+    function removeWordFromStorage(storageKey, wordToRemove) {
+      try {
+        // 1. Fetch the existing stringified data
+        const existingData = localStorage.getItem(storageKey);
+        
+        // 2. If nothing exists, there is nothing to delete
+        if (!existingData) return;
+
+        // 3. Parse the data back into a JavaScript object
+        const wordsObject = JSON.parse(existingData);
+
+        // 4. Double check that the data is a valid object (and not null or an array)
+        if (wordsObject && typeof wordsObject === 'object' && !Array.isArray(wordsObject)) {
+          
+          // 5. Check if the word exists in the object before trying to delete it
+          if (wordToRemove in wordsObject) {
+            // Delete the key and its nested metadata object (e.g., {"cs":5, "tw":0})
+            delete wordsObject[wordToRemove];
+            
+            // 6. Save the cleaned object back to localStorage
+            localStorage.setItem(storageKey, JSON.stringify(wordsObject));
+          }
+        }
+      } catch (error) {
+        console.error("Error updating localStorage:", error);
+      }
+    }
+
     function deleteWord(wordToDelete) {
         let currentVocab = getVocabFromStorage();
 
@@ -456,6 +811,8 @@
         } else {
             localStorage.removeItem(getStorageKey());
         }
+
+        removeWordFromStorage(PROGRESS_KEY, wordToDelete);
     }
 
     wordForm.addEventListener('submit', function(e) {
@@ -1060,10 +1417,6 @@ function processSentence(input) {
       }, 1000);
     }
 
-    let quizData = [];
-    let currentQuestionIndex = 0;
-    let score = 0;
-
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1100,64 +1453,9 @@ function processSentence(input) {
     const finalScoreEl = document.getElementById("final-score");
     const restartBtn = document.getElementById("restart-btn");
 
-    function startQuiz() {
-      score = 0;
-      currentQuestionIndex = 0;
-      quizVocab = quizVocab.filter((item, index, self) =>
-        index === self.findIndex(t => t.spanish === item.spanish)
-      );
-      quizData = shuffleArray(generateQuiz(quizVocab, 4)); 
-      scoreBox.classList.add("hidden");
-      quizBox.classList.remove("hidden");
-      showQuestion();
-    }
-
-    function showQuestion() {
-      choicesContainer.innerHTML = "";
-      const deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.textContent = 'Permanently delete this word';
-      deleteBtn.classList.add('delete-btn');
-      deleteBtn.style='margin-bottom: 16px';
-      deleteBtn.addEventListener('click', function() {
-          const currentWord = quizData[currentQuestionIndex].question;
-          const userConfirmed = confirm("Are you sure you want to permanently delete the word '" + currentWord + "'? ");
-          if (!userConfirmed) {
-            return;
-          } else {
-            deleteWord(currentWord);
-            if (currentQuestionIndex < quizData.length) {
-                score++;
-                currentQuestionIndex++;
-                showQuestion();            
-            }
-          }
-      });
-      choicesContainer.appendChild(deleteBtn);
-
-      if(quizData && quizData.length>0) {
-
-          const quizQuestionCount = document.getElementById('quiz-question-count');
-          quizQuestionCount.innerText = 'Question ' + (currentQuestionIndex+1) + ' out of ' + quizData.length + '.';
-
-          const currentQuizItem = quizData[currentQuestionIndex];
-          questionEl.innerText = currentQuizItem.question;
-          currentQuizItem.choices.forEach(choice => {
-            const button = document.createElement("button");
-            button.classList.add('quiz-btn');
-            button.innerText = choice;
-            // Store answer in a custom dataset property for easy identification later
-            button.dataset.choiceValue = choice; 
-            button.addEventListener("click", (e) => handleAnswer(e.target, choice));
-            choicesContainer.appendChild(button);
-          });
-      }
-    }
-
     function handleAnswer(selectedButton, selectedChoice) {
       const currentQuizItem = quizData[currentQuestionIndex];
       const allButtons = choicesContainer.querySelectorAll("button");
-      
       // Disable all buttons immediately to block double clicking
       allButtons.forEach(btn => btn.disabled = true);
 
@@ -1183,7 +1481,7 @@ function processSentence(input) {
       // Pause for 1.2 seconds so user can process the animations/feedback
       setTimeout(() => {
           if (currentQuestionIndex < quizData.length) {
-            showQuestion();
+            loadNextQuestion();
           } else {
             showResults();
           }
@@ -1196,7 +1494,7 @@ function processSentence(input) {
       finalScoreEl.innerText = `You scored ${score} out of ${quizData.length}!`;
     }
 
-    restartBtn.addEventListener("click", startQuiz);
+    restartBtn.addEventListener("click", resetQuizProgress);
 
     // Scoped helper to update status message
     function smShowStatus(message, isError = false) {
@@ -1383,7 +1681,7 @@ async function loadVocabData(loadDefaults) {
 function smLoadDefaultVocabulary() {
     console.log("Loading vocabulary words.");
     loadVocabData(true);
-    startQuiz();
+    resetQuizProgress();
     updateDisplayData();
     showDynamicPopup('Success','Successfully loaded default vocabulary words.', 3000);
 }
@@ -1394,7 +1692,7 @@ function smDeleteAllVocabulary() {
         console.log("Deleting all vocabulary words.");
         localStorage.setItem(getStorageKey(), []);
         loadVocabData(false);
-        startQuiz();
+        resetQuizProgress();
         const questionElt = document.getElementById('question');
         const loadingQuestionText = 'Loading question...';
         questionElt.textContent=loadingQuestionText;
@@ -1641,8 +1939,9 @@ function turnFullArticleOnSpeaker() {
 
     turnFullArticleOffSpeaker();
     loadVocabData(false);
+    initQuizApplication(getVocabFromStorage());
     initFlashcards();
-    startQuiz();
+    resetQuizProgress();
     displayIncognitoWarning();
 
 
