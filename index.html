@@ -83,17 +83,22 @@
             <div id="panel-2" class="tab-panel" role="tabpanel">
                 <div id="quiz-container" class="quiz-container">
                     <div id="quiz-box">
+<div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; height: 36px; line-height: 1;"> 
+  <!-- Left side forces any injected elements to strip their margins -->
+  <div id="streak-counter" style="margin: 0; padding: 0; font-size: 16px; display: flex; align-items: center;"></div> 
+  <!-- Right side locks the dropdown size and overrides padding bugs -->
+  <div style="display: flex; align-items: center; height: 100%;"> 
+    <select id="level-select" style="width: 150px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px; vertical-align: middle;" class="sm-input" onchange="loadNextQuestion()"> 
+      <option value="random">Random</option> 
+      <option value="easy">Easy</option> 
+      <option value="intermediate">Intermediate</option> 
+      <option value="advanced">Advanced</option> 
+    </select> 
+  </div> 
+</div>
+       
                         <h2 id="question">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
-                        <div id="streak-counter"></div> 
-                        <div>
-                            <select id="level-select" style="max-width: 150px; align-items: end; background-color:#FCFCE3;" class="sm-input" onchange="loadNextQuestion()">
-                              <option value="random">Random</option>
-                              <option value="easy">Easy</option>
-                              <option value="intermediate">Intermediate</option>
-                              <option value="advanced">Advanced</option>
-                            </select>
-                        </div>
                     </div>
                     <div id="score-box" class="hidden">
                         <h2>Quiz Complete!</h2>
@@ -429,7 +434,6 @@
 
     function endQuiz(score, totalQuestions) {
       showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
-      showDynamicPopup('Quiz Completed','Loading a new quiz.', 2000);
       resetQuizProgress();
     }
 
@@ -518,7 +522,7 @@
         } else {
             // Flash streak loss immediately on failure back to placeholder styles
             streakDots.forEach(dot => {
-                dot.innerHTML = "⚪";
+                dot.innerHTML = "⭕";
                 dot.style.opacity = "0.25";
                 dot.classList.remove('active');
             });

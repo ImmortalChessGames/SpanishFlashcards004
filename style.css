@@ -1599,7 +1599,7 @@ h2 {
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--text);
-  border: 1px solid var(--border);
+  border: 0px solid var(--border);
 }
 
 .streak-dot {
