@@ -668,7 +668,7 @@
         const localData = localStorage.getItem(getStorageKey());
         if (!localData) return [];
         try {
-            return JSON.parse(localData);
+            return JSON.parse(localData) || [];
         } catch (e) {
             return [];
         }
