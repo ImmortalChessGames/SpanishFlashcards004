@@ -1944,12 +1944,17 @@ function turnFullArticleOnSpeaker() {
         });
     })();
 
+// This event acts as a bulletproof lock for mobile web engines
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("HTML completely loaded! Safe to read inputs and localStorage.");
     turnFullArticleOffSpeaker();
     loadVocabData(false);
     initQuizApplication(getVocabFromStorage());
     initFlashcards();
     resetQuizProgress();
     displayIncognitoWarning();
+});
+
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
