@@ -253,6 +253,36 @@
     let currentQuestionIndex = -1;
     let score = 0;
 
+    function safeLocalStorageGetItemAsJson(storageName, isArray) {
+        try {
+          const lStorageItem = localStorage.getItem(storageName);
+          if(!localStorage) {
+            return isArray===true ? [] : {};
+          }
+          return JSON.parse(lStorageItem) || (isArray===true ? [] : {});
+        } catch (error) {
+          console.error("(json) Local storage is locked or full in this PWA container:", error);
+          alert("(json) Local storage is locked or full in this PWA container: " + error);
+          showDynamicPopup('Error','(json) Local storage is locked or full in this PWA container: ' + error, 3000);
+        }
+        return isArray===true ? [] : {};
+    }
+
+    function safeLocalStorageGetItem(storageName, isArray) {
+        try {
+          const lStorageItem = localStorage.getItem(storageName);
+          if(!localStorage) {
+            return isArray===true ? [] : {};
+          }
+          return lStorageItem
+        } catch (error) {
+          console.error("(item) Local storage is locked or full in this PWA container:", error);
+          alert("(item) Local storage is locked or full in this PWA container: " + error);
+          showDynamicPopup('Error','(item) Local storage is locked or full in this PWA container: ' + error, 3000);
+        }
+        return isArray===true ? [] : {};
+    }
+
     function generateQuizWords() {
       const words = Object.keys(masterData);
       const levelSelector = document.getElementById('level-select');
@@ -295,7 +325,7 @@
 
     // 2. LOCAL STORAGE MANAGEMENT & PROGRESS TRACKING
     function getAllProgress() {
-        return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+        return safeLocalStorageGetItemAsJson(PROGRESS_KEY,false);
     }
 
     function recordUserAnswer(spanishWord, isCorrect) {
@@ -382,8 +412,7 @@
     function getWordItem(currentWord) {
       try {
         // 1. Fetch and parse your master database object
-        const rawData = localStorage.getItem(DEFAULT_LOCAL_STORAGE_KEY);
-        const wordsDatabase = rawData ? JSON.parse(rawData) : {};
+        const wordsDatabase = safeLocalStorageGetItemAsJson(DEFAULT_LOCAL_STORAGE_KEY,false);
 
         // 2. Check if the word exists in the database
         if (wordsDatabase && currentWord in wordsDatabase) {
@@ -665,13 +694,7 @@
 
     // 1. Retrieve items from localStorage
     function getVocabFromStorage() {
-        const localData = localStorage.getItem(getStorageKey());
-        if (!localData) return [];
-        try {
-            return JSON.parse(localData) || [];
-        } catch (e) {
-            return [];
-        }
+        return safeLocalStorageGetItemAsJson(getStorageKey(),true);
     }
 
     // 2. Sort array alphabetically by Spanish word
@@ -783,14 +806,8 @@
 
     function removeWordFromStorage(storageKey, wordToRemove) {
       try {
-        // 1. Fetch the existing stringified data
-        const existingData = localStorage.getItem(storageKey);
-        
-        // 2. If nothing exists, there is nothing to delete
-        if (!existingData) return;
-
         // 3. Parse the data back into a JavaScript object
-        const wordsObject = JSON.parse(existingData);
+        const wordsObject = safeLocalStorageGetItemAsJson(PROGRESS_KEY,false);
 
         // 4. Double check that the data is a valid object (and not null or an array)
         if (wordsObject && typeof wordsObject === 'object' && !Array.isArray(wordsObject)) {
@@ -1502,7 +1519,7 @@ function processSentence(input) {
             return;
         }
 
-        const data = localStorage.getItem(storageName);
+        const data = safeLocalStorageGetItem(storageName,true);
 
         if (!data) {
             smShowStatus(`Error: No data found in Local Storage for "${storageName}".`, true);
@@ -1561,7 +1578,7 @@ function processSentence(input) {
                 }
 
                 let existingData = [];
-                const rawExisting = localStorage.getItem(storageName);
+                const rawExisting = safeLocalStorageGetItem(storageName,true);;
                 
                 if (rawExisting) {
                     try {
@@ -1608,16 +1625,14 @@ async function loadVocabData(loadDefaults) {
     const storageNameInput = document.getElementById('sm-storageName');
     const storageName = storageNameInput ? storageNameInput.value.trim() : '';
     let existingData = [];
-    const rawExisting = localStorage.getItem(storageName);
-    if (rawExisting) {
+
         try {
-            const parsedExisting = JSON.parse(rawExisting);
+            const parsedExisting = safeLocalStorageItemAsJson(getStorageKey(),true);
             existingData = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
         } catch (parseError) {
             console.warn('Existing data was not valid JSON array, resetting storage.');
             existingData = [];
         }
-    }
     if(loadDefaults) {
         console.log("Loading default vocabulary words.");
         const response = await fetch('./defaults.json');
@@ -1647,7 +1662,7 @@ async function loadVocabData(loadDefaults) {
   }
   // load dynamic data sets
     console.log('Loading dynamic stories');
-    const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
+    const storiesMapJson = safeLocalStorageItemAsJson(DEFAULT_LOCAL_STORAGE_STORIES_KEY,false);
     if(storiesMapJson && storiesMapJson.length>0) {
         const storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
         if(storiesMap && storiesMap.size>0) {
@@ -1766,7 +1781,7 @@ async function fetchGemmaResponse() {
                 responseText = JSON.stringify(responseObj, null, 2);    
 
                 const topicMapKey = generateTopicMapKey(topicInput);
-                const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
+                const storiesMapJson = safeLocalStorageItemAsJson(DEFAULT_LOCAL_STORAGE_STORIES_KEY,false);
                 let storiesMap;
                 if(storiesMapJson && storiesMapJson.length>0) {
                     storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
