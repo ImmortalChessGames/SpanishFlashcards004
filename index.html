@@ -83,20 +83,24 @@
             <div id="panel-2" class="tab-panel" role="tabpanel">
                 <div id="quiz-container" class="quiz-container">
                     <div id="quiz-box">
-<div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; height: 36px; line-height: 1;"> 
-  <!-- Left side forces any injected elements to strip their margins -->
-  <div id="streak-counter" style="margin: 0; padding: 0; font-size: 16px; display: flex; align-items: center;"></div> 
-  <!-- Right side locks the dropdown size and overrides padding bugs -->
-  <div style="display: flex; align-items: center; height: 100%;"> 
-    <select id="level-select" style="width: 150px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px; vertical-align: middle;" class="sm-input" onchange="loadNextQuestion()"> 
-      <option value="random">Random</option> 
-      <option value="easy">Easy</option> 
-      <option value="intermediate">Intermediate</option> 
-      <option value="advanced">Advanced</option> 
-    </select> 
-  </div> 
-</div>
-       
+                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; height: 36px; line-height: 1;"> 
+                          <!-- Left Column: Progress Text (1 of 30) -->
+                          <div id="quiz-progress" style="text-align: left; font-size: 16px; margin: 0; padding: 0;">
+                            <span id="quiz-progress-counter"></span> of <span id="quiz-progress-total"></span>
+                          </div>
+                          <!-- Center Column: Streak Counter -->
+                          <div id="streak-counter" style="text-align: center; font-size: 16px; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;"></div> 
+                          <!-- Right Column: Level Select Dropdown -->
+                          <div style="display: flex; align-items: center; justify-content: flex-end; height: 100%;"> 
+                            <select id="level-select" style="width: 100px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px;" class="sm-input" onchange="loadNextQuestion()"> 
+                              <option value="random">Random</option> 
+                              <option value="easy">Easy</option> 
+                              <option value="intermediate">Intermediate</option> 
+                              <option value="advanced">Advanced</option> 
+                            </select> 
+                          </div> 
+
+                        </div>
                         <h2 id="question">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
                     </div>
@@ -105,8 +109,7 @@
                         <p id="final-score"></p>
                         <button class="quiz-btn" id="restart-btn">Restart Quiz</button>
                     </div>
-                    <p id="quiz-question-count-2" style="vertical-align:bottom;margin-top:50px;"/>
-                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:10px;"/>
+                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:50px;"/>
                 </div>
             </div>
 
@@ -151,6 +154,19 @@
                                   <option value="gemma-4-31b-it">Model B (Slow)</option>
                                 </select>
                             </div>
+                            <div class="gsv-form-group" style="margin-bottom:10px;">
+                                <label class="sm-label" for="ai-engine-lang-level">Model to use:</label>
+                                <select name="ai-engine-lang-level" id="ai-engine-lang-level" class="sm-input">
+                                  <option value="Elementary">Elementary</option>
+                                  <option value="Elementary-to-Intermediate">Elementary-to-Intermediate</option>
+                                  <option value="intermediate">Intermediate</option>
+                                  <option value="Intermediate-to-Advanced" selected>Intermediate-to-Advanced</option>
+                                  <option value="Advanced">Advanced</option>
+                                  <option value="Expert">Expert</option>
+                                  <option value="Superior">Superior</option>
+                                  <option value="Distinguished">Distinguished</option>
+                                </select>
+                            </div>
                             <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchGemmaResponse();">Generate Article</button>
                             <div id="gsv-status" class="gsv-status-msg"></div>
                         </div>   
@@ -167,7 +183,7 @@
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.75"class="speech-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5"class="speech-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -423,10 +439,8 @@
             quizQuestionCount.innerText = `Words left to master: ${remainingCount} (Out of ${masterData.length})`;
         }
 
-        const quizQuestionCount2 = document.getElementById('quiz-question-count-2');
-        if(quizQuestionCount2) {
-            quizQuestionCount2.innerText = 'Question ' + (currentQuestionIndex+1) + ' out of ' + quizVocab.length + '.';
-        }
+        document.getElementById('quiz-progress-counter').textContent=(currentQuestionIndex+1);
+        document.getElementById('quiz-progress-total').textContent=(quizVocab.length);
 
 
         renderQuestionToUI(currentQuestionObj);
@@ -1732,8 +1746,12 @@ async function fetchGemmaResponse() {
     const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
     document.getElementById('gsv-status').innerText='';
     const topicInput = document.getElementById('gsv-topic-input').value;
+    let languageLevel = document.getElementById('ai-engine-lang-level').value;
+    if(!languageLevel) {
+        languageLevel = 'Intermediate-to-Advanced';
+    }
     const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation.";
-    const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use intermediate or advanced Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
+    const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use ` + languageLevel + ` Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
 
     const payload = {
       contents: [{ parts: [{ text: userPrompt }] }],
