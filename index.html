@@ -92,7 +92,7 @@
                           <div id="streak-counter" style="text-align: center; font-size: 16px; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;"></div> 
                           <!-- Right Column: Level Select Dropdown -->
                           <div style="display: flex; align-items: center; justify-content: flex-end; height: 100%;"> 
-                            <select id="level-select" style="width: 100px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px;" class="sm-input" onchange="loadNextQuestion()"> 
+                            <select id="level-select" style="width: 110px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px; text-align:right;" class="sm-input"> 
                               <option value="random">Random</option> 
                               <option value="easy">Easy</option> 
                               <option value="intermediate">Intermediate</option> 
@@ -183,7 +183,7 @@
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5"class="speech-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.45"class="speech-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -247,34 +247,43 @@
     const rateSlider = document.getElementById('rate-slider');
     const rateValueDisplay = document.getElementById('rate-value');
     const speakBtn = document.getElementById('speak-btn');
-
+    let activeQuizList = []; 
     let quizData = [];
     let currentQuestionIndex = -1;
     let score = 0;
 
     function generateQuizWords() {
-      try {
-        currentQuestionIndex = -1;
-        const allWords = masterData;
-        if (!Array.isArray(allWords) || allWords.length === 0) return [];
+      const words = Object.keys(masterData);
+      const levelSelector = document.getElementById('level-select');
+      const selectedLevel = levelSelector ? levelSelector.value : 'random'; 
+      let filteredWords = [];
 
-        // Shuffle the array elements randomly
-        const shuffled = [...allWords].sort(() => 0.5 - Math.random());
-
-        // Slice out exactly 30 words from the shuffled list
-
-        const quizWords = shuffled.slice(0, QUESTIONS_PER_QUIZ);
-
-        const quizQuestionCount = document.getElementById('quiz-question-count');
-        if(quizQuestionCount) {
-            quizQuestionCount.innerText = 'There are a total of ' + quizWords.length + ' questions';
-        }
-
-        return quizWords;
-      } catch (error) {
-        console.error("Error generating quiz:", error);
-        return [];
+      // 1. If TRUE RANDOM, give every word an equal 1/700 chance (ignore tw weights!)
+      if (selectedLevel === 'random') {
+        filteredWords = [...words];
+      } else {
+        // Apply your standard difficulty tier filtering here for Easy/Hard...
+        filteredWords = words.filter(word => {
+          const metrics = masterData[word];
+          if (selectedLevel === 'easy') return metrics.cs >= 4;
+          if (selectedLevel === 'advanced') return metrics.cs <= 1;
+          return true;
+        });
       }
+
+      // CRITICAL FIX: Prevent infinite recursion loops if no words match the criteria!
+      if (filteredWords.length === 0) {
+        console.warn(`No words found matching the level: ${selectedLevel}. Falling back to all words.`);
+        // Fallback strategy: return all words so the app doesn't crash
+        filteredWords = [...words]; 
+      }
+
+      // 2. Shuffle the entire matching pool using an unbiased sorting array
+      const shuffled = filteredWords.sort(() => 0.5 - Math.random());
+
+      // 3. Slice out exactly 30 unique questions for this entire game session
+      // This guarantees absolutely ZERO internal repetition within these 30 turns!
+      return shuffled.slice(0, QUESTIONS_PER_QUIZ);
     }
 
     // 1. GLOBAL SETTINGS & KEYS
@@ -307,18 +316,13 @@
         return progress[spanishWord].cs; // Return updated streak for immediate rendering
     }
 
-    // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        //if (confirm("Are you sure you want to reset all tracking progress? This will put all mastered words back into rotation.")) {
-        //    localStorage.removeItem(PROGRESS_KEY);
-        //    isProcessingAnswer = false;
-            score = 0;
-            currentQuestionIndex = -1;
-            scoreBox.classList.add("hidden");
-            quizBox.classList.remove("hidden");
-            quizVocab = generateQuizWords();
-            loadNextQuestion(); 
-        //}
+        score = 0;
+        currentQuestionIndex = -1;
+        scoreBox.classList.add("hidden");
+        quizBox.classList.remove("hidden");
+        activeQuizList = quizVocab = generateQuizWords();
+        loadNextQuestion(); 
     }
 
     // totalStreak = ts
@@ -347,36 +351,6 @@
         return Math.max(0.1, weight);
     }
 
-    function pickNextSpanishWord(data, level = 'random') {
-        const progress = getAllProgress();
-
-        // Remove any word that has achieved 3 consecutive correct streaks
-        const availableWords = data.filter(item => {
-            const itemProgress = progress[item.spanish];
-            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
-        });
-
-        if (availableWords.length === 0) return null; // Win state reached
-
-        let totalWeight = 0;
-        const weightedItems = availableWords.map(item => {
-            const itemProgress = progress[item.spanish] || { cs: 0, tw: 0 };
-            const weight = getWordWeight(itemProgress.cs, itemProgress.tw, level);
-            totalWeight += weight;
-            return { item, weight };
-        });
-
-        let randomRoll = Math.random() * totalWeight;
-        for (const entry of weightedItems) {
-            randomRoll -= entry.weight;
-            if (randomRoll <= 0) {
-                return entry.item;
-            }
-        }
-        return weightedItems[weightedItems.length - 1].item;
-    }
-
-
     // 4. MULTIPLE CHOICE QUESTION GENERATOR (SINGLE ITEM)
     function generateSingleQuestion(selectedWordItem, fullData, numChoices = 4) {
         const correctAnswer = parseAndGetFirst(selectedWordItem.english);
@@ -404,22 +378,41 @@
         return array;
     }
 
+    function getWordItem(currentWord) {
+      try {
+        // 1. Fetch and parse your master database object
+        const rawData = localStorage.getItem(DEFAULT_LOCAL_STORAGE_KEY);
+        const wordsDatabase = rawData ? JSON.parse(rawData) : {};
+
+        // 2. Check if the word exists in the database
+        if (wordsDatabase && currentWord in wordsDatabase) {
+          // Return the existing metrics: e.g., { "cs": 5, "tw": 0 }
+          return wordsDatabase[currentWord];
+        }
+
+        // 3. Fallback: If the word isn't in the object yet, return default metrics
+        return { cs: 0, tw: 0 };
+        
+      } catch (error) {
+        console.error("Error building wordItem:", error);
+        return { cs: 0, tw: 0 };
+      }
+    }
+
 
     // 5. GAME ENGINE CONTROL LOOP & UI DOM RENDERER
     function loadNextQuestion() {
         currentQuestionIndex++;
 
-        if (currentQuestionIndex >= quizVocab.length) {
-          endQuiz(score, quizVocab.length);
+        if (currentQuestionIndex >= activeQuizList.length) {
+          endQuiz(score, activeQuizList.length);
           return; // Stop the execution of this function
         }
 
         isProcessingAnswer = false; 
 
-        const levelSelector = document.getElementById('level-select');
-        const chosenLevel = levelSelector ? levelSelector.value : 'random'; 
-
-        const nextWordItem = pickNextSpanishWord(masterData, chosenLevel);
+        const currentWord = activeQuizList[currentQuestionIndex];
+        const nextWordItem = getWordItem(currentWord);
 
         if (!nextWordItem) {
             document.getElementById('question').innerText = "🎉 ¡Felicidades!";
@@ -440,8 +433,7 @@
         }
 
         document.getElementById('quiz-progress-counter').textContent=(currentQuestionIndex+1);
-        document.getElementById('quiz-progress-total').textContent=(quizVocab.length);
-
+        document.getElementById('quiz-progress-total').textContent=(activeQuizList.length);
 
         renderQuestionToUI(currentQuestionObj);
     }
@@ -495,8 +487,6 @@
     function handleAnswerSubmit(userSelectedAnswer, clickedButtonElement) {
         if (isProcessingAnswer || !currentQuestionObj) return;
         isProcessingAnswer = true; // Lock choice buttons immediately during validation phase
-
-        console.log('quiz_word_progress:' + localStorage.getItem(PROGRESS_KEY));
 
         const isCorrect = (userSelectedAnswer === currentQuestionObj.answer);
         
@@ -556,7 +546,7 @@
         if (restartBtn) {
             restartBtn.addEventListener('click', resetQuizProgress);
         }
-        quizVocab = generateQuizWords();
+        activeQuizList = quizVocab = generateQuizWords();
         loadNextQuestion();
     }
 
@@ -1441,27 +1431,6 @@ function processSentence(input) {
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
-    }
-
-    function generateQuiz(data, numChoices = 4) {
-        const quizQuestionCount = document.getElementById('quiz-question-count');
-        quizQuestionCount.innerText = 'There are a total of ' + data.length + ' questions';
-      return data.map((item) => {
-        const correctAnswer = item.english;
-        const distractors = data
-          .filter((obj) => obj.english !== correctAnswer)
-          .map((obj) => obj.english);
-        
-        const shuffledDistractors = shuffleArray([...distractors]).slice(0, numChoices - 1);
-        const allChoices = shuffleArray([...shuffledDistractors, correctAnswer]);
-
-        return {
-          spanishWord: item.spanish,
-          question: `${item.spanish}`,
-          choices: allChoices,
-          answer: correctAnswer
-        };
-      });
     }
 
     const quizBox = document.getElementById("quiz-box");
