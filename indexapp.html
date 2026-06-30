@@ -6,7 +6,6 @@
     <meta http-equiv="Cache-Control" content="max-age=31536000">
     <meta name="robots" content="noindex, nofollow">
     <title>Spanish ⇄ English Flashcards</title>
-    <script src="sentences.js"></script>
     <script src="BattleOfStalingrad.js"></script>
     <script src="SinkingOfLucitania.js"></script>
     <script src="T34.js"></script>
@@ -469,7 +468,9 @@
     }
 
     function endQuiz(score, totalQuestions) {
-      showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
+      if(totalQuestions>0) {
+          showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
+      }
       resetQuizProgress();
     }
 
@@ -1947,12 +1948,28 @@ function turnFullArticleOnSpeaker() {
 // This event acts as a bulletproof lock for mobile web engines
 document.addEventListener('DOMContentLoaded', () => {
   console.log("HTML completely loaded! Safe to read inputs and localStorage.");
+
+      // 2. Dynamically create the script element
+      const script = document.createElement('script');
+      script.src = 'sentences.js';
+      script.defer = true;
+
+      // 3. Trigger your app when the file lands
+      script.onload = () => {
+        console.log("Heavy file loaded dynamically!");
+        // Hide spinner UI here
     turnFullArticleOffSpeaker();
     loadVocabData(false);
     initQuizApplication(getVocabFromStorage());
     initFlashcards();
     resetQuizProgress();
     displayIncognitoWarning();
+
+
+      };
+
+      // 4. Inject it into the page to start the download
+      document.head.appendChild(script);
 });
 
 
