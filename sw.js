@@ -13,7 +13,8 @@ const ASSETS_TO_CACHE = [
   './BlackHole.js',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './favicon.ico'
 ];
 
 // 1. Install Event: Force download files directly into local device storage
