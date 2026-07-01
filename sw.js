@@ -2,6 +2,7 @@ const CACHE_NAME = 'rapid-spanish-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index-app.html',
+  './index-app1.html',
   './indexapp.html',
   './style.css',
   './sentences.js',
@@ -14,7 +15,8 @@ const ASSETS_TO_CACHE = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './favicon.ico'
+  './favicon.ico',
+  './apple-touch-icon.png'
 ];
 
 // 1. Install Event: Force download files directly into local device storage
