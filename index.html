@@ -1886,6 +1886,28 @@ function turnFullArticleOnSpeaker() {
 //  speaker.classList.remove('is-hidden');
 }
 
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const threshold = 50; // Minimum swipe distance in pixels
+    if (touchEndX < touchStartX - threshold) {
+        showNext();
+    }
+    if (touchEndX > touchStartX + threshold) {
+        showPrevious();
+    }
+}
+
 (function() {
       let textToSpeak = "";
         
