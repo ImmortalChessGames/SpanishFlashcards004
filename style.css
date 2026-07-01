@@ -1,18 +1,30 @@
 
-    body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 40px auto;
-        padding: 20px;
-        text-align: center;
-        background-color: #f4f7f6;
-        color: #333;
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      position: fixed;
+      overscroll-behavior: none; 
+
+      /* 1. This centers the container on large computer screens */
+      display: flex;
+      justify-content: center; /* Centers horizontally on desktop */
+      align-items: center;     /* Centers vertically on desktop */
+      
+      margin: 0;
+      padding: 0;
+      background-color: white; /* Optional: Desktop background color */
     }
-    .container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    .main-container {
+      width: 100%;
+      
+      /* 2. Prevents the app from stretching too wide on a computer */
+      max-width: 450px; 
+      height: 100%; /* Keeps it full height like an iPhone app */
+      
+      background-color: #ffffff; /* Optional: Your app's actual background */
+      box-sizing: border-box;
+      position: relative;
     }
     .dashboard {
         display: grid;

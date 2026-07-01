@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="max-age=31536000">
+    <meta http-equiv="Cache-Control" content="no-cache">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Spanish ⇄ English Flashcards</title>
     <script src="BattleOfStalingrad.js"></script>
     <script src="SinkingOfLucitania.js"></script>
@@ -16,9 +18,9 @@
 </head>
 <body>
 
-<div class="container">
+<div class="main-container">
     <div id="viewer">
-        `<!-- Scoped Layout Engine Wrapper -->
+        <!-- Scoped Layout Engine Wrapper -->
         <div id="msg-center-scoped-root" class="msg-center-overlay">
           <div class="msg-center-card">
             <button class="msg-center-close-x" onclick="closeDynamicPopup()">&times;</button>
@@ -216,6 +218,8 @@
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
+    const DEFAULT_LOCAL_STORAGE_SETTINGS_KEY = '___spanish_v_settings___';
+    
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
