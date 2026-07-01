@@ -13,18 +13,16 @@
       
       margin: 0;
       padding: 0;
-      background-color: white; /* Optional: Desktop background color */
+      background-color: #f0f0f0; /* Optional: Desktop background color */
     }
     .main-container {
-      width: 100%;
-      
-      /* 2. Prevents the app from stretching too wide on a computer */
-      max-width: 450px; 
-      height: 100%; /* Keeps it full height like an iPhone app */
-      
-      background-color: #ffffff; /* Optional: Your app's actual background */
-      box-sizing: border-box;
-      position: relative;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     .dashboard {
         display: grid;
