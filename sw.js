@@ -1,9 +1,7 @@
 const CACHE_NAME = 'rapid-spanish-v1';
 const ASSETS_TO_CACHE = [
   './',
-  './index-app.html',
   './index-app1.html',
-  './indexapp.html',
   './style.css',
   './sentences.js',
   './defaults.json',
