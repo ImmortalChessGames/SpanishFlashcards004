@@ -4,21 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache">
-    <meta name="robots" content="noindex, nofollow">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Spanish ⇄ English Flashcards</title>
+    <script src="sentences.js"></script>
     <script src="BattleOfStalingrad.js"></script>
     <script src="SinkingOfLucitania.js"></script>
     <script src="T34.js"></script>
     <script src="MexicoCityStreetFood.js"></script>
     <script src="BlackHole.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-
 <div class="main-container">
     <div id="viewer">
         <!-- Scoped Layout Engine Wrapper -->
@@ -89,20 +87,19 @@
                         <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; height: 36px; line-height: 1;"> 
                           <!-- Left Column: Progress Text (1 of 30) -->
                           <div id="quiz-progress" style="text-align: left; font-size: 16px; margin: 0; padding: 0;">
-                            <span id="quiz-progress-counter"></span> of <span id="quiz-progress-total"></span>
+                            <span id="quiz-progress-counter"></span>/<span id="quiz-progress-total"></span>
                           </div>
                           <!-- Center Column: Streak Counter -->
                           <div id="streak-counter" style="text-align: center; font-size: 16px; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;"></div> 
                           <!-- Right Column: Level Select Dropdown -->
                           <div style="display: flex; align-items: center; justify-content: flex-end; height: 100%;"> 
-                            <select id="level-select" style="width: 110px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px; text-align:right;" class="sm-input"> 
+                            <select id="level-select" style="width: 100px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px;" class="sm-input" onchange="loadNextQuestion()"> 
                               <option value="random">Random</option> 
                               <option value="easy">Easy</option> 
-                              <option value="intermediate" selected>Intermediate</option> 
+                              <option value="intermediate">Intermediate</option> 
                               <option value="advanced">Advanced</option> 
                             </select> 
                           </div> 
-
                         </div>
                         <h2 id="question">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
@@ -144,7 +141,7 @@
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
-                    <div class="sm-container">
+                    <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
                             <div class="gsv-form-group">
                                 <label class="sm-label" for="gsv-topic-input">Enter a Topic</label>
@@ -186,7 +183,7 @@
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.45"class="speech-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5"class="speech-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -219,8 +216,6 @@
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
-    const DEFAULT_LOCAL_STORAGE_SETTINGS_KEY = '___spanish_v_settings___';
-    
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
@@ -252,73 +247,34 @@
     const rateSlider = document.getElementById('rate-slider');
     const rateValueDisplay = document.getElementById('rate-value');
     const speakBtn = document.getElementById('speak-btn');
-    let activeQuizList = []; 
+
     let quizData = [];
     let currentQuestionIndex = -1;
     let score = 0;
 
-    function safeLocalStorageGetItemAsJson(storageName, isArray) {
-        try {
-          const lStorageItem = localStorage.getItem(storageName);
-          if(!localStorage) {
-            return isArray===true ? [] : {};
-          }
-          return JSON.parse(lStorageItem) || (isArray===true ? [] : {});
-        } catch (error) {
-          console.error("(json) Local storage is locked or full in this PWA container:", error);
-          alert("(json) Local storage is locked or full in this PWA container: " + error);
-          showDynamicPopup('Error','(json) Local storage is locked or full in this PWA container: ' + error, 3000);
-        }
-        return isArray===true ? [] : {};
-    }
-
-    function safeLocalStorageGetItem(storageName, isArray) {
-        try {
-          const lStorageItem = localStorage.getItem(storageName);
-          if(!localStorage) {
-            return isArray===true ? [] : {};
-          }
-          return lStorageItem
-        } catch (error) {
-          console.error("(item) Local storage is locked or full in this PWA container:", error);
-          alert("(item) Local storage is locked or full in this PWA container: " + error);
-          showDynamicPopup('Error','(item) Local storage is locked or full in this PWA container: ' + error, 3000);
-        }
-        return isArray===true ? [] : {};
-    }
-
     function generateQuizWords() {
-      const words = Object.keys(masterData);
-      const levelSelector = document.getElementById('level-select');
-      const selectedLevel = levelSelector ? levelSelector.value : 'random'; 
-      let filteredWords = [];
+      try {
+        currentQuestionIndex = -1;
+        const allWords = masterData;
+        if (!Array.isArray(allWords) || allWords.length === 0) return [];
 
-      // 1. If TRUE RANDOM, give every word an equal 1/700 chance (ignore tw weights!)
-      if (selectedLevel === 'random') {
-        filteredWords = [...words];
-      } else {
-        // Apply your standard difficulty tier filtering here for Easy/Hard...
-        filteredWords = words.filter(word => {
-          const metrics = masterData[word];
-          if (selectedLevel === 'easy') return metrics.cs >= 4;
-          if (selectedLevel === 'advanced') return metrics.cs <= 1;
-          return true;
-        });
+        // Shuffle the array elements randomly
+        const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+
+        // Slice out exactly 30 words from the shuffled list
+
+        const quizWords = shuffled.slice(0, QUESTIONS_PER_QUIZ);
+
+        const quizQuestionCount = document.getElementById('quiz-question-count');
+        if(quizQuestionCount) {
+            quizQuestionCount.innerText = 'There are a total of ' + quizWords.length + ' questions';
+        }
+
+        return quizWords;
+      } catch (error) {
+        console.error("Error generating quiz:", error);
+        return [];
       }
-
-      // CRITICAL FIX: Prevent infinite recursion loops if no words match the criteria!
-      if (filteredWords.length === 0) {
-        console.warn(`No words found matching the level: ${selectedLevel}. Falling back to all words.`);
-        // Fallback strategy: return all words so the app doesn't crash
-        filteredWords = [...words]; 
-      }
-
-      // 2. Shuffle the entire matching pool using an unbiased sorting array
-      const shuffled = filteredWords.sort(() => 0.5 - Math.random());
-
-      // 3. Slice out exactly 30 unique questions for this entire game session
-      // This guarantees absolutely ZERO internal repetition within these 30 turns!
-      return shuffled.slice(0, QUESTIONS_PER_QUIZ);
     }
 
     // 1. GLOBAL SETTINGS & KEYS
@@ -329,7 +285,7 @@
 
     // 2. LOCAL STORAGE MANAGEMENT & PROGRESS TRACKING
     function getAllProgress() {
-        return safeLocalStorageGetItemAsJson(PROGRESS_KEY,false);
+        return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
     }
 
     function recordUserAnswer(spanishWord, isCorrect) {
@@ -351,13 +307,18 @@
         return progress[spanishWord].cs; // Return updated streak for immediate rendering
     }
 
+    // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        score = 0;
-        currentQuestionIndex = -1;
-        scoreBox.classList.add("hidden");
-        quizBox.classList.remove("hidden");
-        activeQuizList = quizVocab = generateQuizWords();
-        loadNextQuestion(); 
+        //if (confirm("Are you sure you want to reset all tracking progress? This will put all mastered words back into rotation.")) {
+        //    localStorage.removeItem(PROGRESS_KEY);
+        //    isProcessingAnswer = false;
+            score = 0;
+            currentQuestionIndex = -1;
+            scoreBox.classList.add("hidden");
+            quizBox.classList.remove("hidden");
+            quizVocab = generateQuizWords();
+            loadNextQuestion(); 
+        //}
     }
 
     // totalStreak = ts
@@ -386,6 +347,36 @@
         return Math.max(0.1, weight);
     }
 
+    function pickNextSpanishWord(data, level = 'random') {
+        const progress = getAllProgress();
+
+        // Remove any word that has achieved 3 consecutive correct streaks
+        const availableWords = data.filter(item => {
+            const itemProgress = progress[item.spanish];
+            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+        });
+
+        if (availableWords.length === 0) return null; // Win state reached
+
+        let totalWeight = 0;
+        const weightedItems = availableWords.map(item => {
+            const itemProgress = progress[item.spanish] || { cs: 0, tw: 0 };
+            const weight = getWordWeight(itemProgress.cs, itemProgress.tw, level);
+            totalWeight += weight;
+            return { item, weight };
+        });
+
+        let randomRoll = Math.random() * totalWeight;
+        for (const entry of weightedItems) {
+            randomRoll -= entry.weight;
+            if (randomRoll <= 0) {
+                return entry.item;
+            }
+        }
+        return weightedItems[weightedItems.length - 1].item;
+    }
+
+
     // 4. MULTIPLE CHOICE QUESTION GENERATOR (SINGLE ITEM)
     function generateSingleQuestion(selectedWordItem, fullData, numChoices = 4) {
         const correctAnswer = parseAndGetFirst(selectedWordItem.english);
@@ -413,40 +404,27 @@
         return array;
     }
 
-    function getWordItem(currentWord) {
-      try {
-        // 1. Fetch and parse your master database object
-        const wordsDatabase = safeLocalStorageGetItemAsJson(DEFAULT_LOCAL_STORAGE_KEY,false);
-
-        // 2. Check if the word exists in the database
-        if (wordsDatabase && currentWord in wordsDatabase) {
-          // Return the existing metrics: e.g., { "cs": 5, "tw": 0 }
-          return wordsDatabase[currentWord];
-        }
-
-        // 3. Fallback: If the word isn't in the object yet, return default metrics
-        return { cs: 0, tw: 0 };
-        
-      } catch (error) {
-        console.error("Error building wordItem:", error);
-        return { cs: 0, tw: 0 };
-      }
-    }
-
 
     // 5. GAME ENGINE CONTROL LOOP & UI DOM RENDERER
     function loadNextQuestion() {
+
+        if(quizVocab.length<1) {
+            return;
+        }
+
         currentQuestionIndex++;
 
-        if (currentQuestionIndex >= activeQuizList.length) {
-          endQuiz(score, activeQuizList.length);
+        if (currentQuestionIndex >= quizVocab.length) {
+          endQuiz(score, quizVocab.length);
           return; // Stop the execution of this function
         }
 
         isProcessingAnswer = false; 
 
-        const currentWord = activeQuizList[currentQuestionIndex];
-        const nextWordItem = getWordItem(currentWord);
+        const levelSelector = document.getElementById('level-select');
+        const chosenLevel = levelSelector ? levelSelector.value : 'random'; 
+
+        const nextWordItem = pickNextSpanishWord(masterData, chosenLevel);
 
         if (!nextWordItem) {
             document.getElementById('question').innerText = "🎉 ¡Felicidades!";
@@ -467,15 +445,14 @@
         }
 
         document.getElementById('quiz-progress-counter').textContent=(currentQuestionIndex+1);
-        document.getElementById('quiz-progress-total').textContent=(activeQuizList.length);
+        document.getElementById('quiz-progress-total').textContent=(quizVocab.length);
+
 
         renderQuestionToUI(currentQuestionObj);
     }
 
     function endQuiz(score, totalQuestions) {
-      if(totalQuestions>0) {
-          showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
-      }
+      showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
       resetQuizProgress();
     }
 
@@ -523,6 +500,8 @@
     function handleAnswerSubmit(userSelectedAnswer, clickedButtonElement) {
         if (isProcessingAnswer || !currentQuestionObj) return;
         isProcessingAnswer = true; // Lock choice buttons immediately during validation phase
+
+        console.log('quiz_word_progress:' + localStorage.getItem(PROGRESS_KEY));
 
         const isCorrect = (userSelectedAnswer === currentQuestionObj.answer);
         
@@ -582,7 +561,7 @@
         if (restartBtn) {
             restartBtn.addEventListener('click', resetQuizProgress);
         }
-        activeQuizList = quizVocab = generateQuizWords();
+        quizVocab = generateQuizWords();
         loadNextQuestion();
     }
 
@@ -700,7 +679,13 @@
 
     // 1. Retrieve items from localStorage
     function getVocabFromStorage() {
-        return safeLocalStorageGetItemAsJson(getStorageKey(),true);
+        const localData = localStorage.getItem(getStorageKey());
+        if (!localData) return [];
+        try {
+            return JSON.parse(localData);
+        } catch (e) {
+            return [];
+        }
     }
 
     // 2. Sort array alphabetically by Spanish word
@@ -800,20 +785,28 @@
 
             currentVocab.push({ spanish: spanishVal, english: englishVal });
             quizVocab.push({ spanish: spanishVal, english: parseAndGetFirst(englishVal) });
+            masterData.push({ spanish: spanishVal, english: englishVal });
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
 
             wordForm.reset();
             
             // Go to page 1 to let the user see where it fits alphabetically or search it
             currentPage = 1; 
+            resetQuizProgress();
             updateDisplayData();
         }
     }
 
     function removeWordFromStorage(storageKey, wordToRemove) {
       try {
+        // 1. Fetch the existing stringified data
+        const existingData = localStorage.getItem(storageKey);
+        
+        // 2. If nothing exists, there is nothing to delete
+        if (!existingData) return;
+
         // 3. Parse the data back into a JavaScript object
-        const wordsObject = safeLocalStorageGetItemAsJson(PROGRESS_KEY,false);
+        const wordsObject = JSON.parse(existingData);
 
         // 4. Double check that the data is a valid object (and not null or an array)
         if (wordsObject && typeof wordsObject === 'object' && !Array.isArray(wordsObject)) {
@@ -827,6 +820,9 @@
             localStorage.setItem(storageKey, JSON.stringify(wordsObject));
           }
         }
+
+        resetQuizProgress();
+        updateDisplayData();
       } catch (error) {
         console.error("Error updating localStorage:", error);
       }
@@ -837,6 +833,7 @@
 
         currentVocab = currentVocab.filter(item => item.spanish !== wordToDelete);
         quizVocab = quizVocab.filter(item => item.spanish !== wordToDelete);
+        masterData = masterData.filter(item => item.spanish !== wordToDelete);
 
         if (currentVocab.length > 0) {
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
@@ -1457,6 +1454,27 @@ function processSentence(input) {
       return array;
     }
 
+    function generateQuiz(data, numChoices = 4) {
+        const quizQuestionCount = document.getElementById('quiz-question-count');
+        quizQuestionCount.innerText = 'There are a total of ' + data.length + ' questions';
+      return data.map((item) => {
+        const correctAnswer = item.english;
+        const distractors = data
+          .filter((obj) => obj.english !== correctAnswer)
+          .map((obj) => obj.english);
+        
+        const shuffledDistractors = shuffleArray([...distractors]).slice(0, numChoices - 1);
+        const allChoices = shuffleArray([...shuffledDistractors, correctAnswer]);
+
+        return {
+          spanishWord: item.spanish,
+          question: `${item.spanish}`,
+          choices: allChoices,
+          answer: correctAnswer
+        };
+      });
+    }
+
     const quizBox = document.getElementById("quiz-box");
     const scoreBox = document.getElementById("score-box");
     const questionEl = document.getElementById("question");
@@ -1525,7 +1543,7 @@ function processSentence(input) {
             return;
         }
 
-        const data = safeLocalStorageGetItem(storageName,true);
+        const data = localStorage.getItem(storageName);
 
         if (!data) {
             smShowStatus(`Error: No data found in Local Storage for "${storageName}".`, true);
@@ -1584,7 +1602,7 @@ function processSentence(input) {
                 }
 
                 let existingData = [];
-                const rawExisting = safeLocalStorageGetItem(storageName,true);;
+                const rawExisting = localStorage.getItem(storageName);
                 
                 if (rawExisting) {
                     try {
@@ -1631,14 +1649,16 @@ async function loadVocabData(loadDefaults) {
     const storageNameInput = document.getElementById('sm-storageName');
     const storageName = storageNameInput ? storageNameInput.value.trim() : '';
     let existingData = [];
-
+    const rawExisting = localStorage.getItem(storageName);
+    if (rawExisting) {
         try {
-            const parsedExisting = safeLocalStorageItemAsJson(getStorageKey(),true);
+            const parsedExisting = JSON.parse(rawExisting);
             existingData = Array.isArray(parsedExisting) ? parsedExisting : [parsedExisting];
         } catch (parseError) {
             console.warn('Existing data was not valid JSON array, resetting storage.');
             existingData = [];
         }
+    }
     if(loadDefaults) {
         console.log("Loading default vocabulary words.");
         const response = await fetch('./defaults.json');
@@ -1668,7 +1688,7 @@ async function loadVocabData(loadDefaults) {
   }
   // load dynamic data sets
     console.log('Loading dynamic stories');
-    const storiesMapJson = safeLocalStorageItemAsJson(DEFAULT_LOCAL_STORAGE_STORIES_KEY,false);
+    const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
     if(storiesMapJson && storiesMapJson.length>0) {
         const storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
         if(storiesMap && storiesMap.size>0) {
@@ -1787,7 +1807,7 @@ async function fetchGemmaResponse() {
                 responseText = JSON.stringify(responseObj, null, 2);    
 
                 const topicMapKey = generateTopicMapKey(topicInput);
-                const storiesMapJson = safeLocalStorageItemAsJson(DEFAULT_LOCAL_STORAGE_STORIES_KEY,false);
+                const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
                 let storiesMap;
                 if(storiesMapJson && storiesMapJson.length>0) {
                     storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
@@ -1864,6 +1884,28 @@ function turnFullArticleOffSpeaker() {
 function turnFullArticleOnSpeaker() {
  // const speaker = document.getElementById('read-full-article');
 //  speaker.classList.remove('is-hidden');
+}
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const threshold = 50; // Minimum swipe distance in pixels
+    if (touchEndX < touchStartX - threshold) {
+        showNext();
+    }
+    if (touchEndX > touchStartX + threshold) {
+        showPrevious();
+    }
 }
 
 (function() {
@@ -1950,19 +1992,6 @@ function turnFullArticleOnSpeaker() {
         });
     })();
 
-// This event acts as a bulletproof lock for mobile web engines
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("HTML completely loaded! Safe to read inputs and localStorage.");
-
-      // 2. Dynamically create the script element
-      const script = document.createElement('script');
-      script.src = 'sentences.js';
-      script.defer = true;
-
-      // 3. Trigger your app when the file lands
-      script.onload = () => {
-        console.log("Heavy file loaded dynamically!");
-        // Hide spinner UI here
     turnFullArticleOffSpeaker();
     loadVocabData(false);
     initQuizApplication(getVocabFromStorage());
@@ -1970,17 +1999,6 @@ document.addEventListener('DOMContentLoaded', () => {
     resetQuizProgress();
     displayIncognitoWarning();
 
-
-      };
-
-      // 4. Inject it into the page to start the download
-      document.head.appendChild(script);
-});
-
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
 
 </script>
 </body>
