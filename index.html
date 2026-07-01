@@ -15,10 +15,9 @@
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
-
 <div class="container">
     <div id="viewer">
-        `<!-- Scoped Layout Engine Wrapper -->
+        <!-- Scoped Layout Engine Wrapper -->
         <div id="msg-center-scoped-root" class="msg-center-overlay">
           <div class="msg-center-card">
             <button class="msg-center-close-x" onclick="closeDynamicPopup()">&times;</button>
@@ -217,7 +216,7 @@
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
-    const QUESTIONS_PER_QUIZ = 2;
+    const QUESTIONS_PER_QUIZ = 30;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -406,6 +405,11 @@
 
     // 5. GAME ENGINE CONTROL LOOP & UI DOM RENDERER
     function loadNextQuestion() {
+
+        if(quizVocab.length<1) {
+            return;
+        }
+
         currentQuestionIndex++;
 
         if (currentQuestionIndex >= quizVocab.length) {
@@ -779,12 +783,14 @@
 
             currentVocab.push({ spanish: spanishVal, english: englishVal });
             quizVocab.push({ spanish: spanishVal, english: parseAndGetFirst(englishVal) });
+            masterData.push({ spanish: spanishVal, english: englishVal });
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
 
             wordForm.reset();
             
             // Go to page 1 to let the user see where it fits alphabetically or search it
             currentPage = 1; 
+            resetQuizProgress();
             updateDisplayData();
         }
     }
@@ -812,6 +818,9 @@
             localStorage.setItem(storageKey, JSON.stringify(wordsObject));
           }
         }
+
+        resetQuizProgress();
+        updateDisplayData();
       } catch (error) {
         console.error("Error updating localStorage:", error);
       }
@@ -822,6 +831,7 @@
 
         currentVocab = currentVocab.filter(item => item.spanish !== wordToDelete);
         quizVocab = quizVocab.filter(item => item.spanish !== wordToDelete);
+        masterData = masterData.filter(item => item.spanish !== wordToDelete);
 
         if (currentVocab.length > 0) {
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
