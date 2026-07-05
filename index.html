@@ -39,7 +39,8 @@
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false" onclick="resetQuizProgress();">Quiz</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Review</button>
+                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Settings</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -144,6 +145,50 @@
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" role="tabpanel">
+                <div>
+                    <!-- Unique ID prefixes used to prevent CSS/JS ID collisions -->
+<div class="ui-acc-container">
+  
+  <!-- Accordion Item 1 -->
+  <div class="ui-acc-item ui-acc-active">
+    <button type="button" class="ui-acc-header">Words you're struggling with...</button>
+    <div class="ui-acc-content">
+      <div class="ui-acc-inner">
+
+                    <div id="unique-toggle-btn" class="clickable-header">
+                        Words you're struggling with...
+                    </div>
+                    <div id="unique-panel-content" class="collapsible-panel">
+                        
+                    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accordion Item 2 -->
+  <div class="ui-acc-item">
+    <button type="button" class="ui-acc-header">Words you mastered...</button>
+    <div class="ui-acc-content">
+      <div class="ui-acc-inner">
+                    <div id="unique2-toggle-btn" class="clickable-header">
+                        Words you mastered...
+                    </div>
+                    <div id="unique2-panel-content" class="collapsible-panel">
+                        
+                    </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+                </div>
+            </div>
+
+            <!-- PANEL 5 -->
+            <div id="panel-5" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
@@ -1912,6 +1957,85 @@ function handleSwipe() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    const header = document.getElementById("unique-toggle-btn");
+    const panel = document.getElementById("unique-panel-content");
+    header.addEventListener("click", function() {
+        const progress = getAllProgress();
+        const reviewWordlist = document.createElement('ul');
+        panel.innerHTML='';
+        panel.appendChild(reviewWordlist);
+        
+        let words = [];
+        const availableWords = masterData.filter(item => {
+            const itemProgress = progress[item.spanish];
+            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+        });
+        let availableReviewWords = availableWords.filter(item => {
+            const itemProgress = progress[item.spanish];
+            if(itemProgress && itemProgress.tw > 0) {
+                words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
+            }
+            return itemProgress && itemProgress.tw > 1;
+        });
+        if (words.length > 0) {
+            let totalWeight = 0;
+            words = words.sort((a, b) => b.tw - a.tw);
+            words.map(item => {
+                for (const w of words) {
+                  console.log('>'+w.spanish + ' tw=' + progress[w.spanish].tw);
+                  const li = document.createElement('li');
+                  li.textContent = w.spanish + ' - ' + w.english + ' (wrong ' + w.tw + ' times)';
+                  reviewWordlist.appendChild(li);
+                }
+            });
+        } else {
+            reviewWordlist.innerHTML='None needing review.';
+        }
+        panel.classList.toggle("open");
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const header = document.getElementById("unique2-toggle-btn");
+    const panel = document.getElementById("unique2-panel-content");
+    header.addEventListener("click", function() {
+        const progress = getAllProgress();
+        const reviewWordlist = document.createElement('ul');
+        panel.innerHTML='';
+        panel.appendChild(reviewWordlist);
+        
+        let words = [];
+        const availableWords = masterData.filter(item => {
+            const itemProgress = progress[item.spanish];
+            return !(itemProgress && itemProgress.cs < MASTERY_STREAK_NEEDED);
+        });
+        let availableReviewWords = availableWords.filter(item => {
+            const itemProgress = progress[item.spanish];
+            if(itemProgress && itemProgress.tw > 0) {
+                words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
+            }
+            return itemProgress && itemProgress.tw > 1;
+        });
+        if (words.length > 0) {
+            let totalWeight = 0;
+            words = words.sort((a, b) => b.tw - a.tw);
+            words.map(item => {
+                for (const w of words) {
+                  console.log('>'+w.spanish + ' tw=' + progress[w.spanish].tw);
+                  const li = document.createElement('li');
+                  li.textContent = w.spanish + ' - ' + w.english + ' (wrong ' + w.tw + ' times)';
+                  reviewWordlist.appendChild(li);
+                }
+            });
+        } else {
+            reviewWordlist.innerHTML='None.';
+        }
+        panel.classList.toggle("open");
+    });
+});
+
 (function() {
       let textToSpeak = "";
         
@@ -1995,6 +2119,45 @@ function handleSwipe() {
           }
         });
     })();
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Target only this specific namespace container
+  const container = document.querySelector(".ui-acc-container");
+  if (!container) return;
+
+  const headers = container.querySelectorAll(".ui-acc-header");
+
+  // Safely open the default active item inside this scope
+  const defaultActive = container.querySelector(".ui-acc-item.ui-acc-active");
+  if (defaultActive) {
+    const defaultContent = defaultActive.querySelector(".ui-acc-content");
+    defaultContent.style.maxHeight = defaultContent.scrollHeight + "px";
+  }
+
+  headers.forEach((header) => {
+    header.addEventListener("click", function () {
+      const currentItem = this.parentElement;
+      const currentContent = currentItem.querySelector(".ui-acc-content");
+
+      // Stop execution if the user clicks the active panel
+      if (currentItem.classList.contains("ui-acc-active")) {
+        return;
+      }
+
+      // Close other active items ONLY within this specific container instance
+      const activeItem = container.querySelector(".ui-acc-item.ui-acc-active");
+      if (activeItem) {
+        activeItem.classList.remove("ui-acc-active");
+        activeItem.querySelector(".ui-acc-content").style.maxHeight = "0";
+      }
+
+      // Open selected item
+      currentItem.classList.add("ui-acc-active");
+      currentContent.style.maxHeight = currentContent.scrollHeight + "px";
+    });
+  });
+});
+
 
     turnFullArticleOffSpeaker();
     loadVocabData(false);

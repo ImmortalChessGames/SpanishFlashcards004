@@ -14,6 +14,9 @@
       margin: 0;
       padding: 0;
       background-color: white; /* Optional: Desktop background color */
+
+  margin: 0; /* Removes default browser padding/margins around the page */
+  padding: 0;
     }
     .page-title {
         font-family: 'Helvetica', Arial, sans-serif; /* Changes the text font */
@@ -582,7 +585,6 @@ li:hover { background: #f1f3f9; }
 
 .tabs-wrapper {
   max-width: 600px;
-  margin: 40px auto;
   font-family: system-ui, sans-serif;
 }
 
@@ -1628,3 +1630,119 @@ h2 {
 .streak-dot.active {
   animation: pulse-green 0.4s ease-out;
 }
+
+/* Hide the panel by default using zero max-height and hidden overflow */
+.collapsible-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+
+  height: 500px;        /* Set a fixed height to force scrolling */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  
+  /* Enables vertical scrolling only when content overflows */
+  overflow-y: auto;     
+  overflow-x: hidden;   /* Prevents accidental horizontal scrolling */
+
+}
+
+/* Open state: Define a max-height large enough to fit the content */
+.collapsible-panel.open {
+    max-height: 200px; 
+    padding: 15px;
+}
+
+/* Style for the clickable trigger */
+.clickable-header {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.clickable-header:hover {
+    background-color: #0056b3;
+}
+
+/* Scoped Wrapper - Zero global tag selectors used */
+.ui-acc-container {
+  max-width: 500px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.ui-acc-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+.ui-acc-container .ui-acc-item:last-child {
+  border-bottom: none;
+}
+
+/* Button Reset + Styling */
+.ui-acc-header {
+  width: 100%;
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 16px 20px;
+  text-align: left;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-acc-header:hover {
+  background-color: #f0f2f5;
+}
+
+/* Active Modifier Classes */
+.ui-acc-item.ui-acc-active .ui-acc-header {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+
+/* Scoped Indicator Icon */
+.ui-acc-header::after {
+  content: '\276F';
+  font-size: 12px;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.ui-acc-item.ui-acc-active .ui-acc-header::after {
+  transform: rotate(90deg);
+}
+
+/* Height Transition Engine */
+.ui-acc-content {
+  max-height: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+  transition: max-height 0.3s ease-out;
+}
+
+.ui-acc-inner {
+  padding: 20px;
+  color: #5f6368;
+  line-height: 1.6;
+}
+
+.ui-acc-item.ui-acc-active .ui-acc-content {
+  max-height: 200px;
+}
+
