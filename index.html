@@ -151,13 +151,10 @@
   
   <!-- Accordion Item 1 -->
   <div class="ui-acc-item ui-acc-active">
-    <button type="button" class="ui-acc-header">Words you're struggling with...</button>
+    <button type="button" id="ui-acc-header" class="ui-acc-header">Words you're struggling with...</button>
     <div class="ui-acc-content">
       <div class="ui-acc-inner">
 
-                    <div id="unique-toggle-btn" class="clickable-header">
-                        Words you're struggling with...
-                    </div>
                     <div id="unique-panel-content" class="collapsible-panel">
                         
                     </div>
@@ -167,12 +164,9 @@
 
   <!-- Accordion Item 2 -->
   <div class="ui-acc-item">
-    <button type="button" class="ui-acc-header">Words you mastered...</button>
+    <button type="button" id="ui2-acc-header" class="ui-acc-header">Words you mastered...</button>
     <div class="ui-acc-content">
       <div class="ui-acc-inner">
-                    <div id="unique2-toggle-btn" class="clickable-header">
-                        Words you mastered...
-                    </div>
                     <div id="unique2-panel-content" class="collapsible-panel">
                         
                     </div>
@@ -1958,7 +1952,7 @@ function handleSwipe() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const header = document.getElementById("unique-toggle-btn");
+    const header = document.getElementById("ui-acc-header");
     const panel = document.getElementById("unique-panel-content");
     header.addEventListener("click", function() {
         const progress = getAllProgress();
@@ -1998,7 +1992,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    const header = document.getElementById("unique2-toggle-btn");
+    const header = document.getElementById("ui2-acc-header");
     const panel = document.getElementById("unique2-panel-content");
     header.addEventListener("click", function() {
         const progress = getAllProgress();
@@ -2016,7 +2010,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if(itemProgress && itemProgress.tw > 0) {
                 words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
             }
-            return itemProgress && itemProgress.tw > 1;
+            return itemProgress && itemProgress.cs < MASTERY_STREAK_NEEDED;
         });
         if (words.length > 0) {
             let totalWeight = 0;
@@ -2025,12 +2019,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 for (const w of words) {
                   console.log('>'+w.spanish + ' tw=' + progress[w.spanish].tw);
                   const li = document.createElement('li');
-                  li.textContent = w.spanish + ' - ' + w.english + ' (wrong ' + w.tw + ' times)';
+                  li.textContent = w.spanish + ' - ' + w.english;
                   reviewWordlist.appendChild(li);
                 }
             });
         } else {
-            reviewWordlist.innerHTML='None.';
+            reviewWordlist.innerHTML='None';
         }
         panel.classList.toggle("open");
     });
