@@ -120,6 +120,14 @@
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" role="tabpanel">
                 <div>
+                    <!-- Unique ID prefixes used to prevent CSS/JS ID collisions -->
+                    <div id="unique-toggle-btn" class="clickable-header">
+                        Review
+                    </div>
+                    <div id="unique-panel-content" class="collapsible-panel">
+                        
+                    </div>
+                    <hr>
                     <form id="wordForm">
                         <label for="spanishWord">Spanish Word:</label>
                         <input type="text" id="spanishWord" name="spanishWord" placeholder="e.g., gracias" required>
@@ -140,7 +148,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" role="tabpanel">
@@ -1911,6 +1919,45 @@ function handleSwipe() {
         showPrevious();
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const header = document.getElementById("unique-toggle-btn");
+    const panel = document.getElementById("unique-panel-content");
+    header.addEventListener("click", function() {
+        const progress = getAllProgress();
+        const reviewWordlist = document.createElement('ul');
+        panel.innerHTML='';
+        panel.appendChild(reviewWordlist);
+        
+        let words = [];
+        const availableWords = masterData.filter(item => {
+            const itemProgress = progress[item.spanish];
+            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+        });
+        let availableReviewWords = availableWords.filter(item => {
+            const itemProgress = progress[item.spanish];
+            if(itemProgress && itemProgress.tw > 0) {
+                words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
+            }
+            return itemProgress && itemProgress.tw > 0;
+        });
+        if (words.length > 0) {
+            let totalWeight = 0;
+            words = words.sort((a, b) => b.tw - a.tw);
+            words.map(item => {
+                for (const w of words) {
+                  console.log('>'+w.spanish + ' tw=' + progress[w.spanish].tw);
+                  const li = document.createElement('li');
+                  li.textContent = w.spanish + ' - ' + w.english + ' (wrong ' + w.tw + ' times)';
+                  reviewWordlist.appendChild(li);
+                }
+            });
+        } else {
+            reviewWordlist.innerHTML='None needing review.';
+        }
+        panel.classList.toggle("open");
+    });
+});
 
 (function() {
       let textToSpeak = "";
