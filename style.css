@@ -1670,4 +1670,79 @@ h2 {
     background-color: #0056b3;
 }
 
+/* Scoped Wrapper - Zero global tag selectors used */
+.ui-acc-container {
+  max-width: 500px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.ui-acc-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+.ui-acc-container .ui-acc-item:last-child {
+  border-bottom: none;
+}
+
+/* Button Reset + Styling */
+.ui-acc-header {
+  width: 100%;
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 16px 20px;
+  text-align: left;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-acc-header:hover {
+  background-color: #f0f2f5;
+}
+
+/* Active Modifier Classes */
+.ui-acc-item.ui-acc-active .ui-acc-header {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+
+/* Scoped Indicator Icon */
+.ui-acc-header::after {
+  content: '\276F';
+  font-size: 12px;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.ui-acc-item.ui-acc-active .ui-acc-header::after {
+  transform: rotate(90deg);
+}
+
+/* Height Transition Engine */
+.ui-acc-content {
+  max-height: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+  transition: max-height 0.3s ease-out;
+}
+
+.ui-acc-inner {
+  padding: 20px;
+  color: #5f6368;
+  line-height: 1.6;
+}
+
+.ui-acc-item.ui-acc-active .ui-acc-content {
+  max-height: 200px;
+}
 
