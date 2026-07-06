@@ -1628,3 +1628,54 @@ h2 {
 .streak-dot.active {
   animation: pulse-green 0.4s ease-out;
 }
+
+.word-help-link {
+    display: inline-block;
+    margin-top: 25px;
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+.word-help-link:hover {
+    color: #0056b3; /* Slightly darker blue on hover for better UX */
+}
+
+.word-help-bullet-list-container {
+  list-style-type: none; /* Disables standard bullet dots */
+  padding-left: 0;
+  max-width: 600px;
+  margin-top: 20px;
+  /* Modern font family stack with 'Inter' leading */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.word-help-bullet-list-item {
+  display: block; 
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  background-color: #f8fafc; /* Crisp, slightly lighter slate background */
+  border-radius: 6px;
+  font-weight: 600;
+  line-height: 1.4;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  text-align: left;
+  /* Sleek, bold, and slightly smaller text styling */
+  font-size: 16px; 
+  color: blue; /* Deep, sharp dark slate black */
+  letter-spacing: -0.01em; /* Tightens text for a premium feel */
+}
+
+/* Text inside the parentheses flows naturally right after the main text */
+.word-help-bullet-list-item .parenthesis-text {
+  color: maroon; 
+  font-weight: 500;
+  margin-left: 4px; 
+}
+
+.word-help-bullet-list-item:hover {
+  transform: translateX(3px);
+  background-color: #f1f5f9;
+}
+

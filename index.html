@@ -460,6 +460,22 @@
       resetQuizProgress();
     }
 
+    function parseToBulletedList(text) {
+        const sentences = text.split('\n\n');
+        const listItems = sentences
+          .filter(sentence => sentence.trim() !== '')
+          .map(sentence => {
+            const trimmed = sentence.trim();
+            
+            // RegEx finds (...) and wraps it in a styled span tag
+            const formattedText = trimmed.replace(/(\([^)]+\))/g, '<span class="parenthesis-text">$1</span>');
+            
+            return `<li class="word-help-bullet-list-item">${formattedText}</li>`;
+          })
+          .join('');
+        return `<ul class="word-help-bullet-list-container">${listItems}</ul>`;
+    }
+
     function renderQuestionToUI(questionObj) {
         document.getElementById('question').innerText = questionObj.question;
 
@@ -498,6 +514,21 @@
             btn.addEventListener('click', (e) => handleAnswerSubmit(choiceText, e.target));
             container.appendChild(btn);
         });
+
+        const helpLink = document.createElement('a');
+        helpLink.textContent = "Click for hints";
+        helpLink.classList.add('word-help-link');
+        helpLink.addEventListener('click', function(event) {
+            processWordHelp(questionObj.spanishWord);
+            helpLink.remove();
+        });
+        container.appendChild(helpLink);
+
+        const helpOutput = document.createElement('div');
+        helpOutput.id='word-help';
+        helpOutput.classList.add('word-help-bullet-list-container');    
+        container.appendChild(helpOutput);
+
     }
 
     // 6. IN-LINE ANIMATION FEEDBACK CONTROLLER
@@ -1416,6 +1447,48 @@ function processSentence(input) {
         }
     });
 }
+
+async function processWordHelp(word) {
+    if(word && word.length>0) {
+      document.getElementById('word-help').innerHTML="<p class=''>Loading Examples Usages...</p>";
+      const key = await decrypt(api1KeyEncrypted);
+      const systemInstruction = 
+        "You are an expert Spanish language master tutor. Given a word or phrase, break it down using the following 1 section exactly as labeled:\n\n" +
+        "Provide ten real-world alternative example sentences using this word alongside their English translations to show real situational context. One entry per line. Separate each example by an empty line.\n\n" +
+        "CRITICAL: Do not return any headers that start with ### or any other additional information. ";
+        // Extract punctuation from the clean word using a Spanish-friendly regex
+        // This preserves accents (á, é, í, ó, ú), umlauts (ü), and the ñ
+        const cleanWordMatch = word.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
+        if (cleanWordMatch) {
+          const cleanWord = cleanWordMatch[0];
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: `Provide 10 Spanish language sentences that demonstrate how this Spanish word is used: "${word}"` }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: { 
+                  temperature: 0.2,
+                  responseMimeType: "text/plain" 
+                }
+              })
+            });
+            const data = await response.json();
+            if (data.error) {
+              throw new Error(data.error.message);
+            }
+            const rawText = data.candidates[0].content.parts[0].text;
+            document.getElementById('word-help').innerHTML=parseToBulletedList(rawText);       
+          } catch (error) {
+            console.error(error);
+          } finally {
+          }
+        }
+    }
+}
+
 
     // Grab all tab buttons and all content panels
     const tabButtons = document.querySelectorAll('.tab-btn');
