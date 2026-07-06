@@ -1665,7 +1665,7 @@ async function loadVocabData(loadDefaults) {
     }
     if(loadDefaults) {
         console.log("Loading default vocabulary words.");
-        const response = await fetch('./defaults_big.json');
+        const response = await fetch('./defaults_big1.json');
         const data = await response.json(); 
         // Merge the two arrays together (if there's no existing data)
         const combinedData = (existingData && existingData.length>0) ? existingData :
