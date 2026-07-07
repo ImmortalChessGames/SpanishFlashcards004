@@ -322,7 +322,6 @@
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
         document.getElementById('qw-widget-wrapper').style.display='none';
-        document.getElementById('qw-quoteContainer').innerHTML="";
         score = 0;
         currentQuestionIndex = -1;
         scoreBox.classList.add("hidden");
@@ -421,7 +420,7 @@
         if(quizVocab.length<1) {
             return;
         }
-
+        document.getElementById('qw-quoteContainer').innerHTML="";
         currentQuestionIndex++;
 
         if (currentQuestionIndex >= quizVocab.length) {
