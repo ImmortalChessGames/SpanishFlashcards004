@@ -263,6 +263,7 @@
     let quizData = [];
     let currentQuestionIndex = -1;
     let score = 0;
+    let currentSlide = 0;
 
     function generateQuizWords() {
       try {
@@ -490,8 +491,7 @@
         container.appendChild(slide);
       });
 
-      // Slider UI logic safely trapped inside an IIFE closure scope
-      let currentSlide = 0;
+      currentSlide = 0;
       const slides = container.querySelectorAll('.qw-quote-slide');
       const totalSlides = slides.length;
 
@@ -2049,12 +2049,14 @@ function handleSwipe_Quiz() {
     const threshold = 50; // Minimum swipe distance in pixels
     if (touchQuizEndX < touchQuizStartX - threshold) {
         if(document.getElementById('qw-nextBtn') && document.getElementById('qw-nextBtn').checkVisibility()) {
-            document.getElementById('qw-nextBtn').click();
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
         }
     }
     if (touchQuizEndX > touchQuizStartX + threshold) {
         if(document.getElementById('qw-prevBtn') && document.getElementById('qw-prevBtn').checkVisibility()) {
-            document.getElementById('qw-prevBtn').click();
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
         }
     }
 }
