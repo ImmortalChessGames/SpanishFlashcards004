@@ -107,6 +107,13 @@
                         </div>
                         <h2 id="question">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
+                          <div id="qw-widget-wrapper" class="qw-widget-wrapper">
+                            <div class="qw-quote-box">
+                              <div id="qw-quoteContainer"></div>
+                              <button class="qw-nav-btn qw-prev" id="qw-prevBtn" aria-label="Previous quote">&#10094;</button>
+                              <button class="qw-nav-btn qw-next" id="qw-nextBtn" aria-label="Next quote">&#10095;</button>
+                            </div>
+                          </div>
                     </div>
                     <div id="score-box" class="hidden">
                         <h2>Quiz Complete!</h2>
@@ -238,6 +245,7 @@
     const api1KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoEHhgC23MZ+zInz2AwJPYUQ5wLeTIGgvphRV9aU7NB7WtQ4WFrsVNCC1YY7BsqDQkXUhnPJPBSuPYSCb/GYAsHC9+bOPevpJAG8SCE6LSguglA==';
     const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
     const api3KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoBl3w4dnl5l1/a+xjpVKCrXxul2ROtEcogoGEktfZUDEJwvjmuhCJVrVvfzC7cipF6msKIC/NluiNzZWtqGYWJeEE8hsXhZWE5w9UiLIsfvq3Q==';
+    const api4KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoPFnFkLzxHmYOnYMhldqJT7PNfFfKKwmmhkht9E/JVtL+WCi/XziDoHMP9YqbYvVAHI6yJOkSeNOy2dkVRT/k+X2SWCCixFFI7j4mUHYA9Y6JQ==';
     const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
 
@@ -313,16 +321,14 @@
 
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        //if (confirm("Are you sure you want to reset all tracking progress? This will put all mastered words back into rotation.")) {
-        //    localStorage.removeItem(PROGRESS_KEY);
-        //    isProcessingAnswer = false;
-            score = 0;
-            currentQuestionIndex = -1;
-            scoreBox.classList.add("hidden");
-            quizBox.classList.remove("hidden");
-            quizVocab = generateQuizWords();
-            loadNextQuestion(); 
-        //}
+        document.getElementById('qw-widget-wrapper').style.display='none';
+        document.getElementById('qw-quoteContainer').innerHTML="";
+        score = 0;
+        currentQuestionIndex = -1;
+        scoreBox.classList.add("hidden");
+        quizBox.classList.remove("hidden");
+        quizVocab = generateQuizWords();
+        loadNextQuestion(); 
     }
 
     // totalStreak = ts
@@ -458,6 +464,56 @@
     function endQuiz(score, totalQuestions) {
       showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
       resetQuizProgress();
+    }
+
+    function buildWordHelpSlideViewer(word, text) {
+      document.getElementById('qw-widget-wrapper').style.display='none';
+      const container = document.getElementById('qw-quoteContainer');
+      
+      // Clean up text spacing and split by double line breaks
+      const quoteBlocks = text.trim().split('\n\n');
+
+      // Dynamically build individual slider panes
+      quoteBlocks.forEach((block, index) => {
+        const lines = block.split('\n');
+        let text = lines[0] ? lines[0].trim() : '';
+        if(text.indexOf(word)>0) {
+            text = text.replaceAll(word, '<b>' + word + '</b>');
+        }
+
+        const slide = document.createElement('div');
+        slide.className = `qw-quote-slide ${index === 0 ? 'qw-active' : ''}`;
+        
+        slide.innerHTML = `
+          <p class="qw-quote-text">${text}</p>
+        `;
+        
+        container.appendChild(slide);
+      });
+
+      // Slider UI logic safely trapped inside an IIFE closure scope
+      let currentSlide = 0;
+      const slides = container.querySelectorAll('.qw-quote-slide');
+      const totalSlides = slides.length;
+
+      function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('qw-active'));
+        if (slides[index]) {
+          slides[index].classList.add('qw-active');
+        }
+      }
+
+      document.getElementById('qw-nextBtn').addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+      });
+
+      document.getElementById('qw-prevBtn').addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(currentSlide);
+      });
+
+      document.getElementById('qw-widget-wrapper').style.display='block';
     }
 
     function parseToBulletedList(text) {
@@ -744,7 +800,6 @@
         quizVocab=[];
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
-
         // Filter based on search input
         if (searchQuery) {
             filteredList = fullList.filter(item => 
@@ -1450,11 +1505,11 @@ function processSentence(input) {
 
 async function processWordHelp(word) {
     if(word && word.length>0) {
-      document.getElementById('word-help').innerHTML="<p class=''>Loading Examples Usages...</p>";
-      const key = await decrypt(api1KeyEncrypted);
+      document.getElementById('word-help').innerHTML="<p class=''>Loading Example Usages...</p>";
+      const key = await decrypt(api4KeyEncrypted);
       const systemInstruction = 
         "You are an expert Spanish language master tutor. Given a word or phrase, break it down using the following 1 section exactly as labeled:\n\n" +
-        "Provide ten real-world alternative example sentences using this word alongside their English translations to show real situational context. One entry per line. Separate each example by an empty line.\n\n" +
+        "Provide ten real-world alternative example sentences using this word (without translations) to show real situational context. One entry per line. Separate each example by an empty line.\n\n" +
         "CRITICAL: Do not return any headers that start with ### or any other additional information. ";
         // Extract punctuation from the clean word using a Spanish-friendly regex
         // This preserves accents (á, é, í, ó, ú), umlauts (ü), and the ñ
@@ -1480,8 +1535,10 @@ async function processWordHelp(word) {
               throw new Error(data.error.message);
             }
             const rawText = data.candidates[0].content.parts[0].text;
-            document.getElementById('word-help').innerHTML=parseToBulletedList(rawText);       
+            buildWordHelpSlideViewer(word, rawText);
+            document.getElementById('word-help').innerHTML="";
           } catch (error) {
+            document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
             console.error(error);
           } finally {
           }
@@ -1967,12 +2024,13 @@ let touchStartX = 0;
 let touchEndX = 0;
 
 document.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
+    touchQuizStartX = touchStartX = e.changedTouches[0].screenX;
 }, { passive: true });
 
 document.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
+    touchQuizStartX = touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
+    handleSwipe_Quiz();
 }, { passive: true });
 
 function handleSwipe() {
@@ -1982,6 +2040,23 @@ function handleSwipe() {
     }
     if (touchEndX > touchStartX + threshold) {
         showPrevious();
+    }
+}
+
+let touchQuizStartX = 0;
+let touchQuizEndX = 0;
+
+function handleSwipe_Quiz() {
+    const threshold = 50; // Minimum swipe distance in pixels
+    if (touchQuizEndX < touchQuizStartX - threshold) {
+        if(document.getElementById('qw-nextBtn') && document.getElementById('qw-nextBtn').checkVisibility()) {
+            document.getElementById('qw-nextBtn').click();
+        }
+    }
+    if (touchQuizEndX > touchQuizStartX + threshold) {
+        if(document.getElementById('qw-prevBtn') && document.getElementById('qw-prevBtn').checkVisibility()) {
+            document.getElementById('qw-prevBtn').click();
+        }
     }
 }
 
