@@ -37,7 +37,7 @@
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false" onclick="resetQuizProgress();">Quiz</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
             </div>
@@ -466,31 +466,21 @@
       resetQuizProgress();
     }
 
-    function buildWordHelpSlideViewer(word, text) {
+ function buildWordHelpSlideViewer(word, data) {
       document.getElementById('qw-widget-wrapper').style.display='none';
       const container = document.getElementById('qw-quoteContainer');
-      
-      // Clean up text spacing and split by double line breaks
-      const quoteBlocks = text.trim().split('\n\n');
-
-      // Dynamically build individual slider panes
-      quoteBlocks.forEach((block, index) => {
-        const lines = block.split('\n');
-        let text = lines[0] ? lines[0].trim() : '';
+      data.forEach((item, index) => {
+        let text = item.spanish;
         if(text.indexOf(word)>0) {
             text = text.replaceAll(word, '<b>' + word + '</b>');
         }
-
         const slide = document.createElement('div');
         slide.className = `qw-quote-slide ${index === 0 ? 'qw-active' : ''}`;
-        
         slide.innerHTML = `
           <p class="qw-quote-text">${text}</p>
         `;
-        
         container.appendChild(slide);
       });
-
       currentSlide = 0;
       const slides = container.querySelectorAll('.qw-quote-slide');
       const totalSlides = slides.length;
@@ -571,11 +561,12 @@
         });
 
         const helpLink = document.createElement('a');
-        helpLink.textContent = "Click for hints";
+        helpLink.textContent = "Deep Dive";
         helpLink.classList.add('word-help-link');
         helpLink.addEventListener('click', function(event) {
-            processWordHelp(questionObj.spanishWord);
-            helpLink.remove();
+//            processWordHelp(questionObj.spanishWord);
+//            helpLink.remove();
+processWordHelp(questionObj.spanishWord);
         });
         container.appendChild(helpLink);
 
@@ -1035,13 +1026,20 @@
             history = [];
             historyIndex = -1;
         }
+        const selectDataset = document.getElementById('sm-chooseDataset');
+        const speakerMode = dataset.length < 100;
+        const topRightTextElt = document.getElementById('top-right-text');
+        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
+        if(speakerMode === true) {
+            topRightTextElt.style='cursor: pointer;';
+        } else {
+            topRightTextElt.style='cursor: default;';
+        }
         showNext();
-        turnFullArticleOnSpeaker();
     }
 
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
-        turnFullArticleOffSpeaker();
         if(flashcardsDataset && flashcardsDataset.length>0) {
             dataset = [...flashcardsDataset];
             showNext();
@@ -1123,14 +1121,6 @@
         const selectDataset = document.getElementById('sm-chooseDataset');
         if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('>')) {
             randomize = false;
-        }
-        const speakerMode = dataset.length < 100;
-        const topRightTextElt = document.getElementById('top-right-text');
-        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
-        if(speakerMode === true) {
-            topRightTextElt.style='cursor: pointer;';
-        } else {
-            topRightTextElt.style='cursor: default;';
         }
         if (historyIndex < history.length - 1) {
             historyIndex++;
@@ -1502,16 +1492,20 @@ function processSentence(input) {
     });
 }
 
+function capitalizeFirstLetter(str) {
+  if (!str) return ''; // Handle empty or null strings
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 async function processWordHelp(word) {
     if(word && word.length>0) {
       document.getElementById('word-help').innerHTML="<p class=''>Loading Example Usages...</p>";
       const key = await decrypt(api4KeyEncrypted);
       const systemInstruction = 
-        "You are an expert Spanish language master tutor. Given a word or phrase, break it down using the following 1 section exactly as labeled:\n\n" +
-        "Provide ten real-world alternative example sentences using this word (without translations) to show real situational context. One entry per line. Separate each example by an empty line.\n\n" +
-        "CRITICAL: Do not return any headers that start with ### or any other additional information. ";
-        // Extract punctuation from the clean word using a Spanish-friendly regex
-        // This preserves accents (á, é, í, ó, ú), umlauts (ü), and the ñ
+        "You are an expert Spanish language master tutor:\n\n" +
+        "Given a spanish word provide 15 real-world example sentences using this word (include english language translation) to show real situational context. " + 
+        "Return a JSON array of objects. Each object has two properties: spanish with spanish sentence and english with the english translation." +
+        "CRITICAL: Do not return any other information exception except the JSON array of objects.";
         const cleanWordMatch = word.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         if (cleanWordMatch) {
           const cleanWord = cleanWordMatch[0];
@@ -1521,7 +1515,7 @@ async function processWordHelp(word) {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                contents: [{ parts: [{ text: `Provide 10 Spanish language sentences that demonstrate how this Spanish word is used: "${word}"` }] }],
+                contents: [{ parts: [{ text: `Provide 15 Spanish language sentences that demonstrate how this Spanish word is used: "${word}"` }] }],
                 systemInstruction: { parts: [{ text: systemInstruction }] },
                 generationConfig: { 
                   temperature: 0.2,
@@ -1533,18 +1527,24 @@ async function processWordHelp(word) {
             if (data.error) {
               throw new Error(data.error.message);
             }
-            const rawText = data.candidates[0].content.parts[0].text;
-            buildWordHelpSlideViewer(word, rawText);
+            const rawJson = data.candidates[0].content.parts[0].text;
+            console.log(rawJson);  
+            if(rawJson && rawJson.length>0) {
+                const jsonObj = JSON.parse(rawJson);
+                loadArticle(jsonObj);
+                buildWordHelpSlideViewer(word, jsonObj);
+                document.getElementsByClassName("tab-btn")[0].click();
+                const topRightTextElt = document.getElementById('top-right-text');
+                topRightTextElt.textContent=capitalizeFirstLetter(word) + ' 🔊 ';
+            }
             document.getElementById('word-help').innerHTML="";
           } catch (error) {
             document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
             console.error(error);
-          } finally {
-          }
+          } 
         }
     }
 }
-
 
     // Grab all tab buttons and all content panels
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -2007,18 +2007,6 @@ function displayIncognitoWarning() {
     }
 }
 
-// Call this function when you want to hide it and disable clicks
-function turnFullArticleOffSpeaker() {
- // const speaker = document.getElementById('read-full-article');
- // speaker.classList.add('is-hidden');
-}
-
-// Call this function when you want to bring it back and make it clickable again
-function turnFullArticleOnSpeaker() {
- // const speaker = document.getElementById('read-full-article');
-//  speaker.classList.remove('is-hidden');
-}
-
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -2145,7 +2133,6 @@ function handleSwipe_Quiz() {
         });
     })();
 
-    turnFullArticleOffSpeaker();
     loadVocabData(false);
     initQuizApplication(getVocabFromStorage());
     initFlashcards();
