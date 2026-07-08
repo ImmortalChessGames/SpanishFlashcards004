@@ -358,7 +358,7 @@
 
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        if(currentQuestionIndex>=0 && currentQuestionIndex<=QUESTIONS_PER_QUIZ) {
+        if(currentQuestionIndex>=0 && currentQuestionIndex<QUESTIONS_PER_QUIZ) {
             console.log('Quiz in progress, returning.');
             return;
         }
