@@ -217,6 +217,17 @@
     </div> <!-- Closes #viewer -->
 </div> <!-- Closes .container -->
 
+<!-- The Modal Overlay -->
+<div id="appModalWrapper" class="app-modal-overlay">
+  <!-- The Modal Box -->
+  <div class="app-modal-container">
+    <span id="appModalClose" class="app-modal-close-icon">&times;</span>
+    <h2>Pass phrase error</h2>
+    <p>Please enter a correct pass phrase in Settings.</p>
+  </div>
+</div>
+
+
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
@@ -257,6 +268,38 @@
     let currentQuestionIndex = -1;
     let score = 0;
     let currentSlide = 0;
+
+    // Scoped variable declarations using the updated IDs
+    const appModalElement = document.getElementById("appModalWrapper");
+    const appModalCloseTrigger = document.getElementById("appModalClose");
+
+    // Close modal via click on 'x'
+    appModalCloseTrigger.addEventListener("click", () => {
+      appModalElement.classList.remove("is-visible");
+      document.getElementsByClassName("tab-btn")[3].click();
+      setTimeout(() => {
+        document.getElementById('sm-secret').scrollIntoView({ behavior: 'smooth' });
+      }, 50); 
+    });
+
+    // Close modal via click outside the container box
+    window.addEventListener("click", (event) => {
+      if (event.target === appModalElement) {
+        appModalElement.classList.remove("is-visible");
+      }
+    });
+    let savedTime = Date.now();
+    document.addEventListener('click', () => {
+        let currentTime = Date.now();
+        const timeDifference = currentTime - savedTime;
+        if (timeDifference >= 10000) {
+            const smSecretVal = document.getElementById('sm-secret').value;
+            if(smSecretVal && smSecretVal==='enter-your-secret-passcode-here') {
+                savedTime = currentTime;
+                appModalElement.classList.add("is-visible");                
+            } 
+        }
+    });
 
     function generateQuizWords() {
       try {
@@ -520,9 +563,7 @@
         helpLink.textContent = "Deep Dive";
         helpLink.classList.add('word-help-link');
         helpLink.addEventListener('click', function(event) {
-//            processWordHelp(questionObj.spanishWord);
-//            helpLink.remove();
-processWordHelp(questionObj.spanishWord);
+            processWordHelp(questionObj.spanishWord);
         });
         container.appendChild(helpLink);
 
@@ -537,15 +578,10 @@ processWordHelp(questionObj.spanishWord);
     function handleAnswerSubmit(userSelectedAnswer, clickedButtonElement) {
         if (isProcessingAnswer || !currentQuestionObj) return;
         isProcessingAnswer = true; // Lock choice buttons immediately during validation phase
-
-        console.log('quiz_word_progress:' + localStorage.getItem(PROGRESS_KEY));
-
         const isCorrect = (userSelectedAnswer === currentQuestionObj.answer);
-        
         if(isCorrect) {
             score++;
         }
-
         // Disable all option choices concurrently to block additional input registrations
         const allButtons = document.querySelectorAll('#choices-container .quiz-btn');
         allButtons.forEach(btn => btn.disabled = true);
@@ -677,7 +713,7 @@ processWordHelp(questionObj.spanishWord);
         );
     }
 
-    async function decrypt(encrypted) {
+    async function decrypt(encrypted, showPopup) {
         try {
             const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
             const iv = combined.slice(16, 28);
@@ -688,7 +724,9 @@ processWordHelp(questionObj.spanishWord);
             );
             return new TextDecoder().decode(decrypted);
         } catch (e) {
-            showDynamicPopup('Error','Password is wrong.', 3000);
+            if(showPopup===true) {
+                showDynamicPopup('Error','Password is wrong.', 3000);
+            }
             console.log('Decryption failed. Incorrect password or broken text.');
         }
         return null;
@@ -1213,7 +1251,7 @@ function reloadVocabDataset(element) {
 
 async function translateText(textToTranslate) {
     if (!textToTranslate.trim()) return;
-    const trKey = await decrypt(api2KeyEncrypted);
+    const trKey = await decrypt(api2KeyEncrypted, true);
     if (!trKey) {
       alert("Error (2) connecting .");
       return;
@@ -1456,7 +1494,7 @@ function capitalizeFirstLetter(str) {
 async function processWordHelp(word) {
     if(word && word.length>0) {
       document.getElementById('word-help').innerHTML="<p class=''>Loading Example Usages...</p>";
-      const key = await decrypt(api4KeyEncrypted);
+      const key = await decrypt(api4KeyEncrypted, true);
       const systemInstruction = 
         "You are an expert Spanish language master tutor:\n\n" +
         "Given a spanish word provide 15 real-world example sentences using this word (include english language translation) to show real situational context. " + 
@@ -1464,39 +1502,65 @@ async function processWordHelp(word) {
         "CRITICAL: Do not return any other information exception except the JSON array of objects.";
         const cleanWordMatch = word.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         if (cleanWordMatch) {
-          const cleanWord = cleanWordMatch[0];
-          try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
-            const response = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: `Provide 15 Spanish language sentences that demonstrate how this Spanish word is used: "${word}"` }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] },
-                generationConfig: { 
-                  temperature: 0.2,
-                  responseMimeType: "text/plain" 
+            const cleanWord = cleanWordMatch[0];
+            const maxRetries = 5;
+            let currentDelay = 2000; // Start with a 2-second wait on failure
+
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                // 1. Set up the AbortController for the timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); 
+
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
+                    const response = await fetch(url, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Provide 15 Spanish language sentences that demonstrate how this Spanish word is used: "${word}"` }] }],
+                        systemInstruction: { parts: [{ text: systemInstruction }] },
+                        generationConfig: { 
+                          temperature: 0.2,
+                          responseMimeType: "text/plain" 
+                        }
+                      })
+                    });
+                    const data = await response.json();
+                    if (data.error) {
+                      throw new Error(data.error.message);
+                    }
+                    const rawJson = data.candidates[0].content.parts[0].text;
+                    console.log(rawJson);  
+                    if(rawJson && rawJson.length>0) {
+                        const jsonObj = JSON.parse(rawJson);
+                        loadArticle(jsonObj);
+                        document.getElementsByClassName("tab-btn")[0].click();
+                        const topRightTextElt = document.getElementById('top-right-text');
+                        topRightTextElt.textContent=capitalizeFirstLetter(word) + ' 🔊 ';
+                        document.getElementById('word-help').innerHTML="";
+                        break;
+                    }
+                } catch (error) {
+                  clearTimeout(timeoutId); // Ensure timer cleans up on error
+                  document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
+                  const isTimeout = error.name === 'AbortError';
+                  const warnMsg = `Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`;
+                  console.warn(warnMsg);
+                  showDynamicPopup('Warning.', warnMsg, 1500);
+                  // If we used all retries, throw the final error up to your application
+                  if (attempt === maxRetries) {
+                    const errMsg = `Gemini API completely failed after ${maxRetries} attempts.`;
+                    showDynamicPopup('Error', errMsg, 1500);
+                    throw new Error(errMsg);
+                  } else {
+                      showDynamicPopup('Warning', warnMsg, 1500);
+                  }
+                  // Wait before trying again (2s, then 4s, etc.)
+                  console.log(`Waiting ${currentDelay / 1000}s before next attempt...`);
+                  await new Promise(resolve => setTimeout(resolve, currentDelay));
+                  currentDelay *= 2; 
                 }
-              })
-            });
-            const data = await response.json();
-            if (data.error) {
-              throw new Error(data.error.message);
             }
-            const rawJson = data.candidates[0].content.parts[0].text;
-            console.log(rawJson);  
-            if(rawJson && rawJson.length>0) {
-                const jsonObj = JSON.parse(rawJson);
-                loadArticle(jsonObj);
-                document.getElementsByClassName("tab-btn")[0].click();
-                const topRightTextElt = document.getElementById('top-right-text');
-                topRightTextElt.textContent=capitalizeFirstLetter(word) + ' 🔊 ';
-            }
-            document.getElementById('word-help').innerHTML="";
-          } catch (error) {
-            document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
-            console.error(error);
-          } 
         }
     }
 }
@@ -1835,7 +1899,7 @@ function generateTopicMapKey(topicInput) {
 
 async function fetchGemmaResponse() {
 
-    const key = await decrypt(api3KeyEncrypted);
+    const key = await decrypt(api3KeyEncrypted, true);
     if(key) {
         showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.', 3000);
     } else {
@@ -2010,7 +2074,7 @@ function handleSwipe() {
         "CRITICAL: Prepend each bullet item with a &bull; ";
 
       submitBtn.addEventListener('click', async () => {
-        const key = await decrypt(api1KeyEncrypted);
+        const key = await decrypt(api1KeyEncrypted, true);
         const text = spanishTextInput.innerText.trim();
 
         if (!key) {
