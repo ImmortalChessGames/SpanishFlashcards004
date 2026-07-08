@@ -107,13 +107,6 @@
                         </div>
                         <h2 id="question">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
-                          <div id="qw-widget-wrapper" class="qw-widget-wrapper">
-                            <div class="qw-quote-box">
-                              <div id="qw-quoteContainer"></div>
-                              <button class="qw-nav-btn qw-prev" id="qw-prevBtn" aria-label="Previous quote">&#10094;</button>
-                              <button class="qw-nav-btn qw-next" id="qw-nextBtn" aria-label="Next quote">&#10095;</button>
-                            </div>
-                          </div>
                     </div>
                     <div id="score-box" class="hidden">
                         <h2>Quiz Complete!</h2>
@@ -322,7 +315,10 @@
 
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        document.getElementById('qw-widget-wrapper').style.display='none';
+        if(currentQuestionIndex>=0 && currentQuestionIndex<=QUESTIONS_PER_QUIZ) {
+            console.log('Quiz in progress, returning.');
+            return;
+        }
         score = 0;
         currentQuestionIndex = -1;
         scoreBox.classList.add("hidden");
@@ -421,7 +417,6 @@
         if(quizVocab.length<1) {
             return;
         }
-        document.getElementById('qw-quoteContainer').innerHTML="";
         currentQuestionIndex++;
 
         if (currentQuestionIndex >= quizVocab.length) {
@@ -464,45 +459,6 @@
     function endQuiz(score, totalQuestions) {
       showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
       resetQuizProgress();
-    }
-
- function buildWordHelpSlideViewer(word, data) {
-      document.getElementById('qw-widget-wrapper').style.display='none';
-      const container = document.getElementById('qw-quoteContainer');
-      data.forEach((item, index) => {
-        let text = item.spanish;
-        if(text.indexOf(word)>0) {
-            text = text.replaceAll(word, '<b>' + word + '</b>');
-        }
-        const slide = document.createElement('div');
-        slide.className = `qw-quote-slide ${index === 0 ? 'qw-active' : ''}`;
-        slide.innerHTML = `
-          <p class="qw-quote-text">${text}</p>
-        `;
-        container.appendChild(slide);
-      });
-      currentSlide = 0;
-      const slides = container.querySelectorAll('.qw-quote-slide');
-      const totalSlides = slides.length;
-
-      function showSlide(index) {
-        slides.forEach(slide => slide.classList.remove('qw-active'));
-        if (slides[index]) {
-          slides[index].classList.add('qw-active');
-        }
-      }
-
-      document.getElementById('qw-nextBtn').addEventListener('click', () => {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        showSlide(currentSlide);
-      });
-
-      document.getElementById('qw-prevBtn').addEventListener('click', () => {
-        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        showSlide(currentSlide);
-      });
-
-      document.getElementById('qw-widget-wrapper').style.display='block';
     }
 
     function parseToBulletedList(text) {
@@ -1532,7 +1488,6 @@ async function processWordHelp(word) {
             if(rawJson && rawJson.length>0) {
                 const jsonObj = JSON.parse(rawJson);
                 loadArticle(jsonObj);
-                buildWordHelpSlideViewer(word, jsonObj);
                 document.getElementsByClassName("tab-btn")[0].click();
                 const topRightTextElt = document.getElementById('top-right-text');
                 topRightTextElt.textContent=capitalizeFirstLetter(word) + ' 🔊 ';
@@ -2027,25 +1982,6 @@ function handleSwipe() {
     }
     if (touchEndX > touchStartX + threshold) {
         showPrevious();
-    }
-}
-
-let touchQuizStartX = 0;
-let touchQuizEndX = 0;
-
-function handleSwipe_Quiz() {
-    const threshold = 50; // Minimum swipe distance in pixels
-    if (touchQuizEndX < touchQuizStartX - threshold) {
-        if(document.getElementById('qw-nextBtn') && document.getElementById('qw-nextBtn').checkVisibility()) {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            showSlide(currentSlide);
-        }
-    }
-    if (touchQuizEndX > touchQuizStartX + threshold) {
-        if(document.getElementById('qw-prevBtn') && document.getElementById('qw-prevBtn').checkVisibility()) {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            showSlide(currentSlide);
-        }
     }
 }
 
