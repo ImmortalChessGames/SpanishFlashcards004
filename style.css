@@ -1640,6 +1640,21 @@ h2 {
 .word-help-link:hover {
     color: #0056b3; /* Slightly darker blue on hover for better UX */
 }
+
+.addl-topics-link {
+    text-align: center;
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: darkGreen;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.addl-topics-link:hover {
+    color: #0056b3; /* Slightly darker blue on hover for better UX */
+}
+
 /* Custom Modern Font & Button Reset */
 .app-modal-btn {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -1769,5 +1784,4 @@ h2 {
 .app-modal-overlay.is-visible .app-modal-container {
   transform: scale(1);
 }
-
 

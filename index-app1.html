@@ -82,6 +82,7 @@
                         <button id="nextBtn2" class="btn-nav">Next →</button>
                     </div>
                 </div>   
+                <div id="additional-topics-links" style='text-align:center'></div>
             </div>
 
             <!-- PANEL 2 -->
@@ -171,7 +172,7 @@
                                   <option value="Distinguished">Distinguished</option>
                                 </select>
                             </div>
-                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchGemmaResponse();">Generate Article</button>
+                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchArticle();">Generate Article</button>
                             <div id="gsv-status" class="gsv-status-msg"></div>
                         </div>   
                         <div class="sm-choose-dataset">
@@ -234,7 +235,7 @@
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
-    const MINIMUM_VOCAB_WORD_COUNT = 3;
+    const MINIMUM_VOCAB_WORD_COUNT = 100;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -293,7 +294,7 @@
     document.addEventListener('click', () => {
         let currentTime = Date.now();
         const timeDifference = currentTime - savedTime;
-        if (timeDifference >= 10000) {
+        if (timeDifference >= 20000) {
             const smSecretVal = document.getElementById('sm-secret').value;
             if(smSecretVal && smSecretVal==='enter-your-secret-passcode-here') {
                 savedTime = currentTime;
@@ -1013,7 +1014,41 @@
         } 
     }
 
-    function loadArticle(articleDataset) {
+    function loadArticle(d) {
+        let articleDataset = [];
+        let relatedTopicDataset = [];
+        for(i=0;i<d.length;i++) {
+            if(d[i].spanish.startsWith('RELATED_')) {
+                relatedTopicDataset.push(d[i].english);
+            } else {
+                articleDataset.push(d[i]);
+            }
+        }
+        const addlTopicLinks = document.getElementById('additional-topics-links');
+        addlTopicLinks.innerHTML="";
+        if(relatedTopicDataset && relatedTopicDataset.length>0) {
+            const addTopicLinksMsg = document.createElement('p');
+            addTopicLinksMsg.style='margin-top:80px';
+            addTopicLinksMsg.textContent='💡 You may also be interested in ...';
+            addlTopicLinks.append(addTopicLinksMsg);
+            for(i=0; i<relatedTopicDataset.length; i++) {
+                const dynamicLink = document.createElement('a');
+                dynamicLink.textContent = relatedTopicDataset[i];
+                dynamicLink.href='#';
+                dynamicLink.classList.add('addl-topics-link');
+                dynamicLink.addEventListener('click', function(event) {
+                    const gsvTopicInput = document.getElementById('gsv-topic-input');
+                    gsvTopicInput.value=event.target.textContent;
+                    setTimeout(() => {
+                      gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
+                    }, 50); 
+                    document.getElementsByClassName("tab-btn")[3].click();
+                    document.getElementById('gsv-submit-btn').click();                    
+                });
+                addlTopicLinks.appendChild(dynamicLink);
+                addlTopicLinks.appendChild(document.createElement('br'));                
+            }
+        }
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
             document.getElementById('progress-bar').max=100;
@@ -1035,6 +1070,8 @@
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
         if(flashcardsDataset && flashcardsDataset.length>0) {
+            const topRightTextElt = document.getElementById('top-right-text');
+            topRightTextElt.textContent='Individual Sentences';
             dataset = [...flashcardsDataset];
             showNext();
             document.getElementById('nextBtn').click();
@@ -1044,6 +1081,9 @@
         dataset = [];
         history = [];
         historyIndex = -1;
+
+        const topRightTextElt = document.getElementById('top-right-text');
+        topRightTextElt.textContent='Individual Sentences';
 
         const lines = rawTsvData.split(/\r?\n/);
 
@@ -1902,7 +1942,7 @@ function generateTopicMapKey(topicInput) {
     return topicInput;
 }
 
-async function fetchGemmaResponse() {
+async function fetchArticle() {
 
     const key = await decrypt(api3KeyEncrypted, true);
     if(key) {
@@ -1918,7 +1958,7 @@ async function fetchGemmaResponse() {
     if(!languageLevel) {
         languageLevel = 'Intermediate-to-Advanced';
     }
-    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation.";
+    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation. In addition to the array of objects, add a second array of 10-12 English language strings where each string is a related topic suggestion that the user may find interesting. The first array property name should be 'summary' and the second one should be called 'related_topics'.";
     const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use ` + languageLevel + ` Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
 
     const payload = {
@@ -1957,12 +1997,18 @@ async function fetchGemmaResponse() {
                 if(!responseText) {
                     responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
-
                 console.log(responseText);
-
                 let responseObj = JSON.parse(responseText);
-                responseText = JSON.stringify(responseObj, null, 2);    
-
+                if(responseObj.summary) {
+                    if(responseObj.related_topics) {
+                        for(i=0; i<responseObj.related_topics.length; i++) {
+                            responseObj.summary.push({ spanish: "RELATED_TOPIC_"+(i+1), english: responseObj.related_topics[i] });
+                        }
+                    }
+                    responseText = JSON.stringify(responseObj.summary, null, 2);    
+                } else {
+                    responseText = JSON.stringify(responseObj, null, 2);   
+                }
                 const topicMapKey = generateTopicMapKey(topicInput);
                 const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
                 let storiesMap;
