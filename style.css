@@ -1800,7 +1800,7 @@ h2 {
 
 /* Style the label to look like a clickable link/button */
 .menu-label {
-  font-size: 14px;
+  font-size: 20px;
   cursor: pointer;
   display: inline-block;
   margin-bottom: 30px;
@@ -1817,7 +1817,7 @@ h2 {
 /* Hide the link container by default */
 .link-content {
   display: none;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   line-height: 1.8;
 }
@@ -1828,7 +1828,7 @@ h2 {
   color: darkBlue;
   text-decoration: none;
   padding: 0 8px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 .link-content a:hover {
   text-decoration: underline;

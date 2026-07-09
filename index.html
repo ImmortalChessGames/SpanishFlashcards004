@@ -1154,6 +1154,7 @@
     }
 
     function showNext() {
+        document.getElementById('menu-toggle').checked=false;
         let randomize = dataset.length >= 100;
         if (historyIndex < history.length - 1) {
             historyIndex++;
@@ -2094,7 +2095,6 @@ document.addEventListener('touchstart', (e) => {
 document.addEventListener('touchend', (e) => {
     touchQuizStartX = touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
-    handleSwipe_Quiz();
 }, { passive: true });
 
 function handleSwipe() {
