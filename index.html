@@ -207,7 +207,7 @@
                         </div>
                         <div class="sm-button-group">                      
                             <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
-                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Load Starting 100-Word Vocabulary</button>
+                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
                     </div>
@@ -1013,7 +1013,6 @@
         } 
     }
 
-
     function loadArticle(articleDataset) {
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
@@ -1022,7 +1021,7 @@
             historyIndex = -1;
         }
         const selectDataset = document.getElementById('sm-chooseDataset');
-        const speakerMode = dataset.length < 100;
+        const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
         const topRightTextElt = document.getElementById('top-right-text');
         topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
         if(speakerMode === true) {
@@ -1112,11 +1111,7 @@
     }
 
     function showNext() {
-        let randomize = true;
-        const selectDataset = document.getElementById('sm-chooseDataset');
-        if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('>')) {
-            randomize = false;
-        }
+        let randomize = dataset.length >= 100;
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -1537,7 +1532,7 @@ async function processWordHelp(word) {
                         loadArticle(jsonObj);
                         document.getElementsByClassName("tab-btn")[0].click();
                         const topRightTextElt = document.getElementById('top-right-text');
-                        topRightTextElt.textContent=capitalizeFirstLetter(word) + ' 🔊 ';
+                        topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 🔊 ';
                         document.getElementById('word-help').innerHTML="";
                         break;
                     }
@@ -1827,6 +1822,8 @@ async function loadVocabData(loadDefaults) {
         }
         data = [];
     } 
+alert('existingData.length='+existingData.length);
+alert(JSON.stringify(existingData));
     // Merge the two arrays together (if there's no existing data)
     const combinedData = (existingData && existingData.length>0) ? existingData :
         [...existingData, ...data];
@@ -1841,6 +1838,7 @@ async function loadVocabData(loadDefaults) {
         seenItems.add(stringifiedItem);
         return true;
     });
+alert('uniqueData.length='+uniqueData.length);
 
     // Save clean deduplicated array back to local storage
     localStorage.setItem(storageName, JSON.stringify(uniqueData)); 
@@ -1875,6 +1873,7 @@ function smLoadDefaultVocabulary() {
     resetQuizProgress();
     updateDisplayData();
     showDynamicPopup('Success','Successfully loaded default vocabulary words.', 3000);
+    window.location.reload();
 }
 
 function smDeleteAllVocabulary() {
@@ -1890,6 +1889,7 @@ function smDeleteAllVocabulary() {
         questionElt.innerText=loadingQuestionText;
         updateDisplayData();
         showDynamicPopup('Success','Successfully deleted all vocabulary words.', 3000);
+        window.location.reload();
     } else {
         // Code to run if the user clicked "Cancel"
         console.log("Not going to delete all vocabulary words.");

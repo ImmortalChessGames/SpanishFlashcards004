@@ -206,7 +206,7 @@
                             <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
                         </div>
                         <div class="sm-button-group">                      
-                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load Default Vocabulary</button>
+                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
                             <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
@@ -234,6 +234,7 @@
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
+    const MINIMUM_VOCAB_WORD_COUNT = 200;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -1012,7 +1013,6 @@
         } 
     }
 
-
     function loadArticle(articleDataset) {
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
@@ -1021,7 +1021,7 @@
             historyIndex = -1;
         }
         const selectDataset = document.getElementById('sm-chooseDataset');
-        const speakerMode = dataset.length < 100;
+        const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
         const topRightTextElt = document.getElementById('top-right-text');
         topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
         if(speakerMode === true) {
@@ -1111,11 +1111,7 @@
     }
 
     function showNext() {
-        let randomize = true;
-        const selectDataset = document.getElementById('sm-chooseDataset');
-        if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('>')) {
-            randomize = false;
-        }
+        let randomize = dataset.length >= 100;
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -1536,7 +1532,7 @@ async function processWordHelp(word) {
                         loadArticle(jsonObj);
                         document.getElementsByClassName("tab-btn")[0].click();
                         const topRightTextElt = document.getElementById('top-right-text');
-                        topRightTextElt.textContent=capitalizeFirstLetter(word) + ' 🔊 ';
+                        topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 🔊 ';
                         document.getElementById('word-help').innerHTML="";
                         break;
                     }
@@ -1811,30 +1807,42 @@ async function loadVocabData(loadDefaults) {
             existingData = [];
         }
     }
-    if(loadDefaults) {
-        console.log("Loading default vocabulary words.");
-        const response = await fetch('./defaults_big4.json');
-        const data = await response.json(); 
-        // Merge the two arrays together (if there's no existing data)
-        const combinedData = (existingData && existingData.length>0) ? existingData :
-            [...existingData, ...data];
-
-        // Remove exact duplicates by filtering with a Set of stringified items
-        const seenItems = new Set();
-        const uniqueData = combinedData.filter(item => {
-            // Stringify ensures accurate identification regardless of object depth or primitive types
-            const stringifiedItem = JSON.stringify(item);
-            if (seenItems.has(stringifiedItem)) {
-                return false;
+    console.log("Loading default vocabulary words.");
+    const response = await fetch('./defaults_big4.json');
+    const data = await response.json(); 
+    if(!loadDefaults || loadDefaults===false) {
+        console.log("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
+        if(existingData.length<MINIMUM_VOCAB_WORD_COUNT) {
+            const startingIndx = existingData.length;
+            for(i=startingIndx;i<MINIMUM_VOCAB_WORD_COUNT;i++) {
+                let r = Math.floor(Math.random() * data.length);
+                let vocabItem = { spanish: data[r].spanish, english: data[r].english};
+                existingData.push(vocabItem);
             }
-            seenItems.add(stringifiedItem);
-            return true;
-        });
-        // Save clean deduplicated array back to local storage
-        localStorage.setItem(storageName, JSON.stringify(uniqueData)); 
-    } else {
-        console.log("Not loading default vocabulary words.");
-    }
+        }
+        data = [];
+    } 
+alert('existingData.length='+existingData.length);
+alert(JSON.stringify(existingData));
+    // Merge the two arrays together (if there's no existing data)
+    const combinedData = (existingData && existingData.length>0) ? existingData :
+        [...existingData, ...data];
+    // Remove exact duplicates by filtering with a Set of stringified items
+    const seenItems = new Set();
+    const uniqueData = combinedData.filter(item => {
+        // Stringify ensures accurate identification regardless of object depth or primitive types
+        const stringifiedItem = JSON.stringify(item);
+        if (seenItems.has(stringifiedItem)) {
+            return false;
+        }
+        seenItems.add(stringifiedItem);
+        return true;
+    });
+alert('uniqueData.length='+uniqueData.length);
+
+    // Save clean deduplicated array back to local storage
+    localStorage.setItem(storageName, JSON.stringify(uniqueData)); 
+
   } catch (error) {
     console.error("Failed to parse JSON file:", error);
   }
@@ -1856,7 +1864,7 @@ async function loadVocabData(loadDefaults) {
              }
           }
       }
-  } 
+    } 
 }
 
 function smLoadDefaultVocabulary() {
@@ -1865,6 +1873,7 @@ function smLoadDefaultVocabulary() {
     resetQuizProgress();
     updateDisplayData();
     showDynamicPopup('Success','Successfully loaded default vocabulary words.', 3000);
+    window.location.reload();
 }
 
 function smDeleteAllVocabulary() {
@@ -1880,6 +1889,7 @@ function smDeleteAllVocabulary() {
         questionElt.innerText=loadingQuestionText;
         updateDisplayData();
         showDynamicPopup('Success','Successfully deleted all vocabulary words.', 3000);
+        window.location.reload();
     } else {
         // Code to run if the user clicked "Cancel"
         console.log("Not going to delete all vocabulary words.");
