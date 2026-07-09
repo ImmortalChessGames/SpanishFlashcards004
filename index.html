@@ -1823,14 +1823,15 @@ alert('startingIndex='+startingIndx);
             for(i=startingIndx;i<MINIMUM_VOCAB_WORD_COUNT;i++) {
                 let r = Math.floor(Math.random() * data.length);
 alert('r='+r);
-                let vocabItem = { spanish: data[r].spanish, english: data[r].english};
+alert(JSON.stringify(data[r]));
+                existingData.push(data[r]);
 alert(JSON.stringify(existingData));
-                existingData.push(vocabItem);
-alert(JSON.stringify(vocabItem));
             }
+alert(2);
         }
         data = [];
     } 
+alert(3);
 alert('existingData.length='+existingData.length);
 alert(JSON.stringify(existingData));
     // Merge the two arrays together (if there's no existing data)
