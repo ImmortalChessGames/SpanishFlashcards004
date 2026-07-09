@@ -234,7 +234,7 @@
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
-    const MINIMUM_VOCAB_WORD_COUNT = 200;
+    const MINIMUM_VOCAB_WORD_COUNT = 3;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -1811,13 +1811,22 @@ async function loadVocabData(loadDefaults) {
     const response = await fetch('./defaults_big4.json');
     const data = await response.json(); 
     if(!loadDefaults || loadDefaults===false) {
+alert('Load Defaults is false');
         console.log("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
+
+alert('existingData.length='+existingData.length);
+alert('existingData.length<MINIMUM_VOCAB_WORD_COUNT='+(existingData.length<MINIMUM_VOCAB_WORD_COUNT));
         if(existingData.length<MINIMUM_VOCAB_WORD_COUNT) {
+alert('1');
             const startingIndx = existingData.length;
+alert('startingIndex='+startingIndx);
             for(i=startingIndx;i<MINIMUM_VOCAB_WORD_COUNT;i++) {
                 let r = Math.floor(Math.random() * data.length);
+alert('r='+r);
                 let vocabItem = { spanish: data[r].spanish, english: data[r].english};
+alert(JSON.stringify(existingData));
                 existingData.push(vocabItem);
+alert(JSON.stringify(vocabItem));
             }
         }
         data = [];
