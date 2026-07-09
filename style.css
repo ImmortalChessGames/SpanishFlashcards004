@@ -1785,3 +1785,60 @@ h2 {
   transform: scale(1);
 }
 
+/* Container centered and pushed down 50px */
+.collapsible-wrapper {
+  max-width: 600px;
+  margin: 50px auto 0 auto;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+/* Hide the actual checkbox completely */
+#menu-toggle {
+  display: none;
+}
+
+/* Style the label to look like a clickable link/button */
+.menu-label {
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 30px;
+  user-select: none;
+  color: darkGreen;
+}
+
+/* Add a toggle arrow indicator */
+.menu-label::after {
+  content: " ▼";
+  font-size: 12px;
+}
+
+/* Hide the link container by default */
+.link-content {
+  display: none;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.8;
+}
+
+/* Compact text links styling */
+.link-content a {
+  display: inline-block;
+  color: blue;
+  text-decoration: none;
+  padding: 0 8px;
+  margin-bottom: 12px;
+}
+.link-content a:hover {
+  text-decoration: underline;
+}
+
+/* THE MAGIC: When checkbox is checked, show links and flip arrow */
+#menu-toggle:checked ~ .link-content {
+  display: block;
+}
+#menu-toggle:checked ~ .menu-label::after {
+  content: " ▲";
+}
+

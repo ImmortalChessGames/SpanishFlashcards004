@@ -82,7 +82,14 @@
                         <button id="nextBtn2" class="btn-nav">Next →</button>
                     </div>
                 </div>   
-                <div id="additional-topics-links" style='text-align:center'></div>
+
+
+            <div class="collapsible-wrapper">
+              <input type="checkbox" id="menu-toggle">
+              <label id="topicSuggestionsLabel" for="menu-toggle" class="menu-label hidden"> More topics </label>
+              <div class="link-content" id="additional-topics-links"></div>
+            </div>
+
             </div>
 
             <!-- PANEL 2 -->
@@ -1026,16 +1033,12 @@
         }
         const addlTopicLinks = document.getElementById('additional-topics-links');
         addlTopicLinks.innerHTML="";
+        document.getElementById('topicSuggestionsLabel').classList.add('hidden');
         if(relatedTopicDataset && relatedTopicDataset.length>0) {
-            const addTopicLinksMsg = document.createElement('p');
-            addTopicLinksMsg.style='margin-top:80px';
-            addTopicLinksMsg.textContent='💡 You may also be interested in ...';
-            addlTopicLinks.append(addTopicLinksMsg);
             for(i=0; i<relatedTopicDataset.length; i++) {
                 const dynamicLink = document.createElement('a');
-                dynamicLink.textContent = relatedTopicDataset[i];
+                dynamicLink.textContent = ' >> ' + relatedTopicDataset[i] + ' << ';
                 dynamicLink.href='#';
-                dynamicLink.classList.add('addl-topics-link');
                 dynamicLink.addEventListener('click', function(event) {
                     const gsvTopicInput = document.getElementById('gsv-topic-input');
                     gsvTopicInput.value=event.target.textContent;
@@ -1048,6 +1051,7 @@
                 addlTopicLinks.appendChild(dynamicLink);
                 addlTopicLinks.appendChild(document.createElement('br'));                
             }
+            document.getElementById('topicSuggestionsLabel').classList.remove('hidden');
         }
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
@@ -2038,6 +2042,12 @@ async function fetchArticle() {
                 document.getElementById('gsv-topic-input').value='';
                 selectElt.dispatchEvent(new Event('change', { bubbles: true }));
                 document.getElementsByClassName("tab-btn")[0].click();
+
+                window.scrollTo({
+                  top: 0,
+                  left: 0,
+                  behavior: 'smooth'
+                });
 
                 return responseText;
             }
