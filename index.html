@@ -82,16 +82,12 @@
                         <button id="nextBtn2" class="btn-nav">Next →</button>
                     </div>
                 </div>   
-
-
-            <div class="collapsible-wrapper">
-              <input type="checkbox" id="menu-toggle">
-              <label id="topicSuggestionsLabel" for="menu-toggle" class="menu-label hidden"> More topics </label>
-              <div class="link-content" id="additional-topics-links"></div>
+                <div class="collapsible-wrapper">
+                  <input type="checkbox" id="menu-toggle">
+                  <label id="topicSuggestionsLabel" for="menu-toggle" class="menu-label hidden">More topics</label>
+                  <div class="link-content" id="additional-topics-links"></div>
+                </div>
             </div>
-
-            </div>
-
             <!-- PANEL 2 -->
             <div id="panel-2" class="tab-panel" role="tabpanel">
                 <div id="quiz-container" class="quiz-container">
@@ -179,7 +175,7 @@
                                   <option value="Distinguished">Distinguished</option>
                                 </select>
                             </div>
-                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchArticle();">Generate Article</button>
+                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchArticle();window.scrollTo(0, 0);">Generate Article</button>
                             <div id="gsv-status" class="gsv-status-msg"></div>
                         </div>   
                         <div class="sm-choose-dataset">
@@ -242,7 +238,7 @@
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
-    const MINIMUM_VOCAB_WORD_COUNT = 100;
+    const MINIMUM_VOCAB_WORD_COUNT = 200;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -277,6 +273,8 @@
     let currentQuestionIndex = -1;
     let score = 0;
     let currentSlide = 0;
+
+    let wordHelp;
 
     // Scoped variable declarations using the updated IDs
     const appModalElement = document.getElementById("appModalWrapper");
@@ -1022,6 +1020,7 @@
     }
 
     function loadArticle(d) {
+        wordhelp = null;
         let articleDataset = [];
         let relatedTopicDataset = [];
         for(i=0;i<d.length;i++) {
@@ -1037,7 +1036,7 @@
         if(relatedTopicDataset && relatedTopicDataset.length>0) {
             for(i=0; i<relatedTopicDataset.length; i++) {
                 const dynamicLink = document.createElement('a');
-                dynamicLink.textContent = ' >> ' + relatedTopicDataset[i] + ' << ';
+                dynamicLink.textContent = relatedTopicDataset[i];
                 dynamicLink.href='#';
                 dynamicLink.addEventListener('click', function(event) {
                     const gsvTopicInput = document.getElementById('gsv-topic-input');
@@ -1489,6 +1488,7 @@ function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visual
 }
 
 function processSentence(input) {
+
     const wordBox = document.getElementById('wordBox');
 
     // Clear previous results
@@ -1509,12 +1509,14 @@ function processSentence(input) {
         
         if (cleanWordMatch) {
             const cleanWord = cleanWordMatch[0];
-            
             // Create a span element for the clickable word
             const span = document.createElement('span');
             span.className = 'clickable-word';
             span.textContent = rawWord; // Displays the word with its surrounding punctuation
-            
+            if(wordHelp && wordHelp.toUpperCase()===cleanWord.toUpperCase()) {
+                span.style='background-color:#D9E1FC;';
+            }
+
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
                 sendTranslationRequest(cleanWord);
@@ -1537,12 +1539,13 @@ async function processWordHelp(word) {
       const key = await decrypt(api4KeyEncrypted, true);
       const systemInstruction = 
         "You are an expert Spanish language master tutor:\n\n" +
-        "Given a spanish word provide 15 real-world example sentences using this word (include english language translation) to show real situational context. " + 
+        "Given a spanish word provide 15 real-world advanced-level example sentences using this word (include english language translation) to show real situational context. " + 
         "Return a JSON array of objects. Each object has two properties: spanish with spanish sentence and english with the english translation." +
         "CRITICAL: Do not return any other information exception except the JSON array of objects.";
         const cleanWordMatch = word.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         if (cleanWordMatch) {
             const cleanWord = cleanWordMatch[0];
+            wordHelp = cleanWord;
             const maxRetries = 5;
             let currentDelay = 2000; // Start with a 2-second wait on failure
 
@@ -2042,12 +2045,6 @@ async function fetchArticle() {
                 document.getElementById('gsv-topic-input').value='';
                 selectElt.dispatchEvent(new Event('change', { bubbles: true }));
                 document.getElementsByClassName("tab-btn")[0].click();
-
-                window.scrollTo({
-                  top: 0,
-                  left: 0,
-                  behavior: 'smooth'
-                });
 
                 return responseText;
             }
