@@ -84,7 +84,7 @@
                 </div>   
                 <div class="collapsible-wrapper">
                   <input type="checkbox" id="menu-toggle">
-                  <label id="topicSuggestionsLabel" for="menu-toggle" class="menu-label hidden">More topics</label>
+                  <label id="topicSuggestionsLabel" for="menu-toggle" class="menu-label hidden">See Also</label>
                   <div class="link-content" id="additional-topics-links"></div>
                 </div>
             </div>
@@ -275,6 +275,7 @@
     let currentSlide = 0;
 
     let wordHelp;
+    let lastWordHelped;
 
     // Scoped variable declarations using the updated IDs
     const appModalElement = document.getElementById("appModalWrapper");
@@ -307,6 +308,43 @@
             } 
         }
     });
+
+    function getSimilarityPercentage(wordA, wordB) {
+        const normA = normalizeWord(wordA);
+        const normB = normalizeWord(wordB);
+
+        const maxLength = Math.max(normA.length, normB.length);
+        if (maxLength === 0) return 100; // Both words are empty strings
+
+        const distance = getLevenshteinDistance(normA, normB);
+        
+        // Calculate percentage and round to 2 decimal places
+        const percentage = (1 - distance / maxLength) * 100;
+        return parseFloat(percentage.toFixed(2));
+    }
+
+    // Helper normalization from previous step
+    function normalizeWord(word) {
+        return word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zñ]/g, "");
+    }
+
+    // Optimized distance from previous step
+    function getLevenshteinDistance(a, b) {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        let prevRow = Array(b.length + 1).fill(0).map((_, i) => i);
+        let currRow = Array(b.length + 1).fill(0);
+        for (let i = 1; i <= a.length; i++) {
+            currRow[0] = i;
+            for (let j = 1; j <= b.length; j++) {
+                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                currRow[j] = Math.min(currRow[j - 1] + 1, prevRow[j] + 1, prevRow[j - 1] + cost);
+            }
+            [prevRow, currRow] = [currRow, prevRow];
+        }
+        return prevRow[b.length];
+    }
+
 
     function generateQuizWords() {
       try {
@@ -346,20 +384,21 @@
 
     function recordUserAnswer(spanishWord, isCorrect) {
         const progress = getAllProgress();
-        
         if (!progress[spanishWord]) {
             progress[spanishWord] = { cs: 0, tw: 0 };
         }
-
         if (isCorrect) {
+            if(lastWordHelped && lastWordHelped.toUpperCase()==spanishWord.toUpperCase()) {
+                progress[spanishWord].cs += -1; // neutralize the correct answer
+                showDynamicPopup('Deep Dive','The correct answer is not going to be counted towards extending the streak.', 500);
+            }
             progress[spanishWord].cs += 1;
         } else {
             progress[spanishWord].cs = 0; // Reset streak instantly on wrong answer
             progress[spanishWord].tw += 1;
         }
-
         localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-
+        lastWordHelped = null;
         return progress[spanishWord].cs; // Return updated streak for immediate rendering
     }
 
@@ -1582,6 +1621,7 @@ async function processWordHelp(word) {
                         const topRightTextElt = document.getElementById('top-right-text');
                         topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 🔊 ';
                         document.getElementById('word-help').innerHTML="";
+                        lastWordHelped = word;
                         break;
                     }
                 } catch (error) {
@@ -1858,7 +1898,11 @@ async function loadVocabData(loadDefaults) {
     console.log("Loading default vocabulary words.");
     const response = await fetch('./defaults_big4.json');
     let data = await response.json(); 
-    //let data = [{"spanish":"madre","english":"mom"},{"spanish":"madre2","english":"mom2"},{"spanish":"madre3","english":"mom3"}];
+//let data = [{"spanish":"madre","english":"mom"},{"spanish":"padre","english":"daddy"},{"spanish":"man","english":"hombre"},{"spanish":"hospital","english":"hospital"}];
+    data = data.filter(item => { // remove similar words
+        const score = getSimilarityPercentage(item.spanish, item.english);
+        return !(score && score >= 35);
+    });
     if(!loadDefaults || loadDefaults===false) {
         console.log("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
         if(existingData.length<MINIMUM_VOCAB_WORD_COUNT) {
