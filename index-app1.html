@@ -136,7 +136,7 @@
                     </form>
                     <div class="search-box">
                         <input type="text" id="searchBar" placeholder="Type to filter Spanish or English words...">
-                        <ul id="wordList"></ul>
+                        <ul id="wordList" class="vocab"></ul>
                         <!-- Pagination Controls -->
                         <div class="pagination">
                             <button id="prevPage" type="button" disabled>Previous</button>
@@ -897,10 +897,11 @@
         wordList.innerHTML = '';
         if(pageItems) {
             if (pageItems.length === 0) {
-                wordList.innerHTML = '<li style="color: #888; justify-content: center;">No words found</li>';
+                wordList.innerHTML = '<li class="vocab" style="color: #888; justify-content: center;">No words found</li>';
             } else {
                 pageItems.forEach((item) => {
                     const li = document.createElement('li');
+                    li.classList.add('vocab');
                     li.innerHTML = `
                         <span><strong>${item.spanish}</strong> ➔ ${item.english}</span>
                         <button class="delete-btn" data-word="${item.spanish.replace(/"/g, '&quot;')}">Delete</button>
@@ -956,9 +957,11 @@
             if(count>0) {
                 masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
                 const ul = document.createElement('ul');
+                ul.classList.add('review');
                 for(i=0;i<masteredWords.length;i++) {
                     const li = document.createElement('li');
                     li.style='margin-bottom:5px;';
+                    li.classList.add('review');
                     const a = document.createElement('a');
                     a.href = '#';
                     a.style = 'color:darkBlue;font-weight:bold;font-size:18px;text-transform: uppercase;';
@@ -1003,9 +1006,11 @@
             let totalWeight = 0;
             words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
             const ul = document.createElement('ul');
+            ul.classList.add('review');
             words.map(w => {
                   const li = document.createElement('li');
                   li.style='margin-bottom:5px;';
+                  li.classList.add('review');
                   const a = document.createElement('a');
                   a.href = '#';
                   a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;';
