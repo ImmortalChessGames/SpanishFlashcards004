@@ -918,9 +918,10 @@
 
     function repaintMasteredWords() {
         const masteredWordsDiv = document.getElementById('results-positive');
-        masteredWordsDiv.style='display:flex;gap:20px;';
+        masteredWordsDiv.style='max-width:600px;display:flex;gap:20px;width:100%;margin:0 auto;';
         masteredWordsDiv.innerHTML='';
         let masteredWords = [];
+        let masteredWordsEnglish = [];
         const progress = getAllProgress();
         if(progress) {
             let count = 0;
@@ -928,16 +929,28 @@
                 const itemProgress = progress[masterData[i].spanish];
                 if(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                   masteredWords.push(masterData[i].spanish);
+                  masteredWordsEnglish.push(masterData[i].english);
                   count++;
                 }
             }
             if(count>0) {
+                const ul = document.createElement('ul');
                 for(i=0;i<masteredWords.length;i++) {
-                    const span = document.createElement('span');
-                    span.style = 'background-color:pink;padding:5px;gap:25px;border-radius:5px;margin-top:25px;';
-                    span.append(masteredWords[i]); 
-                    masteredWordsDiv.appendChild(span);
+                    const li = document.createElement('li');
+                    li.style='margin-bottom:5px;';
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.style = 'color:darkBlue;font-weight:bold;font-size:18px;text-transform: uppercase;';
+                    a.textContent = masteredWords[i];
+                    a.addEventListener('click', function(event) {
+                        processWordHelp(masteredWords[i]);
+                    });
+                    li.append('✅ ');
+                    li.appendChild(a);
+                    li.append(' '+masteredWordsEnglish[i]); 
+                    ul.appendChild(li);
                 }
+                masteredWordsDiv.appendChild(ul);
             } else {
                 masteredWordsDiv.innerHTML='None.';
             }
@@ -946,7 +959,7 @@
 
     function repaintWordsNeedingMoreWork() {
         const wordsThatNeedMoreWorkDiv = document.getElementById('results-negative');
-       // wordsThatNeedMoreWorkDiv.innerHTML="";
+        wordsThatNeedMoreWorkDiv.innerHTML='';
         const progress = getAllProgress();
         let words = [];
         const availableWords = masterData.filter(item => {
@@ -963,25 +976,23 @@
         if (words.length > 0) {
             let totalWeight = 0;
             words = words.sort((a, b) => b.tw - a.tw);
-            words.map(item => {
-                const ul = document.createElement('ul');
-                for (const w of words) {
+            const ul = document.createElement('ul');
+            words.map(w => {
                   const li = document.createElement('li');
+                  li.style='margin-bottom:5px;';
                   const a = document.createElement('a');
                   a.href = '#';
+                  a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;';
                   a.textContent = w.spanish;
-                //  a.classList.add('word-help-link');
                   a.addEventListener('click', function(event) {
                     processWordHelp(w.spanish);
                   });
                   li.append('[-' + w.tw + '] ');
                   li.appendChild(a);
-                  li.append(w.english); 
-                  //li.textContent = '[-' + w.tw + '] ' + w.spanish + ' - ' + w.english;
+                  li.append(' '+w.english); 
                   ul.appendChild(li);
-                }
-                wordsThatNeedMoreWorkDiv.appendChild(ul);
             });
+            wordsThatNeedMoreWorkDiv.appendChild(ul);
         } else {
             wordsThatNeedMoreWorkDiv.innerHTML='None needing review.';
         }
@@ -1671,6 +1682,11 @@ async function processWordHelp(word) {
     if(word && word.length>0) {
       document.getElementById('word-help').innerHTML="<p class=''>Loading Example Usages...</p>";
       const key = await decrypt(api4KeyEncrypted, true);
+      if(key == null) {
+         showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
+         return;
+      }
+      showDynamicPopup('Deep Dive', 'Deep Diving: ' + word, 1000);
       const systemInstruction = 
         "You are an expert Spanish language master tutor:\n\n" +
         "Given a spanish word provide 15 real-world advanced-level example sentences using this word (include english language translation) to show real situational context. " + 
