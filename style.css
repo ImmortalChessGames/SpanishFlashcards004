@@ -1793,11 +1793,6 @@ h2 {
   font-family: sans-serif;
 }
 
-/* Hide the actual checkbox completely */
-#menu-toggle {
-  display: none;
-}
-
 /* Style the label to look like a clickable link/button */
 .menu-label {
   font-size: 30px;
@@ -1839,6 +1834,11 @@ h2 {
   margin-left: 16px;
 }
 
+/* Hide the actual checkbox completely */
+#menu-toggle {
+  display: none;
+}
+
 /* THE MAGIC: When checkbox is checked, show links and flip arrow */
 #menu-toggle:checked ~ .link-content {
   display: block;
@@ -1846,4 +1846,5 @@ h2 {
 #menu-toggle:checked ~ .menu-label::after {
   content: " ▲";
 }
+
 

@@ -39,7 +39,8 @@
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Results</button>
+                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Settings</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -148,6 +149,14 @@
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" role="tabpanel">
+                  <label id="results-negative-label" for="results-negative">Words that need more work.</label>
+                  <div id="results-negative"></div>
+                  <label id="results-positive-label" for="results-positive">Words you have mastered.</label>
+                  <div id="results-positive"></div>
+            </div>
+
+            <!-- PANEL 5 -->
+            <div id="panel-5" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
@@ -190,7 +199,7 @@
                             </select>
                         </div>
                         <div class="sm-input-group">
-                          <label class="sm-label" style="margin-top:20px;" for="word-similarity-slider">Word Similarity Threshold</label>
+                          <label class="sm-label" style="margin-top:20px;" for="word-similarity-slider">Word Similarity Threshold:</label>
                           <i style="font-size:12px;text-align:right;">Note: 100 is least restrictive</i>
                           <input type="range" id="word-similarity-slider" min="0" max="100" step="1" value="35" class="settings-slider">
                         </div>       
@@ -900,7 +909,82 @@
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
+        repaintWordsNeedingMoreWork();
+        repaintMasteredWords();
+
+
         resetQuizProgress();
+    }
+
+    function repaintMasteredWords() {
+        const masteredWordsDiv = document.getElementById('results-positive');
+        masteredWordsDiv.style='display:flex;gap:20px;';
+        masteredWordsDiv.innerHTML='';
+        let masteredWords = [];
+        const progress = getAllProgress();
+        if(progress) {
+            let count = 0;
+            for(i=0;i<masterData.length;i++) {
+                const itemProgress = progress[masterData[i].spanish];
+                if(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
+                  masteredWords.push(masterData[i].spanish);
+                  count++;
+                }
+            }
+            if(count>0) {
+                for(i=0;i<masteredWords.length;i++) {
+                    const span = document.createElement('span');
+                    span.style = 'background-color:pink;padding:5px;gap:25px;border-radius:5px;margin-top:25px;';
+                    span.append(masteredWords[i]); 
+                    masteredWordsDiv.appendChild(span);
+                }
+            } else {
+                masteredWordsDiv.innerHTML='None.';
+            }
+        } 
+    }
+
+    function repaintWordsNeedingMoreWork() {
+        const wordsThatNeedMoreWorkDiv = document.getElementById('results-negative');
+       // wordsThatNeedMoreWorkDiv.innerHTML="";
+        const progress = getAllProgress();
+        let words = [];
+        const availableWords = masterData.filter(item => {
+            const itemProgress = progress[item.spanish];
+            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+        });
+        let availableReviewWords = availableWords.filter(item => {
+            const itemProgress = progress[item.spanish];
+            if(itemProgress && itemProgress.tw > 1) {
+                words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
+            }
+            return itemProgress && itemProgress.tw > 0;
+        });
+        if (words.length > 0) {
+            let totalWeight = 0;
+            words = words.sort((a, b) => b.tw - a.tw);
+            words.map(item => {
+                const ul = document.createElement('ul');
+                for (const w of words) {
+                  const li = document.createElement('li');
+                  const a = document.createElement('a');
+                  a.href = '#';
+                  a.textContent = w.spanish;
+                //  a.classList.add('word-help-link');
+                  a.addEventListener('click', function(event) {
+                    processWordHelp(w.spanish);
+                  });
+                  li.append('[-' + w.tw + '] ');
+                  li.appendChild(a);
+                  li.append(w.english); 
+                  //li.textContent = '[-' + w.tw + '] ' + w.spanish + ' - ' + w.english;
+                  ul.appendChild(li);
+                }
+                wordsThatNeedMoreWorkDiv.appendChild(ul);
+            });
+        } else {
+            wordsThatNeedMoreWorkDiv.innerHTML='None needing review.';
+        }
     }
 
     function saveWord(spanishVal, englishVal) {
