@@ -1830,7 +1830,22 @@ h2 {
 .link-content a:not(:last-child)::before {
   content: "🚀 ";
   color: #ccc;
-  margin-left: 16px;
+  margin-left: 16px;.scroll-wrapper {
+  /* Sets height to exactly 50% of the viewport height */
+  height: 50vh; 
+  
+  /* Adds a vertical scrollbar only when content overflows */
+  overflow-y: auto; 
+  
+  /* Optional visual styling to see the box boundaries */
+  border: 2px solid #ccc;
+  padding: 16px;
+}
+
+.inner-content {
+  /* Styling for your inner div */
+  background-color: #f9f9f9;
+}
 }
 
 /* Hide the actual checkbox completely */
@@ -1846,4 +1861,21 @@ h2 {
   content: " ▲";
 }
 
+.scroll-wrapper {
+  /* Grows dynamically but caps at exactly half the screen height */
+  max-height: 50vh; 
+  
+  /* Enables scrolling only when content exceeds the max-height */
+  overflow-y: auto; 
+  
+  /* Removes default or previous border styling */
+  border: none; 
+  
+  /* Removes extra padding that might create artificial height */
+  padding: 0; 
+}
+.inner-content {
+  /* Styling for your inner div */
+  background-color: #f9f9f9;
+}
 
