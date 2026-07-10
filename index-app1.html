@@ -301,7 +301,7 @@
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
       appModalElement.classList.remove("is-visible");
-      document.getElementsByClassName("tab-btn")[3].click();
+      document.getElementsByClassName("tab-btn")[4].click();
       setTimeout(() => {
         document.getElementById('sm-secret').scrollIntoView({ behavior: 'smooth' });
       }, 50); 
@@ -416,6 +416,7 @@
         }
         localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
         lastWordHelped = null;
+        repaintReviewTab();
         return progress[spanishWord].cs; // Return updated streak for immediate rendering
     }
 
@@ -909,11 +910,12 @@
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
+        resetQuizProgress();
+    }
+
+    function repaintReviewTab() {
         repaintWordsNeedingMoreWork();
         repaintMasteredWords();
-
-
-        resetQuizProgress();
     }
 
     function repaintMasteredWords() {
@@ -1188,7 +1190,7 @@
                     setTimeout(() => {
                       gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
                     }, 50); 
-                    document.getElementsByClassName("tab-btn")[3].click();
+                    document.getElementsByClassName("tab-btn")[4].click();
                     document.getElementById('gsv-submit-btn').click();                    
                 });
                 addlTopicLinks.appendChild(dynamicLink);
@@ -2350,7 +2352,7 @@ function handleSwipe() {
     initFlashcards();
     resetQuizProgress();
     displayIncognitoWarning();
-
+    repaintReviewTab();
 
 </script>
 </body>

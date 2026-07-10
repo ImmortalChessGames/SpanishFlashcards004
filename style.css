@@ -1799,7 +1799,7 @@ h2 {
   display: inline-block;
   margin-bottom: 30px;
   user-select: none;
-  color: #CC338B;
+  color: red;
 }
 
 /* Add a toggle arrow indicator */
