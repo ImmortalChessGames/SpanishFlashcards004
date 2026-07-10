@@ -188,10 +188,15 @@
                               <option value="MexicoCityStreetFood.json">Mexico City Street Food</option>
                               <option value="BlackHole.json">Black Hole</option>
                             </select>
+                        </div>
+                        <div class="sm-input-group">
+                          <label class="sm-label" style="margin-top:20px;" for="word-similarity-slider">Word Similarity Threshold</label>
+                          <i style="font-size:12px;text-align:right;">Note: 100 is least restrictive</i>
+                          <input type="range" id="word-similarity-slider" min="0" max="100" step="1" value="35" class="settings-slider">
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5"class="speech-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5" class="settings-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -231,7 +236,6 @@
   </div>
 </div>
 
-
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
@@ -267,6 +271,10 @@
     // 2. DOM Elements
     const rateSlider = document.getElementById('rate-slider');
     const rateValueDisplay = document.getElementById('rate-value');
+
+    const wordSimilaritySlider = document.getElementById('word-similarity-slider');
+    const wordSimilarityValueDisplay = document.getElementById('word-similarity-value');
+
     const speakBtn = document.getElementById('speak-btn');
 
     let quizData = [];
@@ -390,7 +398,7 @@
         if (isCorrect) {
             if(lastWordHelped && lastWordHelped.toUpperCase()==spanishWord.toUpperCase()) {
                 progress[spanishWord].cs += -1; // neutralize the correct answer
-                showDynamicPopup('Deep Dive','The correct answer is not going to be counted towards extending the streak.', 500);
+                showDynamicPopup('Deep Dive','The correct answer is not going to be counted towards extending the streak.', 1500);
             }
             progress[spanishWord].cs += 1;
         } else {
@@ -610,9 +618,11 @@
         helpLink.classList.add('word-help-link');
         helpLink.addEventListener('click', function(event) {
             processWordHelp(questionObj.spanishWord);
+            if(questionObj.spanishWord && questionObj.englishWord) {
+                saveWord(questionObj.spanishWord.toLowerCase(), questionObj.englishWord.toLowerCase());
+            }
         });
         container.appendChild(helpLink);
-
         const helpOutput = document.createElement('div');
         helpOutput.id='word-help';
         helpOutput.classList.add('word-help-bullet-list-container');    
@@ -1901,7 +1911,7 @@ async function loadVocabData(loadDefaults) {
 //let data = [{"spanish":"madre","english":"mom"},{"spanish":"padre","english":"daddy"},{"spanish":"man","english":"hombre"},{"spanish":"hospital","english":"hospital"}];
     data = data.filter(item => { // remove similar words
         const score = getSimilarityPercentage(item.spanish, item.english);
-        return !(score && score >= 35);
+        return !(score && score >= wordSimilaritySlider.value);
     });
     if(!loadDefaults || loadDefaults===false) {
         console.log("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
