@@ -39,7 +39,7 @@
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Results</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Review</button>
                 <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Settings</button>
             </div>
             <!-- Tab Content Panes -->
@@ -1658,7 +1658,7 @@ function processSentence(input) {
             const span = document.createElement('span');
             span.className = 'clickable-word';
             span.textContent = rawWord; // Displays the word with its surrounding punctuation
-            if(wordHelp && wordHelp.toUpperCase()===cleanWord.toUpperCase()) {
+            if(wordHelp && wordHelp.toUpperCase()===rawWord.toUpperCase()) {
                 span.style='background-color:#D9E1FC;';
             }
 
@@ -1686,7 +1686,7 @@ async function processWordHelp(word) {
          showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
          return;
       }
-      showDynamicPopup('Deep Dive', 'Deep Diving: ' + word, 1000);
+      showDynamicPopup('Deep Dive', 'Deep Diving: ' + word, 2000);
       const systemInstruction = 
         "You are an expert Spanish language master tutor:\n\n" +
         "Given a spanish word provide 15 real-world advanced-level example sentences using this word (include english language translation) to show real situational context. " + 
