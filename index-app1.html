@@ -149,13 +149,13 @@
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-negative-label" for="results-negative">Words requiring more study.</label>
+                <label id="results-negative-label" for="results-negative">Words requiring more study</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
                       <div id="results-negative"></div>
                   </div>
                 </div>
-                <label id="results-positive-label" for="results-positive">Words you have learned.</label>
+                <label id="results-positive-label" for="results-positive">Words you have learned</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
                       <div id="results-positive"></div>
@@ -232,9 +232,11 @@
                             <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
                         </div>
                         <div class="sm-button-group">                      
-                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
                             <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
-                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#EB5406" onclick="smResetQuizProgress();">Reset Quiz Progress</button>
+                        </div>
+                        <div class="sm-button-group">                      
+                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
+                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#EB5406" onclick="smResetQuizProgress();">Reset Progress</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
                     </div>
@@ -935,6 +937,8 @@
     }
 
     function repaintMasteredWords() {
+        const label = document.getElementById('results-positive-label');
+        label.innerText='Words you have learned';
         const masteredWordsDiv = document.getElementById('results-positive');
         masteredWordsDiv.style='max-width:600px;display:flex;gap:20px;width:100%;margin:0 auto;';
         masteredWordsDiv.innerHTML='';
@@ -969,6 +973,7 @@
                     li.append(' '+masteredWords[i].split(':')[1]); 
                     ul.appendChild(li);
                 }
+                label.innerText = label.innerText + ' ['+count+']';
                 masteredWordsDiv.appendChild(ul);
             } else {
                 masteredWordsDiv.innerHTML='None.';
@@ -977,6 +982,8 @@
     }
 
     function repaintWordsNeedingMoreWork() {
+        const label = document.getElementById('results-negative-label');
+        label.innerText='Words requiring more study';
         const wordsThatNeedMoreWorkDiv = document.getElementById('results-negative');
         wordsThatNeedMoreWorkDiv.innerHTML='';
         const progress = getAllProgress();
@@ -1012,6 +1019,7 @@
                   ul.appendChild(li);
             });
             wordsThatNeedMoreWorkDiv.appendChild(ul);
+            label.innerText = label.innerText + ' ['+words.length+']';
         } else {
             wordsThatNeedMoreWorkDiv.innerHTML='None needing review.';
         }
