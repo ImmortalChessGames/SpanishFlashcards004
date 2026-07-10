@@ -1864,9 +1864,9 @@ h2 {
 .scroll-wrapper {
   /* Grows dynamically but caps at exactly half the screen height */
   max-height: 40vh; 
-  
   /* Enables scrolling only when content exceeds the max-height */
-  overflow-y: auto; 
+  overflow-y: scroll;
+  overflow-x: hidden; 
   
   /* Removes default or previous border styling */
   border: none; 

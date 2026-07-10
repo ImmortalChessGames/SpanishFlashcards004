@@ -232,8 +232,9 @@
                             <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
                         </div>
                         <div class="sm-button-group">                      
-                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
                             <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
+                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
+                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#EB5406" onclick="smResetQuizProgress();">Reset Quiz Progress</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
                     </div>
@@ -426,6 +427,13 @@
         lastWordHelped = null;
         repaintReviewTab();
         return progress[spanishWord].cs; // Return updated streak for immediate rendering
+    }
+
+    function smResetQuizProgress() {
+        if(confirm('Are you sure you want to reset all of your quiz progress?')) {
+            localStorage.setItem(PROGRESS_KEY, '{}');
+            showDynamicPopup('Quiz Progress','Reset progress has been deleted successfully.', 2000);
+        }
     }
 
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
