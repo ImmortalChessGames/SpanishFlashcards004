@@ -62,9 +62,9 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explain</button>
-                              <button id="translateBtn" class="ai-tutor-btn">Translate</button>
-                              <button id="speakSlowBtn" class="ai-tutor-btn">Speak 🔊</button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🤔 </button>
+                              <button id="translateBtn" class="ai-tutor-btn"> 🌎 </button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🔊 </button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -421,7 +421,7 @@
             if(lastWordHelped && lastWordHelped.toUpperCase()==spanishWord.toUpperCase()) {
                 progress[spanishWord].cs += -1; // neutralize the correct answer
                 if(!deepDiveWarningAlreadyShown) {
-                    showDynamicPopup('Deep Dive','Although you answered correctly, whille in Deep Dive mode this answer will not be counted towards extending the word streak.', 5000);
+                    showDynamicPopup('Deep Dive','Although you answered correctly, while in Deep Dive mode this answer will not be counted towards extending the word streak.', 5000);
                     deepDiveWarningAlreadyShown = true;
                 }
             }
@@ -608,8 +608,8 @@
     }
 
     function renderQuestionToUI(questionObj) {
-        document.getElementById('question').innerText = questionObj.question;
-
+        questionEl.innerText = questionObj.question + " 🔊";
+        questionEl.addEventListener('click', (e) => speakWordSpanish(questionObj.question));
         // Build the beautiful visual streak tracker component
         const progress = getAllProgress();
         const currentWordProgress = progress[questionObj.spanishWord] || { cs: 0 };
@@ -1404,6 +1404,21 @@
         }
     }
 
+    function speakWordSpanish(wordToSpeak) {
+        if (!wordToSpeak) {
+            return;
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(wordToSpeak);
+          utterance.lang = 'es-ES'; 
+          utterance.rate = rateSlider.value; 
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("Native browser speech synthesis is unsupported on this software platform.");
+        }
+    }
+
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
     translateBtn.disabled=true;
@@ -1414,7 +1429,6 @@ prevBtn.addEventListener('click', showPrevious);
 nextBtn2.addEventListener('click', showNext);
 prevBtn2.addEventListener('click', showPrevious); 
 speakSlowBtn.addEventListener('click', speakSlowSpanish);
-
 
 function adaptGoogleToITranslate(googleResponse, targetLang) {
     var googleList = (googleResponse && googleResponse.data && googleResponse.data.translations) || [];
@@ -2299,8 +2313,9 @@ function handleSwipe() {
 }
 
 (function() {
+
       let textToSpeak = "";
-        
+  
       const spanishTextInput = document.getElementById('spanishText');
       const submitBtn = document.getElementById('ai-tutor-submitBtn');
       const outputCard = document.getElementById('ai-tutor-outputCard');
