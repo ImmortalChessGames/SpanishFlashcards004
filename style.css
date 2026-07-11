@@ -26,7 +26,7 @@
     }
     .main-container {
         background: white;
-        padding: 30px;
+        padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         height: 100%;
@@ -1866,20 +1866,34 @@ h2 {
 }
 
 .scroll-wrapper {
-  /* Grows dynamically but caps at exactly half the screen height */
-  max-height: 40vh; 
-  /* Enables scrolling only when content exceeds the max-height */
-  overflow-y: scroll;
+  max-height: 50vh; 
+  overflow-y: auto;
   overflow-x: hidden; 
-  
-  /* Removes default or previous border styling */
-  border: none; 
-  
-  /* Removes extra padding that might create artificial height */
-  padding: 0; 
+  border: 1px solid #d3d3d3; 
+  border-radius: 10px; 
+  padding: 20px; 
 }
 .inner-content {
-  /* Styling for your inner div */
   background-color: #f9f9f9;
+}
+
+/* Style the scrollbar to guarantee it stays visible */
+.scroll-wrapper::-webkit-scrollbar {
+  width: 8px; /* Width of the vertical scrollbar */
+  display: block; /* Overrides default hidden state on mobile/Mac */
+}
+
+.scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light track background */
+  border-radius: 4px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #888; /* Darker draggable bar */
+  border-radius: 4px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 

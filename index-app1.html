@@ -149,13 +149,13 @@
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-negative-label" for="results-negative">Words requiring more study</label>
+                <label id="results-negative-label" for="results-negative" style="margin-bottom:10px;">Words requiring more study</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
                       <div id="results-negative"></div>
                   </div>
                 </div>
-                <label id="results-positive-label" for="results-positive">Words you have learned</label>
+                <label id="results-positive-label" for="results-positive" style="margin-bottom:10px;">Words you have learned</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
                       <div id="results-positive"></div>
@@ -260,7 +260,7 @@
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
     const ITEMS_PER_PAGE = 20;
-    const MASTERY_STREAK_NEEDED = 4;
+    const MASTERY_STREAK_NEEDED = 0;
     const QUESTIONS_PER_QUIZ = 30;
     const MINIMUM_VOCAB_WORD_COUNT = 200;
 
@@ -304,10 +304,12 @@
 
     let wordHelp;
     let lastWordHelped;
-
+    
     // Scoped variable declarations using the updated IDs
     const appModalElement = document.getElementById("appModalWrapper");
     const appModalCloseTrigger = document.getElementById("appModalClose");
+
+    let deepDiveWarningAlreadyShown;
 
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
@@ -418,7 +420,10 @@
         if (isCorrect) {
             if(lastWordHelped && lastWordHelped.toUpperCase()==spanishWord.toUpperCase()) {
                 progress[spanishWord].cs += -1; // neutralize the correct answer
-                showDynamicPopup('Deep Dive','The correct answer is not going to be counted towards extending the streak.', 1500);
+                if(!deepDiveWarningAlreadyShown) {
+                    showDynamicPopup('Deep Dive','Although you answered correctly, whille in Deep Dive mode this answer will not be counted towards extending the word streak.', 5000);
+                    deepDiveWarningAlreadyShown = true;
+                }
             }
             progress[spanishWord].cs += 1;
         } else {
@@ -967,7 +972,7 @@
                     a.style = 'color:darkBlue;font-weight:bold;font-size:18px;text-transform: uppercase;';
                     a.textContent = masteredWords[i].split(':')[0];
                     a.addEventListener('click', function(event) {
-                        if(confirm('You have mastered word '+event.target.textContent+' , are you sure to continue to Deep Dive')) {
+                        if(confirm('You have mastered word ['+event.target.textContent+'], are you sure to continue to Deep Dive ?')) {
                            processWordHelp(event.target.textContent);
                         }
                     });
