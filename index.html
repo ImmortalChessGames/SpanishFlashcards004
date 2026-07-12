@@ -611,12 +611,12 @@
         if(questionEl.nextElementSibling && questionEl.nextElementSibling.tagName.toLowerCase() === "a") {
             questionEl.nextElementSibling.remove();
         }
-        questionEl.innerText = questionObj.question + "  🔊";
+        questionEl.innerText = "🔊   " + questionObj.question;
         questionEl.addEventListener('click', (e) => speakWordSpanish(questionObj.question));
         const a = document.createElement('a');
         a.title = "Click to delete the word [" + questionObj.question+ "].";
-        a.textContent = "🗑️";
-        a.style.fontSize = "22px";
+        a.textContent = " 🗑️";
+        a.style.fontSize = "20px";
         a.addEventListener('click', function(event) {
             if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {
                 deleteWord(questionObj.question);
