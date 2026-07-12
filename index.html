@@ -571,19 +571,19 @@
 
         currentQuestionObj = generateSingleQuestion(nextWordItem, masterData);
 
+        repaintWordsLeftToMaster();
+        renderQuestionToUI(currentQuestionObj);
+    }
+
+    function repaintWordsLeftToMaster() {
         const progress = getAllProgress();
         const remainingCount = masterData.filter(item => !(progress[item.spanish]?.cs >= MASTERY_STREAK_NEEDED)).length;
-        
         const quizQuestionCount = document.getElementById('quiz-question-count');
         if (quizQuestionCount) {
             quizQuestionCount.innerText = `Words left to master: ${remainingCount} (Out of ${masterData.length})`;
         }
-
         document.getElementById('quiz-progress-counter').textContent=(currentQuestionIndex+1);
         document.getElementById('quiz-progress-total').textContent=(quizVocab.length);
-
-
-        renderQuestionToUI(currentQuestionObj);
     }
 
     function endQuiz(score, totalQuestions) {
@@ -950,6 +950,7 @@
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
         resetQuizProgress();
+        repaintWordsLeftToMaster();
     }
 
     function repaintReviewTab() {
@@ -1065,12 +1066,12 @@
             masterData.push({ spanish: spanishVal, english: englishVal });
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
 
-            wordForm.reset();
-            
             // Go to page 1 to let the user see where it fits alphabetically or search it
             currentPage = 1; 
             resetQuizProgress();
             updateDisplayData();
+
+            wordForm.reset();
         }
     }
 
