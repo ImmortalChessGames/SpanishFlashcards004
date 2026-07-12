@@ -110,7 +110,7 @@
                             </select> 
                           </div> 
                         </div>
-                        <h2 id="question">Loading question...</h2>
+                        <h2 id="question" class="inline-heading">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
                     </div>
                     <div id="score-box" class="hidden">
@@ -608,8 +608,23 @@
     }
 
     function renderQuestionToUI(questionObj) {
-        questionEl.innerText = questionObj.question + " 🔊";
+        if(questionEl.nextElementSibling && questionEl.nextElementSibling.tagName.toLowerCase() === "a") {
+            questionEl.nextElementSibling.remove();
+        }
+        questionEl.innerText = questionObj.question + "  🔊";
         questionEl.addEventListener('click', (e) => speakWordSpanish(questionObj.question));
+        const a = document.createElement('a');
+        a.title = "Click to delete the word [" + questionObj.question+ "].";
+        a.textContent = "🗑️";
+        a.style.fontSize = "22px";
+        a.addEventListener('click', function(event) {
+            if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {
+                deleteWord(questionObj.question);
+                showDynamicPopup('Delete', 'The word ['+ questionObj.question +'] was deleted successfully.', 2000);
+                loadNextQuestion();
+            }
+        });
+        questionEl.after(a);
         // Build the beautiful visual streak tracker component
         const progress = getAllProgress();
         const currentWordProgress = progress[questionObj.spanishWord] || { cs: 0 };
@@ -1709,16 +1724,14 @@ function processSentence(input) {
             const span = document.createElement('span');
             span.className = 'clickable-word';
             span.textContent = rawWord; // Displays the word with its surrounding punctuation
-            if(wordHelp && wordHelp.toUpperCase()===rawWord.toUpperCase()) {
+            if(wordHelp && wordHelp.toUpperCase()===cleanWord.toUpperCase()) {
                 span.style='background-color:#D9E1FC;';
             }
-
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
                 sendTranslationRequest(cleanWord);
                 //translateText(cleanWord);
             });
-
             wordBox.appendChild(span);
         }
     });

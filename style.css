@@ -1895,3 +1895,9 @@ h2 {
   background: #555; 
 }
 
+.inline-heading {
+  display: inline-block;  /* Allows other elements to sit on the same line */
+  vertical-align: middle; /* Aligns text with the middle of the image */
+  margin-right: 10px;     /* Creates a gap before the image */
+}
+
