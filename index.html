@@ -259,6 +259,8 @@
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
+    const DEFAULT_SP_KEY = '__PASSPHRASE__';
+    const DEFAULT_SP = 'enter-your-secret-passcode-here';
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
@@ -332,7 +334,7 @@
         const timeDifference = currentTime - savedTime;
         if (timeDifference >= 20000) {
             const smSecretVal = document.getElementById('sm-secret').value;
-            if(smSecretVal && smSecretVal==='enter-your-secret-passcode-here') {
+            if(smSecretVal && smSecretVal===DEFAULT_SP) {
                 savedTime = currentTime;
                 appModalElement.classList.add("is-visible");                
             } 
@@ -799,10 +801,15 @@
     }
 
     async function getDerivedKey() {
-        const secret = document.getElementById('sm-secret').value;
-        if(!secret || secret==='enter-your-secret-passcode-here') {
-          alert("Please replace 'enter-your-secret-passcode-here' in Settings with a valid secret pass code.");
-          return;
+        let secret = document.getElementById('sm-secret').value;
+        if(!secret || secret===DEFAULT_SP) {
+          if(localStorage.getItem(DEFAULT_SP_KEY) && localStorage.getItem(DEFAULT_SP_KEY)!==DEFAULT_SP) {
+            secret = localStorage.getItem(DEFAULT_SP_KEY);
+            document.getElementById('sm-secret').value=secret;
+          } else {
+              alert("Please replace " + DEFAULT_SP + " in Settings with a valid secret pass code.");
+              return;
+          }
         }
         const encoder = new TextEncoder();
         const baseKey = await window.crypto.subtle.importKey(
@@ -826,8 +833,10 @@
             const decrypted = await window.crypto.subtle.decrypt(
                 { name: "AES-GCM", iv: iv }, key, data
             );
+            localStorage.setItem(DEFAULT_SP_KEY,document.getElementById('sm-secret').value);
             return new TextDecoder().decode(decrypted);
         } catch (e) {
+            localStorage.setItem(DEFAULT_SP_KEY, DEFAULT_SP);
             if(showPopup===true) {
                 showDynamicPopup('Error','Password is wrong.', 3000);
             }
