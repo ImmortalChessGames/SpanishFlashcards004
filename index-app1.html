@@ -803,12 +803,10 @@
     async function getDerivedKey() {
         let secret = document.getElementById('sm-secret').value;
         if(!secret || secret===DEFAULT_SP) {
-          if(localStorage.getItem(DEFAULT_SP_KEY) && localStorage.getItem(DEFAULT_SP_KEY)!==DEFAULT_SP) {
-            secret = localStorage.getItem(DEFAULT_SP_KEY);
-            document.getElementById('sm-secret').value=secret;
-          } else {
-              alert("Please replace " + DEFAULT_SP + " in Settings with a valid secret pass code.");
-              return;
+          secret = getsetPassphrase();
+          if(!secret || secret===DEFAULT_SP) {
+            alert("Please replace " + DEFAULT_SP + " in Settings with a valid secret pass code.");
+            return;
           }
         }
         const encoder = new TextEncoder();
@@ -2167,6 +2165,15 @@ function smDeleteAllVocabulary() {
     }
 }
 
+function getsetPassphrase() {
+    const passphrase = localStorage.getItem(DEFAULT_SP_KEY);
+    if(passphrase && passphrase!==DEFAULT_SP) {
+      document.getElementById('sm-secret').value=passphrase;
+    } else {
+      document.getElementById('sm-secret').value=DEFAULT_SP;
+    }
+    return passphrase;
+}
 
 function saveWordFromExplanation(event,elt) {
     event.preventDefault();
@@ -2426,6 +2433,7 @@ function handleSwipe() {
     resetQuizProgress();
     displayIncognitoWarning();
     repaintReviewTab();
+    getsetPassphrase();
 
 </script>
 </body>
