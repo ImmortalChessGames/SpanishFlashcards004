@@ -462,17 +462,6 @@
         color: #1a202c;
     }
 
-/* Container Wrapper */
-.accordion-container {
-  max-width: 600px;
-  margin: 2rem auto;
-  font-family: system-ui, -apple-system, sans-serif;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
 /* Individual Accordion Panel */
 details {
   border-bottom: 1px solid #e2e8f0;
@@ -1136,7 +1125,7 @@ h2 {
 }
 
 #ai-tutor-container .ai-tutor-btn:disabled { 
-  background: #cbd5e1; 
+  background: #F0F8FF; 
   cursor: not-allowed; 
 }
 
