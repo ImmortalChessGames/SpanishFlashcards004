@@ -577,7 +577,7 @@ li { background: #f9f9fb; border-radius: 4px; }
   transition: transform 0.1s ease;
 }
 
-/* The state while being clicked */
+/* The state while being click ed */
 .pressed-link:active {
   /* Push the element down by the size of the shadow */
   transform: translateY(4px); 
