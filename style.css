@@ -1157,7 +1157,6 @@ h2 {
 }
 
 #ai-tutor-container .ai-tutor-response-block {
-  background: var(--ai-tutor-hl-bg);
   padding: 1.25rem;
   border-radius: 8px;
   font-family: 'Courier New', Courier, monospace;
