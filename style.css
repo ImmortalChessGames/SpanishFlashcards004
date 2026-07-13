@@ -84,11 +84,14 @@
     }
     .english-text {
         font-size: 1.2rem;
-        color: #27ae60;
-        font-style: italic;
+        color: green;
         margin-top: 20px;
         min-height: 30px;
         margin-bottom: 20px;
+        background-color: #FFFAA0;
+        padding:15px;
+        font-weight:400;
+        border: 2px dashed green;   
     }
     .action-row {
         display: flex;
