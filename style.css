@@ -1820,6 +1820,14 @@ h2 {
   line-height: 1.8;
 }
 
+.link-container {
+  display: flex;            /* Aligns items horizontally */
+  flex-direction: row;      /* Ensures they sit side by side */
+  justify-content: center;  /* Centers the items horizontally */
+  align-items: center;      /* Centers the items vertically (optional) */
+  gap: 15px;  
+}
+
 /* Compact text links styling */
 .link-content a {
   display: inline-block;
@@ -1872,6 +1880,8 @@ h2 {
   border: 1px solid #d3d3d3; 
   border-radius: 10px; 
   padding: 20px; 
+  margin-left:5px;
+  margin-right:5px;
 }
 .inner-content {
   background-color: #f9f9f9;

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache">
@@ -20,9 +20,7 @@
 <body>
 <div class="main-container">
     <div id="viewer">
-<!--
-    <img class="mobile-only-image" src="./banner_bw.PNG"/>
--->
+        <img style="display: block; margin: 0 auto;" src="./banner.PNG"/>
         <!-- Scoped Layout Engine Wrapper -->
         <div id="msg-center-scoped-root" class="msg-center-overlay">
           <div class="msg-center-card">
@@ -36,11 +34,10 @@
         <div class="tabs-wrapper">
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
-                <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Read</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
-                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Words</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Review</button>
-                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Config</button>
+                <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Sentences</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false" onclick="resetQuizProgress();">Quiz</button>
+                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Vocabulary</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Settings</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -62,9 +59,9 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🤔 </button>
-                              <button id="translateBtn" class="ai-tutor-btn"> 🌎 </button>
-                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🔊 </button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn">Explain</button>
+                              <button id="translateBtn" class="ai-tutor-btn">Translate</button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn">Speak 🔊</button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -83,12 +80,8 @@
                         <button id="nextBtn2" class="btn-nav">Next →</button>
                     </div>
                 </div>   
-                <div class="collapsible-wrapper">
-                  <input type="checkbox" id="menu-toggle">
-                  <label id="topicSuggestionsLabel" for="menu-toggle" class="menu-label hidden">See Also</label>
-                  <div class="link-content" id="additional-topics-links"></div>
-                </div>
             </div>
+
             <!-- PANEL 2 -->
             <div id="panel-2" class="tab-panel" role="tabpanel">
                 <div id="quiz-container" class="quiz-container">
@@ -110,7 +103,7 @@
                             </select> 
                           </div> 
                         </div>
-                        <h2 id="question" class="inline-heading">Loading question...</h2>
+                        <h2 id="question">Loading question...</h2>
                         <div id="choices-container" class="choices-grid"></div>
                     </div>
                     <div id="score-box" class="hidden">
@@ -136,7 +129,7 @@
                     </form>
                     <div class="search-box">
                         <input type="text" id="searchBar" placeholder="Type to filter Spanish or English words...">
-                        <ul id="wordList" class="vocab"></ul>
+                        <ul id="wordList"></ul>
                         <!-- Pagination Controls -->
                         <div class="pagination">
                             <button id="prevPage" type="button" disabled>Previous</button>
@@ -148,23 +141,7 @@
             </div>
 
             <!-- PANEL 4 -->
-            <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
-                <div class="scroll-wrapper">
-                  <div class="inner-content">
-                      <div id="results-negative"></div>
-                  </div>
-                </div>
-                <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
-                <div class="scroll-wrapper">
-                  <div class="inner-content">
-                      <div id="results-positive"></div>
-                  </div>
-                </div>
-            </div>
-
-            <!-- PANEL 5 -->
-            <div id="panel-5" class="tab-panel" role="tabpanel">
+            <div id="panel-4" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
@@ -188,9 +165,11 @@
                                   <option value="Intermediate-to-Advanced" selected>Intermediate-to-Advanced</option>
                                   <option value="Advanced">Advanced</option>
                                   <option value="Expert">Expert</option>
+                                  <option value="Superior">Superior</option>
+                                  <option value="Distinguished">Distinguished</option>
                                 </select>
                             </div>
-                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchArticle();window.scrollTo(0, 0);">Generate Article</button>
+                            <button id="gsv-submit-btn" class="gsv-btn" onclick="fetchGemmaResponse();">Generate Article</button>
                             <div id="gsv-status" class="gsv-status-msg"></div>
                         </div>   
                         <div class="sm-choose-dataset">
@@ -203,15 +182,10 @@
                               <option value="MexicoCityStreetFood.json">Mexico City Street Food</option>
                               <option value="BlackHole.json">Black Hole</option>
                             </select>
-                        </div>
-                        <div class="sm-input-group">
-                          <label class="sm-label" style="margin-top:20px;" for="word-similarity-slider">Word Similarity Threshold:</label>
-                          <i style="font-size:12px;text-align:right;">Note: 100 is least restrictive</i>
-                          <input type="range" id="word-similarity-slider" min="0" max="100" step="1" value="35" class="settings-slider">
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5" class="settings-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5"class="speech-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -230,11 +204,8 @@
                             <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
                         </div>
                         <div class="sm-button-group">                      
-                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
-                        </div>
-                        <div class="sm-button-group">                      
+                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load Default Vocabulary</button>
                             <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
-                            <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#EB5406" onclick="smResetQuizProgress();">Reset Progress</button>
                         </div>
                         <div id="sm-status" class="sm-status"></div>
                     </div>
@@ -244,25 +215,12 @@
     </div> <!-- Closes #viewer -->
 </div> <!-- Closes .container -->
 
-<!-- The Modal Overlay -->
-<div id="appModalWrapper" class="app-modal-overlay">
-  <!-- The Modal Box -->
-  <div class="app-modal-container">
-    <span id="appModalClose" class="app-modal-close-icon">&times;</span>
-    <h2>Pass phrase error</h2>
-    <p>Please enter a correct pass phrase in Settings.</p>
-  </div>
-</div>
-
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
-    const DEFAULT_SP_KEY = '__PASSPHRASE__';
-    const DEFAULT_SP = 'enter-your-secret-passcode-here';
     const ITEMS_PER_PAGE = 20;
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
-    const MINIMUM_VOCAB_WORD_COUNT = 200;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -278,7 +236,6 @@
     const api1KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoEHhgC23MZ+zInz2AwJPYUQ5wLeTIGgvphRV9aU7NB7WtQ4WFrsVNCC1YY7BsqDQkXUhnPJPBSuPYSCb/GYAsHC9+bOPevpJAG8SCE6LSguglA==';
     const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
     const api3KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoBl3w4dnl5l1/a+xjpVKCrXxul2ROtEcogoGEktfZUDEJwvjmuhCJVrVvfzC7cipF6msKIC/NluiNzZWtqGYWJeEE8hsXhZWE5w9UiLIsfvq3Q==';
-    const api4KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoPFnFkLzxHmYOnYMhldqJT7PNfFfKKwmmhkht9E/JVtL+WCi/XziDoHMP9YqbYvVAHI6yJOkSeNOy2dkVRT/k+X2SWCCixFFI7j4mUHYA9Y6JQ==';
     const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
 
@@ -291,96 +248,11 @@
     // 2. DOM Elements
     const rateSlider = document.getElementById('rate-slider');
     const rateValueDisplay = document.getElementById('rate-value');
-
-    const wordSimilaritySlider = document.getElementById('word-similarity-slider');
-    const wordSimilarityValueDisplay = document.getElementById('word-similarity-value');
-
     const speakBtn = document.getElementById('speak-btn');
 
     let quizData = [];
     let currentQuestionIndex = -1;
     let score = 0;
-    let currentSlide = 0;
-
-    let wordHelp;
-    let lastWordHelped;
-    
-    // Scoped variable declarations using the updated IDs
-    const appModalElement = document.getElementById("appModalWrapper");
-    const appModalCloseTrigger = document.getElementById("appModalClose");
-
-    let deepDiveWarningAlreadyShown;
-
-    // Close modal via click on 'x'
-    appModalCloseTrigger.addEventListener("click", () => {
-      appModalElement.classList.remove("is-visible");
-      document.getElementsByClassName("tab-btn")[4].click();
-      setTimeout(() => {
-        document.getElementById('sm-secret').scrollIntoView({ behavior: 'smooth' });
-      }, 50); 
-    });
-
-    // Close modal via click outside the container box
-    window.addEventListener("click", (event) => {
-      if (event.target === appModalElement) {
-        appModalElement.classList.remove("is-visible");
-      }
-    });
-    let savedTime = Date.now();
-    document.addEventListener('click', () => {
-        let currentTime = Date.now();
-        const timeDifference = currentTime - savedTime;
-        if (timeDifference >= 20000) {
-            const smSecretVal = document.getElementById('sm-secret').value;
-            if(smSecretVal && smSecretVal===DEFAULT_SP) {
-                savedTime = currentTime;
-                appModalElement.classList.add("is-visible");                
-            } 
-        }
-    });
-
-    function getSimilarityPercentage(wordA, wordB) {
-        const normA = normalizeWord(wordA);
-        const normB = normalizeWord(wordB);
-
-        const maxLength = Math.max(normA.length, normB.length);
-        if (maxLength === 0) return 100; // Both words are empty strings
-
-        const distance = getLevenshteinDistance(normA, normB);
-        
-        // Calculate percentage and round to 2 decimal places
-        const percentage = (1 - distance / maxLength) * 100;
-        return parseFloat(percentage.toFixed(2));
-    }
-
-    // Helper normalization from previous step
-    function normalizeWord(word) {
-        return removeSpanishPrefixes(word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zñ]/g, ""));
-    }
-
-    function removeSpanishPrefixes(str) {
-      // \b ensures we only remove whole words (e.g., skips "lamento")
-      // \s? handles optional trailing space after the prefix
-      return str.replace(/^(el|la|las|los)\b\s?/i, '');
-    }
-
-    // Optimized distance from previous step
-    function getLevenshteinDistance(a, b) {
-        if (a.length === 0) return b.length;
-        if (b.length === 0) return a.length;
-        let prevRow = Array(b.length + 1).fill(0).map((_, i) => i);
-        let currRow = Array(b.length + 1).fill(0);
-        for (let i = 1; i <= a.length; i++) {
-            currRow[0] = i;
-            for (let j = 1; j <= b.length; j++) {
-                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-                currRow[j] = Math.min(currRow[j - 1] + 1, prevRow[j] + 1, prevRow[j - 1] + cost);
-            }
-            [prevRow, currRow] = [currRow, prevRow];
-        }
-        return prevRow[b.length];
-    }
-
 
     function generateQuizWords() {
       try {
@@ -420,47 +292,35 @@
 
     function recordUserAnswer(spanishWord, isCorrect) {
         const progress = getAllProgress();
+        
         if (!progress[spanishWord]) {
             progress[spanishWord] = { cs: 0, tw: 0 };
         }
+
         if (isCorrect) {
-            if(lastWordHelped && lastWordHelped.toUpperCase()==spanishWord.toUpperCase()) {
-                progress[spanishWord].cs += -1; // neutralize the correct answer
-                if(!deepDiveWarningAlreadyShown) {
-                    showDynamicPopup('Deep Dive','Although you answered correctly, while in Deep Dive mode this answer will not be counted towards extending the word streak.', 5000);
-                    deepDiveWarningAlreadyShown = true;
-                }
-            }
             progress[spanishWord].cs += 1;
         } else {
             progress[spanishWord].cs = 0; // Reset streak instantly on wrong answer
             progress[spanishWord].tw += 1;
         }
-        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-        lastWordHelped = null;
-        repaintReviewTab();
-        return progress[spanishWord].cs; // Return updated streak for immediate rendering
-    }
 
-    function smResetQuizProgress() {
-        if(confirm('Are you sure you want to reset all of your quiz progress?')) {
-            localStorage.setItem(PROGRESS_KEY, '{}');
-            showDynamicPopup('Quiz Progress','Reset progress has been deleted successfully.', 2000);
-        }
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+
+        return progress[spanishWord].cs; // Return updated streak for immediate rendering
     }
 
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        if(currentQuestionIndex>=0 && currentQuestionIndex<QUESTIONS_PER_QUIZ) {
-            console.log('Quiz in progress, returning.');
-            return;
-        }
-        score = 0;
-        currentQuestionIndex = -1;
-        scoreBox.classList.add("hidden");
-        quizBox.classList.remove("hidden");
-        quizVocab = generateQuizWords();
-        loadNextQuestion(); 
+        //if (confirm("Are you sure you want to reset all tracking progress? This will put all mastered words back into rotation.")) {
+        //    localStorage.removeItem(PROGRESS_KEY);
+        //    isProcessingAnswer = false;
+            score = 0;
+            currentQuestionIndex = -1;
+            scoreBox.classList.add("hidden");
+            quizBox.classList.remove("hidden");
+            quizVocab = generateQuizWords();
+            loadNextQuestion(); 
+        //}
     }
 
     // totalStreak = ts
@@ -553,6 +413,7 @@
         if(quizVocab.length<1) {
             return;
         }
+
         currentQuestionIndex++;
 
         if (currentQuestionIndex >= quizVocab.length) {
@@ -577,19 +438,19 @@
 
         currentQuestionObj = generateSingleQuestion(nextWordItem, masterData);
 
-        repaintWordsLeftToMaster();
-        renderQuestionToUI(currentQuestionObj);
-    }
-
-    function repaintWordsLeftToMaster() {
         const progress = getAllProgress();
         const remainingCount = masterData.filter(item => !(progress[item.spanish]?.cs >= MASTERY_STREAK_NEEDED)).length;
+        
         const quizQuestionCount = document.getElementById('quiz-question-count');
         if (quizQuestionCount) {
             quizQuestionCount.innerText = `Words left to master: ${remainingCount} (Out of ${masterData.length})`;
         }
+
         document.getElementById('quiz-progress-counter').textContent=(currentQuestionIndex+1);
         document.getElementById('quiz-progress-total').textContent=(quizVocab.length);
+
+
+        renderQuestionToUI(currentQuestionObj);
     }
 
     function endQuiz(score, totalQuestions) {
@@ -597,29 +458,9 @@
       resetQuizProgress();
     }
 
-    function parseToBulletedList(text) {
-        const sentences = text.split('\n\n');
-        const listItems = sentences
-          .filter(sentence => sentence.trim() !== '')
-          .map(sentence => {
-            const trimmed = sentence.trim();
-            
-            // RegEx finds (...) and wraps it in a styled span tag
-            const formattedText = trimmed.replace(/(\([^)]+\))/g, '<span class="parenthesis-text">$1</span>');
-            
-            return `<li class="word-help-bullet-list-item">${formattedText}</li>`;
-          })
-          .join('');
-        return `<ul class="word-help-bullet-list-container">${listItems}</ul>`;
-    }
-
     function renderQuestionToUI(questionObj) {
-        if(questionEl.nextElementSibling && questionEl.nextElementSibling.tagName.toLowerCase() === "a") {
-            questionEl.nextElementSibling.remove();
-        }
-        questionEl.innerText = questionObj.question + "  🔊";
-        questionEl.addEventListener('click', (e) => speakWordSpanish(questionObj.question));
-       
+        document.getElementById('question').innerText = questionObj.question;
+
         // Build the beautiful visual streak tracker component
         const progress = getAllProgress();
         const currentWordProgress = progress[questionObj.spanishWord] || { cs: 0 };
@@ -655,52 +496,21 @@
             btn.addEventListener('click', (e) => handleAnswerSubmit(choiceText, e.target));
             container.appendChild(btn);
         });
-
-        const linkContainer = document.createElement('div');
-        linkContainer.classList.add('link-container');
-        container.appendChild(linkContainer);
-
-        const helpLink = document.createElement('a');
-        helpLink.textContent = "Deep Dive";
-        helpLink.style='font-weight:bold;color:darkBlue;font-size:16px;';
-        helpLink.classList.add('word-help-link');
-        helpLink.addEventListener('click', function(event) {
-            processWordHelp(questionObj.spanishWord);
-            if(questionObj.spanishWord && questionObj.englishWord) {
-                saveWord(questionObj.spanishWord.toLowerCase(), questionObj.englishWord.toLowerCase());
-            }
-        });
-        linkContainer.appendChild(helpLink);
-
-        const removeWordLink = document.createElement('a');
-        removeWordLink.style='color:darkRed;font-weight:bold;font-size:16px;';
-        removeWordLink.textContent = "Delete Word";
-        removeWordLink.classList.add('word-help-link');
-        removeWordLink.addEventListener('click', function(event) {
-            if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {
-                deleteWord(questionObj.question);
-                showDynamicPopup('Delete', 'The word ['+ questionObj.question +'] was deleted successfully.', 2000);
-                loadNextQuestion();
-            }
-        });
-        linkContainer.appendChild(removeWordLink);
-
-
-        const helpOutput = document.createElement('div');
-        helpOutput.id='word-help';
-        helpOutput.classList.add('word-help-bullet-list-container');    
-        container.appendChild(helpOutput);
-
     }
 
     // 6. IN-LINE ANIMATION FEEDBACK CONTROLLER
     function handleAnswerSubmit(userSelectedAnswer, clickedButtonElement) {
         if (isProcessingAnswer || !currentQuestionObj) return;
         isProcessingAnswer = true; // Lock choice buttons immediately during validation phase
+
+        console.log('quiz_word_progress:' + localStorage.getItem(PROGRESS_KEY));
+
         const isCorrect = (userSelectedAnswer === currentQuestionObj.answer);
+        
         if(isCorrect) {
             score++;
         }
+
         // Disable all option choices concurrently to block additional input registrations
         const allButtons = document.querySelectorAll('#choices-container .quiz-btn');
         allButtons.forEach(btn => btn.disabled = true);
@@ -814,13 +624,10 @@
     }
 
     async function getDerivedKey() {
-        let secret = document.getElementById('sm-secret').value;
-        if(!secret || secret===DEFAULT_SP) {
-          secret = getsetPassphrase();
-          if(!secret || secret===DEFAULT_SP) {
-            alert("Please replace " + DEFAULT_SP + " in Settings with a valid secret pass code.");
-            return;
-          }
+        const secret = document.getElementById('sm-secret').value;
+        if(!secret || secret==='enter-your-secret-passcode-here') {
+          alert("Please replace 'enter-your-secret-passcode-here' in Settings with a valid secret pass code.");
+          return;
         }
         const encoder = new TextEncoder();
         const baseKey = await window.crypto.subtle.importKey(
@@ -835,7 +642,7 @@
         );
     }
 
-    async function decrypt(encrypted, showPopup) {
+    async function decrypt(encrypted) {
         try {
             const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
             const iv = combined.slice(16, 28);
@@ -844,13 +651,9 @@
             const decrypted = await window.crypto.subtle.decrypt(
                 { name: "AES-GCM", iv: iv }, key, data
             );
-            localStorage.setItem(DEFAULT_SP_KEY,document.getElementById('sm-secret').value);
             return new TextDecoder().decode(decrypted);
         } catch (e) {
-            localStorage.setItem(DEFAULT_SP_KEY, DEFAULT_SP);
-            if(showPopup===true) {
-                showDynamicPopup('Error','Password is wrong.', 3000);
-            }
+            showDynamicPopup('Error','Password is wrong.', 3000);
             console.log('Decryption failed. Incorrect password or broken text.');
         }
         return null;
@@ -908,6 +711,7 @@
         quizVocab=[];
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
+
         // Filter based on search input
         if (searchQuery) {
             filteredList = fullList.filter(item => 
@@ -937,11 +741,10 @@
         wordList.innerHTML = '';
         if(pageItems) {
             if (pageItems.length === 0) {
-                wordList.innerHTML = '<li class="vocab" style="color: #888; justify-content: center;">No words found</li>';
+                wordList.innerHTML = '<li style="color: #888; justify-content: center;">No words found</li>';
             } else {
                 pageItems.forEach((item) => {
                     const li = document.createElement('li');
-                    li.classList.add('vocab');
                     li.innerHTML = `
                         <span><strong>${item.spanish}</strong> ➔ ${item.english}</span>
                         <button class="delete-btn" data-word="${item.spanish.replace(/"/g, '&quot;')}">Delete</button>
@@ -970,105 +773,6 @@
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
         resetQuizProgress();
-        repaintWordsLeftToMaster();
-    }
-
-    function repaintReviewTab() {
-        repaintWordsNeedingMoreWork();
-        repaintMasteredWords();
-    }
-
-    function repaintMasteredWords() {
-        const label = document.getElementById('results-positive-label');
-        label.innerText='Words you have learned';
-        const masteredWordsDiv = document.getElementById('results-positive');
-        masteredWordsDiv.style='max-width:600px;display:flex;gap:20px;width:100%;margin:0 auto;';
-        masteredWordsDiv.innerHTML='';
-        let masteredWords = [];
-        const progress = getAllProgress();
-        if(progress) {
-            let count = 0;
-            for(i=0;i<masterData.length;i++) {
-                const itemProgress = progress[masterData[i].spanish];
-                if(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
-                  masteredWords.push(masterData[i].spanish + ':' + masterData[i].english);
-                  count++;
-                }
-            }
-            if(count>0) {
-                masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-                const ul = document.createElement('ul');
-                ul.classList.add('review');
-                for(i=0;i<masteredWords.length;i++) {
-                    const li = document.createElement('li');
-                    li.style='margin-bottom:5px;';
-                    li.classList.add('review');
-                    const a = document.createElement('a');
-                    a.href = '#';
-                    a.style = 'color:darkBlue;font-weight:bold;font-size:18px;text-transform: uppercase;';
-                    a.textContent = masteredWords[i].split(':')[0];
-                    a.addEventListener('click', function(event) {
-                        if(confirm('You have mastered word ['+event.target.textContent+'], are you sure to continue to Deep Dive ?')) {
-                           processWordHelp(event.target.textContent);
-                        }
-                    });
-                    li.append('✅ ');
-                    li.appendChild(a);
-                    li.append(' '+masteredWords[i].split(':')[1]); 
-                    ul.appendChild(li);
-                }
-                label.innerText = label.innerText + ' ['+count+']';
-                masteredWordsDiv.appendChild(ul);
-            } else {
-                masteredWordsDiv.innerHTML='None.';
-            }
-        } 
-    }
-
-    function repaintWordsNeedingMoreWork() {
-        const label = document.getElementById('results-negative-label');
-        label.innerText='Words requiring more study';
-        const wordsThatNeedMoreWorkDiv = document.getElementById('results-negative');
-        wordsThatNeedMoreWorkDiv.innerHTML='';
-        const progress = getAllProgress();
-        let words = [];
-        const availableWords = masterData.filter(item => {
-            const itemProgress = progress[item.spanish];
-            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
-        });
-        let availableReviewWords = availableWords.filter(item => {
-            const itemProgress = progress[item.spanish];
-            if(itemProgress && itemProgress.tw > 1) {
-                words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
-            }
-            return itemProgress && itemProgress.tw > 0;
-        });
-        if (words.length > 0) {
-            let totalWeight = 0;
-            words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
-            const ul = document.createElement('ul');
-            ul.classList.add('review');
-            words.map(w => {
-                  const li = document.createElement('li');
-                  li.style='margin-bottom:5px;';
-                  li.classList.add('review');
-                  const a = document.createElement('a');
-                  a.href = '#';
-                  a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;';
-                  a.textContent = w.spanish;
-                  a.addEventListener('click', function(event) {
-                    processWordHelp(w.spanish);
-                  });
-                  li.append('[-' + w.tw + '] ');
-                  li.appendChild(a);
-                  li.append(' '+w.english); 
-                  ul.appendChild(li);
-            });
-            wordsThatNeedMoreWorkDiv.appendChild(ul);
-            label.innerText = label.innerText + ' ['+words.length+']';
-        } else {
-            wordsThatNeedMoreWorkDiv.innerHTML='None needing review.';
-        }
     }
 
     function saveWord(spanishVal, englishVal) {
@@ -1086,12 +790,12 @@
             masterData.push({ spanish: spanishVal, english: englishVal });
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
 
+            wordForm.reset();
+            
             // Go to page 1 to let the user see where it fits alphabetically or search it
             currentPage = 1; 
             resetQuizProgress();
             updateDisplayData();
-
-            wordForm.reset();
         }
     }
 
@@ -1236,62 +940,22 @@
         } 
     }
 
-    function loadArticle(d) {
-        wordhelp = null;
-        let articleDataset = [];
-        let relatedTopicDataset = [];
-        for(i=0;i<d.length;i++) {
-            if(d[i].spanish.startsWith('RELATED_')) {
-                relatedTopicDataset.push(d[i].english);
-            } else {
-                articleDataset.push(d[i]);
-            }
-        }
-        const addlTopicLinks = document.getElementById('additional-topics-links');
-        addlTopicLinks.innerHTML="";
-        document.getElementById('topicSuggestionsLabel').classList.add('hidden');
-        if(relatedTopicDataset && relatedTopicDataset.length>0) {
-            for(i=0; i<relatedTopicDataset.length; i++) {
-                const dynamicLink = document.createElement('a');
-                dynamicLink.textContent = relatedTopicDataset[i];
-                dynamicLink.href='#';
-                dynamicLink.addEventListener('click', function(event) {
-                    const gsvTopicInput = document.getElementById('gsv-topic-input');
-                    gsvTopicInput.value=event.target.textContent;
-                    setTimeout(() => {
-                      gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
-                    }, 50); 
-                    document.getElementsByClassName("tab-btn")[4].click();
-                    document.getElementById('gsv-submit-btn').click();                    
-                });
-                addlTopicLinks.appendChild(dynamicLink);
-                addlTopicLinks.appendChild(document.createElement('br'));                
-            }
-            document.getElementById('topicSuggestionsLabel').classList.remove('hidden');
-        }
+
+    function loadArticle(articleDataset) {
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
             document.getElementById('progress-bar').max=100;
             history = [];
             historyIndex = -1;
         }
-        const selectDataset = document.getElementById('sm-chooseDataset');
-        const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
-        const topRightTextElt = document.getElementById('top-right-text');
-        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
-        if(speakerMode === true) {
-            topRightTextElt.style='cursor: pointer;';
-        } else {
-            topRightTextElt.style='cursor: default;';
-        }
         showNext();
+        turnFullArticleOnSpeaker();
     }
 
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
+        turnFullArticleOffSpeaker();
         if(flashcardsDataset && flashcardsDataset.length>0) {
-            const topRightTextElt = document.getElementById('top-right-text');
-            topRightTextElt.textContent='Individual Sentences';
             dataset = [...flashcardsDataset];
             showNext();
             document.getElementById('nextBtn').click();
@@ -1301,9 +965,6 @@
         dataset = [];
         history = [];
         historyIndex = -1;
-
-        const topRightTextElt = document.getElementById('top-right-text');
-        topRightTextElt.textContent='Individual Sentences';
 
         const lines = rawTsvData.split(/\r?\n/);
 
@@ -1371,8 +1032,19 @@
     }
 
     function showNext() {
-        document.getElementById('menu-toggle').checked=false;
-        let randomize = dataset.length >= 100;
+        let randomize = true;
+        const selectDataset = document.getElementById('sm-chooseDataset');
+        if(selectDataset.value.endsWith('.json') || selectDataset.options[selectDataset.selectedIndex].text.startsWith('>')) {
+            randomize = false;
+        }
+        const speakerMode = dataset.length < 100;
+        const topRightTextElt = document.getElementById('top-right-text');
+        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
+        if(speakerMode === true) {
+            topRightTextElt.style='cursor: pointer;';
+        } else {
+            topRightTextElt.style='cursor: default;';
+        }
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -1440,21 +1112,6 @@
         }
     }
 
-    function speakWordSpanish(wordToSpeak) {
-        if (!wordToSpeak) {
-            return;
-        }
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(wordToSpeak);
-          utterance.lang = 'es-ES'; 
-          utterance.rate = rateSlider.value; 
-          window.speechSynthesis.speak(utterance);
-        } else {
-          alert("Native browser speech synthesis is unsupported on this software platform.");
-        }
-    }
-
 translateBtn.addEventListener('click', function() {
     englishText.classList.remove('hidden');
     translateBtn.disabled=true;
@@ -1465,6 +1122,7 @@ prevBtn.addEventListener('click', showPrevious);
 nextBtn2.addEventListener('click', showNext);
 prevBtn2.addEventListener('click', showPrevious); 
 speakSlowBtn.addEventListener('click', speakSlowSpanish);
+
 
 function adaptGoogleToITranslate(googleResponse, targetLang) {
     var googleList = (googleResponse && googleResponse.data && googleResponse.data.translations) || [];
@@ -1522,7 +1180,7 @@ function reloadVocabDataset(element) {
 
 async function translateText(textToTranslate) {
     if (!textToTranslate.trim()) return;
-    const trKey = await decrypt(api2KeyEncrypted, true);
+    const trKey = await decrypt(api2KeyEncrypted);
     if (!trKey) {
       alert("Error (2) connecting .");
       return;
@@ -1720,7 +1378,6 @@ function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visual
 }
 
 function processSentence(input) {
-
     const wordBox = document.getElementById('wordBox');
 
     // Clear previous results
@@ -1741,107 +1398,21 @@ function processSentence(input) {
         
         if (cleanWordMatch) {
             const cleanWord = cleanWordMatch[0];
+            
             // Create a span element for the clickable word
             const span = document.createElement('span');
             span.className = 'clickable-word';
             span.textContent = rawWord; // Displays the word with its surrounding punctuation
-            if(wordHelp && wordHelp.toUpperCase()===cleanWord.toUpperCase()) {
-                span.style='background-color:#D9E1FC;';
-            }
+            
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
                 sendTranslationRequest(cleanWord);
                 //translateText(cleanWord);
             });
+
             wordBox.appendChild(span);
         }
     });
-}
-
-function capitalizeFirstLetter(str) {
-  if (!str) return ''; // Handle empty or null strings
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-async function processWordHelp(word) {
-    if(word && word.length>0) {
-      document.getElementById('word-help').innerHTML="<p class=''>Loading Example Usages...</p>";
-      const key = await decrypt(api4KeyEncrypted, true);
-      if(key == null) {
-         showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
-         return;
-      }
-      showDynamicPopup('Deep Dive', 'Deep Diving: ' + word, 2000);
-      const systemInstruction = 
-        "You are an expert Spanish language master tutor:\n\n" +
-        "Given a spanish word provide 15 real-world advanced-level example sentences using this word (include english language translation) to show real situational context. " + 
-        "Return a JSON array of objects. Each object has two properties: spanish with spanish sentence and english with the english translation." +
-        "CRITICAL: Do not return any other information exception except the JSON array of objects.";
-        const cleanWordMatch = word.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
-        if (cleanWordMatch) {
-            const cleanWord = cleanWordMatch[0];
-            wordHelp = cleanWord;
-            const maxRetries = 5;
-            let currentDelay = 2000; // Start with a 2-second wait on failure
-
-            for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                // 1. Set up the AbortController for the timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000); 
-
-                try {
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
-                    const response = await fetch(url, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Provide 15 Spanish language sentences that demonstrate how this Spanish word is used: "${word}"` }] }],
-                        systemInstruction: { parts: [{ text: systemInstruction }] },
-                        generationConfig: { 
-                          temperature: 0.2,
-                          responseMimeType: "text/plain" 
-                        }
-                      })
-                    });
-                    const data = await response.json();
-                    if (data.error) {
-                      throw new Error(data.error.message);
-                    }
-                    const rawJson = data.candidates[0].content.parts[0].text;
-                    console.log(rawJson);  
-                    if(rawJson && rawJson.length>0) {
-                        const jsonObj = JSON.parse(rawJson);
-                        loadArticle(jsonObj);
-                        document.getElementsByClassName("tab-btn")[0].click();
-                        const topRightTextElt = document.getElementById('top-right-text');
-                        topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 🔊 ';
-                        document.getElementById('word-help').innerHTML="";
-                        lastWordHelped = word;
-                        break;
-                    }
-                } catch (error) {
-                  clearTimeout(timeoutId); // Ensure timer cleans up on error
-                  document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
-                  const isTimeout = error.name === 'AbortError';
-                  const warnMsg = `Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`;
-                  console.warn(warnMsg);
-                  showDynamicPopup('Warning.', warnMsg, 1500);
-                  // If we used all retries, throw the final error up to your application
-                  if (attempt === maxRetries) {
-                    const errMsg = `Gemini API completely failed after ${maxRetries} attempts.`;
-                    showDynamicPopup('Error', errMsg, 1500);
-                    throw new Error(errMsg);
-                  } else {
-                      showDynamicPopup('Warning', warnMsg, 1500);
-                  }
-                  // Wait before trying again (2s, then 4s, etc.)
-                  console.log(`Waiting ${currentDelay / 1000}s before next attempt...`);
-                  await new Promise(resolve => setTimeout(resolve, currentDelay));
-                  currentDelay *= 2; 
-                }
-            }
-        }
-    }
 }
 
     // Grab all tab buttons and all content panels
@@ -2072,7 +1643,7 @@ async function processWordHelp(word) {
         reader.readAsText(files[0]);
         updateDisplayData();
         window.location.reload();
-    } 
+    }
 
 async function loadVocabData(loadDefaults) {
   try {
@@ -2090,41 +1661,30 @@ async function loadVocabData(loadDefaults) {
             existingData = [];
         }
     }
-    console.log("Loading default vocabulary words.");
-    const response = await fetch('./defaults_big4.json');
-    let data = await response.json(); 
-//let data = [{"spanish":"madre","english":"mom"},{"spanish":"padre","english":"daddy"},{"spanish":"man","english":"hombre"},{"spanish":"hospital","english":"hospital"}];
-    data = data.filter(item => { // remove similar words
-        const score = getSimilarityPercentage(item.spanish, item.english);
-        return !(score && score >= wordSimilaritySlider.value);
-    });
-    if(!loadDefaults || loadDefaults===false) {
-        console.log("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
-        if(existingData.length<MINIMUM_VOCAB_WORD_COUNT) {
-            const startingIndx = existingData.length;
-            for(i=startingIndx;i<MINIMUM_VOCAB_WORD_COUNT;i++) {
-                let r = Math.floor(Math.random() * data.length);
-                existingData.push(data[r]);
+    if(loadDefaults) {
+        console.log("Loading default vocabulary words.");
+        const response = await fetch('./defaults.json');
+        const data = await response.json(); 
+        // Merge the two arrays together (if there's no existing data)
+        const combinedData = (existingData && existingData.length>0) ? existingData :
+            [...existingData, ...data];
+
+        // Remove exact duplicates by filtering with a Set of stringified items
+        const seenItems = new Set();
+        const uniqueData = combinedData.filter(item => {
+            // Stringify ensures accurate identification regardless of object depth or primitive types
+            const stringifiedItem = JSON.stringify(item);
+            if (seenItems.has(stringifiedItem)) {
+                return false;
             }
-        }
-        data = [];
-    } 
-    // Merge the two arrays together (if there's no existing data)
-    const combinedData = (existingData && existingData.length>0) ? existingData :
-        [...existingData, ...data];
-    // Remove exact duplicates by filtering with a Set of stringified items
-    const seenItems = new Set();
-    const uniqueData = combinedData.filter(item => {
-        // Stringify ensures accurate identification regardless of object depth or primitive types
-        const stringifiedItem = JSON.stringify(item);
-        if (seenItems.has(stringifiedItem)) {
-            return false;
-        }
-        seenItems.add(stringifiedItem);
-        return true;
-    });
-    // Save clean deduplicated array back to local storage
-    localStorage.setItem(storageName, JSON.stringify(uniqueData)); 
+            seenItems.add(stringifiedItem);
+            return true;
+        });
+        // Save clean deduplicated array back to local storage
+        localStorage.setItem(storageName, JSON.stringify(uniqueData)); 
+    } else {
+        console.log("Not loading default vocabulary words.");
+    }
   } catch (error) {
     console.error("Failed to parse JSON file:", error);
   }
@@ -2146,7 +1706,7 @@ async function loadVocabData(loadDefaults) {
              }
           }
       }
-    } 
+  } 
 }
 
 function smLoadDefaultVocabulary() {
@@ -2155,7 +1715,6 @@ function smLoadDefaultVocabulary() {
     resetQuizProgress();
     updateDisplayData();
     showDynamicPopup('Success','Successfully loaded default vocabulary words.', 3000);
-    window.location.reload();
 }
 
 function smDeleteAllVocabulary() {
@@ -2171,22 +1730,12 @@ function smDeleteAllVocabulary() {
         questionElt.innerText=loadingQuestionText;
         updateDisplayData();
         showDynamicPopup('Success','Successfully deleted all vocabulary words.', 3000);
-        window.location.reload();
     } else {
         // Code to run if the user clicked "Cancel"
         console.log("Not going to delete all vocabulary words.");
     }
 }
 
-function getsetPassphrase() {
-    const passphrase = localStorage.getItem(DEFAULT_SP_KEY);
-    if(passphrase && passphrase!==DEFAULT_SP) {
-      document.getElementById('sm-secret').value=passphrase;
-    } else {
-      document.getElementById('sm-secret').value=DEFAULT_SP;
-    }
-    return passphrase;
-}
 
 function saveWordFromExplanation(event,elt) {
     event.preventDefault();
@@ -2198,9 +1747,9 @@ function generateTopicMapKey(topicInput) {
     return topicInput;
 }
 
-async function fetchArticle() {
+async function fetchGemmaResponse() {
 
-    const key = await decrypt(api3KeyEncrypted, true);
+    const key = await decrypt(api3KeyEncrypted);
     if(key) {
         showDynamicPopup('Generating article.','This may take 10+ minutes. If you get an error try again later.', 3000);
     } else {
@@ -2214,7 +1763,7 @@ async function fetchArticle() {
     if(!languageLevel) {
         languageLevel = 'Intermediate-to-Advanced';
     }
-    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation. In addition to the array of objects, add a second array of 10-12 English language strings where each string is a related topic suggestion that the user may find interesting. The first array property name should be 'summary' and the second one should be called 'related_topics'.";
+    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation.";
     const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use ` + languageLevel + ` Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
 
     const payload = {
@@ -2253,18 +1802,12 @@ async function fetchArticle() {
                 if(!responseText) {
                     responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
+
                 console.log(responseText);
+
                 let responseObj = JSON.parse(responseText);
-                if(responseObj.summary) {
-                    if(responseObj.related_topics) {
-                        for(i=0; i<responseObj.related_topics.length; i++) {
-                            responseObj.summary.push({ spanish: "RELATED_TOPIC_"+(i+1), english: responseObj.related_topics[i] });
-                        }
-                    }
-                    responseText = JSON.stringify(responseObj.summary, null, 2);    
-                } else {
-                    responseText = JSON.stringify(responseObj, null, 2);   
-                }
+                responseText = JSON.stringify(responseObj, null, 2);    
+
                 const topicMapKey = generateTopicMapKey(topicInput);
                 const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
                 let storiesMap;
@@ -2333,15 +1876,27 @@ function displayIncognitoWarning() {
     }
 }
 
+// Call this function when you want to hide it and disable clicks
+function turnFullArticleOffSpeaker() {
+ // const speaker = document.getElementById('read-full-article');
+ // speaker.classList.add('is-hidden');
+}
+
+// Call this function when you want to bring it back and make it clickable again
+function turnFullArticleOnSpeaker() {
+ // const speaker = document.getElementById('read-full-article');
+//  speaker.classList.remove('is-hidden');
+}
+
 let touchStartX = 0;
 let touchEndX = 0;
 
 document.addEventListener('touchstart', (e) => {
-    touchQuizStartX = touchStartX = e.changedTouches[0].screenX;
+    touchStartX = e.changedTouches[0].screenX;
 }, { passive: true });
 
 document.addEventListener('touchend', (e) => {
-    touchQuizStartX = touchEndX = e.changedTouches[0].screenX;
+    touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
 }, { passive: true });
 
@@ -2356,9 +1911,8 @@ function handleSwipe() {
 }
 
 (function() {
-
       let textToSpeak = "";
-  
+        
       const spanishTextInput = document.getElementById('spanishText');
       const submitBtn = document.getElementById('ai-tutor-submitBtn');
       const outputCard = document.getElementById('ai-tutor-outputCard');
@@ -2381,7 +1935,7 @@ function handleSwipe() {
         "CRITICAL: Prepend each bullet item with a &bull; ";
 
       submitBtn.addEventListener('click', async () => {
-        const key = await decrypt(api1KeyEncrypted, true);
+        const key = await decrypt(api1KeyEncrypted);
         const text = spanishTextInput.innerText.trim();
 
         if (!key) {
@@ -2440,13 +1994,13 @@ function handleSwipe() {
         });
     })();
 
+    turnFullArticleOffSpeaker();
     loadVocabData(false);
     initQuizApplication(getVocabFromStorage());
     initFlashcards();
     resetQuizProgress();
     displayIncognitoWarning();
-    repaintReviewTab();
-    getsetPassphrase();
+
 
 </script>
 </body>
