@@ -62,9 +62,9 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🤔 </button>
-                              <button id="translateBtn" class="ai-tutor-btn"> 🌎 </button>
-                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🔊 </button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🔬 </button>
+                              <button id="translateBtn" class="ai-tutor-btn"> 🗺️ </button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🗣️ </button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -617,7 +617,7 @@
         if(questionEl.nextElementSibling && questionEl.nextElementSibling.tagName.toLowerCase() === "a") {
             questionEl.nextElementSibling.remove();
         }
-        questionEl.innerText = questionObj.question + "  🔊";
+        questionEl.innerText = questionObj.question + "  🗣️";
         questionEl.addEventListener('click', (e) => speakWordSpanish(questionObj.question));
        
         // Build the beautiful visual streak tracker component
@@ -662,7 +662,8 @@
 
         const helpLink = document.createElement('a');
         helpLink.textContent = "Deep Dive";
-        helpLink.style='font-weight:bold;color:darkBlue;font-size:16px;';
+        helpLink.title = "Deep Dive";
+        helpLink.style='font-weight:bold;color:blue;font-size:16px;text-decoration: none;';
         helpLink.classList.add('word-help-link');
         helpLink.addEventListener('click', function(event) {
             processWordHelp(questionObj.spanishWord);
@@ -673,8 +674,9 @@
         linkContainer.appendChild(helpLink);
 
         const removeWordLink = document.createElement('a');
-        removeWordLink.style='color:darkRed;font-weight:bold;font-size:16px;';
+        removeWordLink.style='color:red;font-weight:bold;font-size:16px;text-decoration: none;';
         removeWordLink.textContent = "Delete Word";
+        removeWordLink.title = "Delete Word";
         removeWordLink.classList.add('word-help-link');
         removeWordLink.addEventListener('click', function(event) {
             if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {

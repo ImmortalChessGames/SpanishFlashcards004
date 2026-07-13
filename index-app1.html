@@ -31,14 +31,14 @@
             <h2 id="msg-center-dynamic-title" class="msg-center-title">Notification</h2>
             <p id="msg-center-dynamic-text" class="msg-center-text">Fallback body text message.</p>
             <button class="msg-center-action-btn" onclick="closeDynamicPopup()">Dismiss</button>
-          </div> 
+          </div>
         </div>
         <div class="tabs-wrapper">
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
-                <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Main</button>
+                <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Read</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
-                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Glossary</button>
+                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Words</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Review</button>
                 <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Config</button>
             </div>
@@ -62,9 +62,9 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🤔 </button>
-                              <button id="translateBtn" class="ai-tutor-btn"> 🌎 </button>
-                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🔊 </button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🔬 </button>
+                              <button id="translateBtn" class="ai-tutor-btn"> 🗺️ </button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🗣️ </button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -149,13 +149,13 @@
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-negative-label" for="results-negative" style="margin-bottom:10px;">Words requiring more study</label>
+                <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
                       <div id="results-negative"></div>
                   </div>
                 </div>
-                <label id="results-positive-label" for="results-positive" style="margin-bottom:10px;">Words you have learned</label>
+                <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
                       <div id="results-positive"></div>
@@ -355,7 +355,13 @@
 
     // Helper normalization from previous step
     function normalizeWord(word) {
-        return word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zñ]/g, "");
+        return removeSpanishPrefixes(word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zñ]/g, ""));
+    }
+
+    function removeSpanishPrefixes(str) {
+      // \b ensures we only remove whole words (e.g., skips "lamento")
+      // \s? handles optional trailing space after the prefix
+      return str.replace(/^(el|la|las|los)\b\s?/i, '');
     }
 
     // Optimized distance from previous step
@@ -611,20 +617,9 @@
         if(questionEl.nextElementSibling && questionEl.nextElementSibling.tagName.toLowerCase() === "a") {
             questionEl.nextElementSibling.remove();
         }
-        questionEl.innerText = "🔊   " + questionObj.question;
+        questionEl.innerText = questionObj.question + "  🗣️";
         questionEl.addEventListener('click', (e) => speakWordSpanish(questionObj.question));
-        const a = document.createElement('a');
-        a.title = "Click to delete the word [" + questionObj.question+ "].";
-        a.textContent = " 🗑️";
-        a.style.fontSize = "20px";
-        a.addEventListener('click', function(event) {
-            if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {
-                deleteWord(questionObj.question);
-                showDynamicPopup('Delete', 'The word ['+ questionObj.question +'] was deleted successfully.', 2000);
-                loadNextQuestion();
-            }
-        });
-        questionEl.after(a);
+       
         // Build the beautiful visual streak tracker component
         const progress = getAllProgress();
         const currentWordProgress = progress[questionObj.spanishWord] || { cs: 0 };
@@ -661,8 +656,14 @@
             container.appendChild(btn);
         });
 
+        const linkContainer = document.createElement('div');
+        linkContainer.classList.add('link-container');
+        container.appendChild(linkContainer);
+
         const helpLink = document.createElement('a');
         helpLink.textContent = "Deep Dive";
+        helpLink.title = "Deep Dive";
+        helpLink.style='font-weight:bold;color:blue;font-size:16px;text-decoration: none;';
         helpLink.classList.add('word-help-link');
         helpLink.addEventListener('click', function(event) {
             processWordHelp(questionObj.spanishWord);
@@ -670,7 +671,23 @@
                 saveWord(questionObj.spanishWord.toLowerCase(), questionObj.englishWord.toLowerCase());
             }
         });
-        container.appendChild(helpLink);
+        linkContainer.appendChild(helpLink);
+
+        const removeWordLink = document.createElement('a');
+        removeWordLink.style='color:red;font-weight:bold;font-size:16px;text-decoration: none;';
+        removeWordLink.textContent = "Delete Word";
+        removeWordLink.title = "Delete Word";
+        removeWordLink.classList.add('word-help-link');
+        removeWordLink.addEventListener('click', function(event) {
+            if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {
+                deleteWord(questionObj.question);
+                showDynamicPopup('Delete', 'The word ['+ questionObj.question +'] was deleted successfully.', 2000);
+                loadNextQuestion();
+            }
+        });
+        linkContainer.appendChild(removeWordLink);
+
+
         const helpOutput = document.createElement('div');
         helpOutput.id='word-help';
         helpOutput.classList.add('word-help-bullet-list-container');    
@@ -2057,7 +2074,7 @@ async function processWordHelp(word) {
         reader.readAsText(files[0]);
         updateDisplayData();
         window.location.reload();
-    }
+    } 
 
 async function loadVocabData(loadDefaults) {
   try {

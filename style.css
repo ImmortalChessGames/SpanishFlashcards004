@@ -1825,7 +1825,7 @@ h2 {
   flex-direction: row;      /* Ensures they sit side by side */
   justify-content: center;  /* Centers the items horizontally */
   align-items: center;      /* Centers the items vertically (optional) */
-  gap: 15px;  
+  gap: 25px;  
 }
 
 /* Compact text links styling */
