@@ -1114,10 +1114,12 @@ h2 {
 }
 
 #ai-tutor-container .ai-tutor-btn { 
-  color: white; 
-  border: none; 
-  font-size: 0.95rem; 
-  border-radius: 6px; 
+  background-color: white; 
+  border: solid; 
+  font-size: 2.2rem; 
+  border-width:2px;
+  border-color: #E0E5E5;
+  border-radius: 16px; 
   cursor: pointer; 
   font-weight: 500; 
   flex: 1; 
