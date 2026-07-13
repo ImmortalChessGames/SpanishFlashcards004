@@ -62,9 +62,9 @@
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
                             <div class="ai-tutor-btn-group">
-                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🔬 </button>
-                              <button id="translateBtn" class="ai-tutor-btn"> 🗺️ </button>
-                              <button id="speakSlowBtn" class="ai-tutor-btn"> 🗣️ </button>
+                              <button id="ai-tutor-submitBtn" class="ai-tutor-btn"> 🕵️ </button>
+                              <button id="translateBtn" class="ai-tutor-btn"> 🌎 </button>
+                              <button id="speakSlowBtn" class="ai-tutor-btn"> 📢 </button>
                             </div>
                           </div>
                           <div id="ai-tutor-outputCard" class="ai-tutor-card ai-tutor-output-container">
@@ -1280,7 +1280,7 @@
         const selectDataset = document.getElementById('sm-chooseDataset');
         const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
         const topRightTextElt = document.getElementById('top-right-text');
-        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 🔊 ' : '');
+        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 📢 ' : '');
         if(speakerMode === true) {
             topRightTextElt.style='cursor: pointer;';
         } else {
@@ -1816,7 +1816,7 @@ async function processWordHelp(word) {
                         loadArticle(jsonObj);
                         document.getElementsByClassName("tab-btn")[0].click();
                         const topRightTextElt = document.getElementById('top-right-text');
-                        topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 🔊 ';
+                        topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 📢 ';
                         document.getElementById('word-help').innerHTML="";
                         lastWordHelped = word;
                         break;
