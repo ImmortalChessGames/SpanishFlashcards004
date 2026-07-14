@@ -1054,21 +1054,18 @@
             } else {
                 this.container.innerHTML='None needing review.';
             }
-
-            function neghandleSwipe() {
-                const threshold = 50; // Minimum swipe distance in pixels
-                if (negtouchEndX < negtouchStartX - threshold) {
-                    if(this.currentPage<pageCount) {
-                        this.currentPage++;
-                        this.renderPage(this.currentPage);
-                    }
+        }
+        neghandleSwipe() {
+            const threshold = 50; // Minimum swipe distance in pixels
+            if (negtouchEndX < negtouchStartX - threshold) {
+                if(pageCount>0 && this.currentPage<pageCount) {
+                    this.renderPage(this.currentPage + 1);
                 }
-                if (negtouchEndX > negtouchStartX + threshold) {       
-                    if(this.currentPage>0) {
-                        this.currentPage--;
-                        this.renderPage(this.currentPage);
-                    }             
-                }
+            }
+            if (negtouchEndX > negtouchStartX + threshold) {       
+                if(pageCount>0 && this.currentPage>0) {
+                    this.renderPage(this.currentPage - 1);
+                }             
             }
         }
         renderPage(page) {
