@@ -118,7 +118,7 @@
                         <p id="final-score"></p>
                         <button class="quiz-btn" id="restart-btn">Restart Quiz</button>
                     </div>
-                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:50px;"/>
+                    <p id="quiz-question-count" style="vertical-align:bottom;margin-top:45px;"/>
                 </div>
             </div>
 
@@ -160,7 +160,7 @@
                   <div class="inner-content">
                       <div id="results-positive-paginated"></div>
                   </div>
-                </div>
+                </div>  
             </div>
 
             <!-- PANEL 5 -->
@@ -660,11 +660,11 @@
         linkContainer.classList.add('link-container');
         container.appendChild(linkContainer);
 
-        const helpLink = document.createElement('a');
+        const helpLink = document.createElement('button');
         helpLink.textContent = "Deep Dive";
         helpLink.title = "Deep Dive";
-        helpLink.style='font-weight:bold;color:blue;font-size:16px;';
-        helpLink.classList.add('word-help-link');
+        helpLink.style='margin-top:30px;width:30%;background-color:#5c67f2;color:white;font-weight:bold;font-size:16px;';
+      //  helpLink.classList.add('word-help-link');
         helpLink.addEventListener('click', function(event) {
             processWordHelp(questionObj.spanishWord);
             if(questionObj.spanishWord && questionObj.englishWord) {
@@ -673,11 +673,11 @@
         });
         linkContainer.appendChild(helpLink);
 
-        const removeWordLink = document.createElement('a');
-        removeWordLink.style='color:red;font-weight:bold;font-size:16px;';
-        removeWordLink.textContent = "Delete Word";
+        const removeWordLink = document.createElement('button');
+        removeWordLink.style='margin-top:30px;width:30%;background-color:#ff4d4d;color:white;font-weight:bold;font-size:16px;';
+        removeWordLink.textContent = "Delete";
         removeWordLink.title = "Delete Word";
-        removeWordLink.classList.add('word-help-link');
+      //  removeWordLink.classList.add('word-help-link');
         removeWordLink.addEventListener('click', function(event) {
             if(confirm("Are you sure you want to delete the word [" + questionObj.question + "]?")) {
                 deleteWord(questionObj.question);
@@ -1000,7 +1000,7 @@
             }
             label.innerText = label.innerText + ' ['+masteredWords.length+']';
             masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-            new PositiveListPaginator(containerId, masteredWords, 10);
+            new PositiveListPaginator(containerId, masteredWords, 5);
         } 
     }
 
@@ -1034,10 +1034,10 @@
             this.allData = dataArray;
             this.itemsPerPage = itemsPerPage;
             this.currentPage = 1;
-            this.controlsContainer = document.createElement('div');
-            this.controlsContainer.className = 'pagination-controls';
-            this.container.after(this.controlsContainer);
             if(dataArray && dataArray.length>0) {
+                this.controlsContainer = document.createElement('div');
+                this.controlsContainer.className = 'pagination-controls';
+                this.container.after(this.controlsContainer);
                 this.renderPage(1);
             } else {
                 this.container.innerHTML='None needing review.';
@@ -1069,8 +1069,8 @@
                 li.append(' '+item.english); 
                 ul.appendChild(li);
             });
-            this.container.appendChild(ul);
             this.renderControls();
+            this.container.appendChild(ul);
         }
         renderControls() {
             const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
@@ -1106,10 +1106,10 @@
             this.allData = dataArray;
             this.itemsPerPage = itemsPerPage;
             this.currentPage = 1;
-            this.controlsContainer = document.createElement('div');
-            this.controlsContainer.className = 'pagination-controls';
-            this.container.after(this.controlsContainer);
             if(dataArray && dataArray.length>0) {
+                this.controlsContainer = document.createElement('div');
+                this.controlsContainer.className = 'pagination-controls';
+                this.container.after(this.controlsContainer);
                 this.renderPage(1);
             } else {
                 this.container.innerHTML='None needing review.';
@@ -1143,8 +1143,8 @@
                 li.append(' '+item.split(':')[1]); 
                 ul.appendChild(li);
             });
-            this.container.appendChild(ul);
             this.renderControls();
+            this.container.appendChild(ul);
         }
         renderControls() {
             const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);

@@ -1872,7 +1872,7 @@ h2 {
   overflow-x: hidden; 
   border: 1px solid #d3d3d3; 
   border-radius: 10px; 
-  padding: 20px; 
+  padding: 5px; 
   margin-left:5px;
   margin-right:5px;
 }
@@ -1952,4 +1952,8 @@ h2 {
     display: inline !important;
     white-space: nowrap !important;     /* Guarantees text stays on one line */
 }
+
+
+
+
 
