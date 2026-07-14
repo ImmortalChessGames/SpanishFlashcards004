@@ -1056,7 +1056,7 @@
             }
         }
         neghandleSwipe() {
-            const threshold = 50; // Minimum swipe distance in pixels
+            const threshold = 10; // Minimum swipe distance in pixels
             if (negtouchEndX < negtouchStartX - threshold) {
                 if(this.pageCount>0 && this.currentPage<pageCount) {
                     this.renderPage(this.currentPage + 1);
@@ -1151,7 +1151,7 @@
             }
         }
         poshandleSwipe() {
-            const threshold = 50; // Minimum swipe distance in pixels
+            const threshold = 10; // Minimum swipe distance in pixels
             if (postouchEndX < postouchStartX - threshold) {
                 if(this.pageCount>0 && this.currentPage<pageCount) {
                     this.renderPage(this.currentPage + 1);
