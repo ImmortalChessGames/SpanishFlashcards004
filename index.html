@@ -1038,6 +1038,7 @@
             if(dataArray && dataArray.length>0) {
                 this.controlsContainer = document.createElement('div');
                 this.controlsContainer.className = 'pagination-controls';
+                this.container.before(this.controlsContainer);
                 this.container.after(this.controlsContainer);
                 this.renderPage(1);
             } else {
@@ -1110,6 +1111,7 @@
             if(dataArray && dataArray.length>0) {
                 this.controlsContainer = document.createElement('div');
                 this.controlsContainer.className = 'pagination-controls';
+                this.container.before(this.controlsContainer);
                 this.container.after(this.controlsContainer);
                 this.renderPage(1);
             } else {
