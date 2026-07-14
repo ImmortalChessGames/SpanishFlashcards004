@@ -1878,7 +1878,7 @@ h2 {
 }
 .inner-content {
   background-color: #f9f9f9;
-  padding: 20px;
+  margin-left: 20px;
 }
 
 /* Style the scrollbar to guarantee it stays visible */

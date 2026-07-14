@@ -1001,7 +1001,7 @@
             }
             label.innerText = label.innerText + ' ['+masteredWords.length+']';
             masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-            new PositiveListPaginator(containerId, masteredWords, 25);
+            new PositiveListPaginator(containerId, masteredWords, 20);
         } 
     }
 
@@ -1026,7 +1026,7 @@
         });
         label.innerText = label.innerText + ' ['+words.length+']';
         words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
-        new NegativeListPaginator(containerId, words, 25);
+        new NegativeListPaginator(containerId, words, 20);
     }
 
     class NegativeListPaginator {
@@ -1070,8 +1070,8 @@
                 li.append(' '+item.english); 
                 ul.appendChild(li);
             });
-            this.renderControls();
             this.container.appendChild(ul);
+            this.renderControls();
         }
         renderControls() {
             const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
@@ -1144,8 +1144,8 @@
                 li.append(' '+item.split(':')[1]); 
                 ul.appendChild(li);
             });
-            this.renderControls();
             this.container.appendChild(ul);
+            this.renderControls();
         }
         renderControls() {
             const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
