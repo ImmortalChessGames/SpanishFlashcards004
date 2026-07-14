@@ -1029,9 +1029,20 @@
         new NegativeListPaginator(containerId, words, 16);
     }
 
+
+    let negtouchStartX = 0;
+    let negtouchEndX = 0;
     class NegativeListPaginator {
         constructor(containerId, dataArray, itemsPerPage = 10) {
             this.container = document.getElementById(containerId);
+            this.container.addEventListener('touchstart', (e) => {
+                negtouchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            this.container.addEventListener('touchend', (e) => {
+                negtouchEndX = e.changedTouches[0].screenX;
+                neghandleSwipe();
+            }, { passive: true });
             this.allData = dataArray;
             this.itemsPerPage = itemsPerPage;
             this.currentPage = 1;
@@ -1042,6 +1053,22 @@
                 this.renderPage(1);
             } else {
                 this.container.innerHTML='None needing review.';
+            }
+
+            function neghandleSwipe() {
+                const threshold = 50; // Minimum swipe distance in pixels
+                if (negtouchEndX < negtouchStartX - threshold) {
+                    if(this.currentPage<pageCount) {
+                        this.currentPage++;
+                        this.renderPage(this.currentPage);
+                    }
+                }
+                if (negtouchEndX > negtouchStartX + threshold) {       
+                    if(this.currentPage>0) {
+                        this.currentPage--;
+                        this.renderPage(this.currentPage);
+                    }             
+                }
             }
         }
         renderPage(page) {
@@ -2445,11 +2472,11 @@ let touchStartX = 0;
 let touchEndX = 0;
 
 document.addEventListener('touchstart', (e) => {
-    touchQuizStartX = touchStartX = e.changedTouches[0].screenX;
+    touchStartX = e.changedTouches[0].screenX;
 }, { passive: true });
 
 document.addEventListener('touchend', (e) => {
-    touchQuizStartX = touchEndX = e.changedTouches[0].screenX;
+    touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
 }, { passive: true });
 
