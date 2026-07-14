@@ -1057,13 +1057,14 @@
         }
         neghandleSwipe() {
             const threshold = 10; // Minimum swipe distance in pixels
+            const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
             if (negtouchEndX < negtouchStartX - threshold) {
-                if(this.pageCount>0 && this.currentPage<pageCount) {
+                if(pageCount>0 && this.currentPage<pageCount) {
                     this.renderPage(this.currentPage + 1);
                 }
             }
             if (negtouchEndX > negtouchStartX + threshold) {       
-                if(this.pageCount>0 && this.currentPage>0) {
+                if(pageCount>0 && this.currentPage>0) {
                     this.renderPage(this.currentPage - 1);
                 }             
             }
@@ -1152,13 +1153,14 @@
         }
         poshandleSwipe() {
             const threshold = 10; // Minimum swipe distance in pixels
+            const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
             if (postouchEndX < postouchStartX - threshold) {
-                if(this.pageCount>0 && this.currentPage<pageCount) {
+                if(pageCount>0 && this.currentPage<pageCount) {
                     this.renderPage(this.currentPage + 1);
                 }
             }
             if (postouchEndX > postouchStartX + threshold) {       
-                if(this.pageCount>0 && this.currentPage>0) {
+                if(pageCount>0 && this.currentPage>0) {
                     this.renderPage(this.currentPage - 1);
                 }             
             }
