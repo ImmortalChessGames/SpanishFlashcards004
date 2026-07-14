@@ -31,7 +31,7 @@
             <h2 id="msg-center-dynamic-title" class="msg-center-title">Notification</h2>
             <p id="msg-center-dynamic-text" class="msg-center-text">Fallback body text message.</p>
             <button class="msg-center-action-btn" onclick="closeDynamicPopup()">Dismiss</button>
-          </div> 
+          </div>
         </div>
         <div class="tabs-wrapper">
             <!-- Tab Navigation Headers -->
@@ -40,7 +40,8 @@
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Words</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Review</button>
-                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Config</button>
+                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Know</button>
+                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">Config</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -154,7 +155,11 @@
                   <div class="inner-content">
                       <div id="results-negative-paginated"></div>
                   </div>
-                </div>
+                </div> 
+            </div>
+
+            <!-- PANEL 5 -->
+            <div id="panel-5" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
@@ -163,8 +168,8 @@
                 </div>  
             </div>
 
-            <!-- PANEL 5 -->
-            <div id="panel-5" class="tab-panel" role="tabpanel">
+            <!-- PANEL 6 -->
+            <div id="panel-6" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
@@ -314,7 +319,7 @@
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
       appModalElement.classList.remove("is-visible");
-      document.getElementsByClassName("tab-btn")[4].click();
+      document.getElementsByClassName("tab-btn")[5].click();
       setTimeout(() => {
         document.getElementById('sm-secret').scrollIntoView({ behavior: 'smooth' });
       }, 50); 
@@ -1000,7 +1005,7 @@
             }
             label.innerText = label.innerText + ' ['+masteredWords.length+']';
             masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-            new PositiveListPaginator(containerId, masteredWords, 6);
+            new PositiveListPaginator(containerId, masteredWords, 16);
         } 
     }
 
@@ -1025,7 +1030,7 @@
         });
         label.innerText = label.innerText + ' ['+words.length+']';
         words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
-        new NegativeListPaginator(containerId, words, 8);
+        new NegativeListPaginator(containerId, words, 16);
     }
 
     class NegativeListPaginator {
@@ -1136,7 +1141,7 @@
                 a.addEventListener('click', function(event) {
                     if(confirm('You have mastered word ['+event.target.textContent+'], are you sure to continue to Deep Dive ?')) {
                        processWordHelp(event.target.textContent);
-                    }
+                    } 
                 });
                 li.append('✅ ');
                 li.appendChild(a);
@@ -1364,7 +1369,7 @@
                     setTimeout(() => {
                       gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
                     }, 50); 
-                    document.getElementsByClassName("tab-btn")[4].click();
+                    document.getElementsByClassName("tab-btn")[5].click();
                     document.getElementById('gsv-submit-btn').click();                    
                 });
                 addlTopicLinks.appendChild(dynamicLink);
