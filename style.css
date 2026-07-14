@@ -1927,7 +1927,7 @@ h2 {
     align-items: center !important;     /* Vertically centers buttons with text */
     justify-content: center !important; /* Centers the pagination block on screen */
     gap: 12px !important;               /* Space out elements without margins */
-    margin: 15px 0 !important;          /* Clean spacing above and below the block */
+    margin: 5px 0 !important;          /* Clean spacing above and below the block */
     width: 100% !important;
 }
 

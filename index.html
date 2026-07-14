@@ -1000,7 +1000,7 @@
             }
             label.innerText = label.innerText + ' ['+masteredWords.length+']';
             masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-            new PositiveListPaginator(containerId, masteredWords, 5);
+            new PositiveListPaginator(containerId, masteredWords, 6);
         } 
     }
 
@@ -1025,7 +1025,7 @@
         });
         label.innerText = label.innerText + ' ['+words.length+']';
         words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
-        new NegativeListPaginator(containerId, words, 10);
+        new NegativeListPaginator(containerId, words, 8);
     }
 
     class NegativeListPaginator {
