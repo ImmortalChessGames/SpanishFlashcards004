@@ -1125,9 +1125,19 @@
         }
     }
 
+    let postouchStartX = 0;
+    let postouchEndX = 0;
     class PositiveListPaginator {
         constructor(containerId, dataArray, itemsPerPage = 10) {
             this.container = document.getElementById(containerId);
+            this.container.addEventListener('touchstart', (e) => {
+                postouchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            this.container.addEventListener('touchend', (e) => {
+                postouchEndX = e.changedTouches[0].screenX;
+                poshandleSwipe();
+            }, { passive: true });
             this.allData = dataArray;
             this.itemsPerPage = itemsPerPage;
             this.currentPage = 1;
@@ -1138,6 +1148,19 @@
                 this.renderPage(1);
             } else {
                 this.container.innerHTML='None needing review.';
+            }
+        }
+        poshandleSwipe() {
+            const threshold = 50; // Minimum swipe distance in pixels
+            if (postouchEndX < postouchStartX - threshold) {
+                if(pageCount>0 && this.currentPage<pageCount) {
+                    this.renderPage(this.currentPage + 1);
+                }
+            }
+            if (postouchEndX > postouchStartX + threshold) {       
+                if(pageCount>0 && this.currentPage>0) {
+                    this.renderPage(this.currentPage - 1);
+                }             
             }
         }
         renderPage(page) {
