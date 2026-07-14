@@ -1919,3 +1919,37 @@ h2 {
     display: block; /* Or 'inline-block' depending on your layout */
   }
 }
+
+/* Container styling to force a single, centered line */
+.pagination-controls {
+    display: flex !important;           /* Forces flexbox layout layout override */
+    flex-direction: row !important;     /* Guarantees horizontal alignment */
+    align-items: center !important;     /* Vertically centers buttons with text */
+    justify-content: center !important; /* Centers the pagination block on screen */
+    gap: 12px !important;               /* Space out elements without margins */
+    margin: 15px 0 !important;          /* Clean spacing above and below the block */
+    width: 100% !important;
+}
+
+/* Isolated button styling */
+.custom-paginator-btn {
+    display: inline-block !important;
+    white-space: nowrap !important;     /* Stops text from wrapping inside the button */
+    padding: 6px 12px !important;
+    cursor: pointer !important;
+    background-color:#34495e;
+    color:white;
+}
+
+/* Disabled button appearance */
+.custom-paginator-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Isolated center text wrapper */
+.custom-paginator-indicator {
+    display: inline !important;
+    white-space: nowrap !important;     /* Guarantees text stays on one line */
+}
+

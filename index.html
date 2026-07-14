@@ -152,13 +152,13 @@
                 <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
-                      <div id="results-negative"></div>
+                      <div id="results-negative-paginated"></div>
                   </div>
                 </div>
                 <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
                 <div class="scroll-wrapper">
                   <div class="inner-content">
-                      <div id="results-positive"></div>
+                      <div id="results-positive-paginated"></div>
                   </div>
                 </div>
             </div>
@@ -981,9 +981,10 @@
     }
 
     function repaintMasteredWords() {
+        const containerId = 'results-positive-paginated';
         const label = document.getElementById('results-positive-label');
         label.innerText='Words you have learned';
-        const masteredWordsDiv = document.getElementById('results-positive');
+        const masteredWordsDiv = document.getElementById(containerId);
         masteredWordsDiv.style='max-width:600px;display:flex;gap:20px;width:100%;margin:0 auto;';
         masteredWordsDiv.innerHTML='';
         let masteredWords = [];
@@ -997,40 +998,17 @@
                   count++;
                 }
             }
-            if(count>0) {
-                masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-                const ul = document.createElement('ul');
-                ul.classList.add('review');
-                for(i=0;i<masteredWords.length;i++) {
-                    const li = document.createElement('li');
-                    li.style='margin-bottom:5px;';
-                    li.classList.add('review');
-                    const a = document.createElement('a');
-                    a.href = '#';
-                    a.style = 'color:darkBlue;font-weight:bold;font-size:18px;text-transform: uppercase;';
-                    a.textContent = masteredWords[i].split(':')[0];
-                    a.addEventListener('click', function(event) {
-                        if(confirm('You have mastered word ['+event.target.textContent+'], are you sure to continue to Deep Dive ?')) {
-                           processWordHelp(event.target.textContent);
-                        }
-                    });
-                    li.append('✅ ');
-                    li.appendChild(a);
-                    li.append(' '+masteredWords[i].split(':')[1]); 
-                    ul.appendChild(li);
-                }
-                label.innerText = label.innerText + ' ['+count+']';
-                masteredWordsDiv.appendChild(ul);
-            } else {
-                masteredWordsDiv.innerHTML='None.';
-            }
+            label.innerText = label.innerText + ' ['+masteredWords.length+']';
+            masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
+            new PositiveListPaginator(containerId, masteredWords, 10);
         } 
     }
 
     function repaintWordsNeedingMoreWork() {
+        const containerId = 'results-negative-paginated';
         const label = document.getElementById('results-negative-label');
         label.innerText='Words requiring more study';
-        const wordsThatNeedMoreWorkDiv = document.getElementById('results-negative');
+        const wordsThatNeedMoreWorkDiv = document.getElementById(containerId);
         wordsThatNeedMoreWorkDiv.innerHTML='';
         const progress = getAllProgress();
         let words = [];
@@ -1045,31 +1023,154 @@
             }
             return itemProgress && itemProgress.tw > 0;
         });
-        if (words.length > 0) {
-            let totalWeight = 0;
-            words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
+        label.innerText = label.innerText + ' ['+words.length+']';
+        words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
+        new NegativeListPaginator(containerId, words, 10);
+    }
+
+    class NegativeListPaginator {
+        constructor(containerId, dataArray, itemsPerPage = 10) {
+            this.container = document.getElementById(containerId);
+            this.allData = dataArray;
+            this.itemsPerPage = itemsPerPage;
+            this.currentPage = 1;
+            this.controlsContainer = document.createElement('div');
+            this.controlsContainer.className = 'pagination-controls';
+            this.container.after(this.controlsContainer);
+            if(dataArray && dataArray.length>0) {
+                this.renderPage(1);
+            } else {
+                this.container.innerHTML='None needing review.';
+            }
+        }
+        renderPage(page) {
+            this.currentPage = page;
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            const paginatedItems = this.allData.slice(start, end);
+            this.container.innerHTML = '';
             const ul = document.createElement('ul');
             ul.classList.add('review');
-            words.map(w => {
-                  const li = document.createElement('li');
-                  li.style='margin-bottom:5px;';
-                  li.classList.add('review');
-                  const a = document.createElement('a');
-                  a.href = '#';
-                  a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;';
-                  a.textContent = w.spanish;
-                  a.addEventListener('click', function(event) {
-                    processWordHelp(w.spanish);
-                  });
-                  li.append('[-' + w.tw + '] ');
-                  li.appendChild(a);
-                  li.append(' '+w.english); 
-                  ul.appendChild(li);
+            paginatedItems.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                const li = document.createElement('li');
+                li.style='margin-bottom:5px;';
+                li.classList.add('review');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;';
+                a.textContent = item.spanish;
+                a.addEventListener('click', function(event) {
+                    processWordHelp(item.spanish);
+                });
+                li.append('[-' + item.tw + '] ');
+                li.appendChild(a);
+                li.append(' '+item.english); 
+                ul.appendChild(li);
             });
-            wordsThatNeedMoreWorkDiv.appendChild(ul);
-            label.innerText = label.innerText + ' ['+words.length+']';
-        } else {
-            wordsThatNeedMoreWorkDiv.innerHTML='None needing review.';
+            this.container.appendChild(ul);
+            this.renderControls();
+        }
+        renderControls() {
+            const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
+            this.controlsContainer.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.classList.add('custom-paginator-btn');
+            prevBtn.textContent = '« Prev';
+            prevBtn.disabled = this.currentPage === 1;
+            prevBtn.onclick = () => this.renderPage(this.currentPage - 1);
+            this.controlsContainer.appendChild(prevBtn);
+
+            // Current Page Indicator
+            const indicator = document.createElement('span');
+            indicator.className = 'custom-paginator-indicator';
+            indicator.textContent = ` Page ${this.currentPage} of ${pageCount} `;
+            this.controlsContainer.appendChild(indicator);
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.classList.add('custom-paginator-btn');
+            nextBtn.textContent = 'Next »';
+            nextBtn.disabled = this.currentPage === pageCount || pageCount === 0;
+            nextBtn.onclick = () => this.renderPage(this.currentPage + 1);
+            this.controlsContainer.appendChild(nextBtn);
+        }
+    }
+
+    class PositiveListPaginator {
+        constructor(containerId, dataArray, itemsPerPage = 10) {
+            this.container = document.getElementById(containerId);
+            this.allData = dataArray;
+            this.itemsPerPage = itemsPerPage;
+            this.currentPage = 1;
+            this.controlsContainer = document.createElement('div');
+            this.controlsContainer.className = 'pagination-controls';
+            this.container.after(this.controlsContainer);
+            if(dataArray && dataArray.length>0) {
+                this.renderPage(1);
+            } else {
+                this.container.innerHTML='None needing review.';
+            }
+        }
+        renderPage(page) {
+            this.currentPage = page;
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            const paginatedItems = this.allData.slice(start, end);
+            this.container.innerHTML = '';
+            const ul = document.createElement('ul');
+            ul.classList.add('review');
+            paginatedItems.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                const li = document.createElement('li');
+                li.style='margin-bottom:5px;';
+                li.classList.add('review');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.style = 'color:darkBlue;font-weight:bold;font-size:18px;text-transform: uppercase;';
+                a.textContent = item.split(':')[0];
+                a.addEventListener('click', function(event) {
+                    if(confirm('You have mastered word ['+event.target.textContent+'], are you sure to continue to Deep Dive ?')) {
+                       processWordHelp(event.target.textContent);
+                    }
+                });
+                li.append('✅ ');
+                li.appendChild(a);
+                li.append(' '+item.split(':')[1]); 
+                ul.appendChild(li);
+            });
+            this.container.appendChild(ul);
+            this.renderControls();
+        }
+        renderControls() {
+            const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
+            this.controlsContainer.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.classList.add('custom-paginator-btn');
+            prevBtn.textContent = '« Prev';
+            prevBtn.disabled = this.currentPage === 1;
+            prevBtn.onclick = () => this.renderPage(this.currentPage - 1);
+            this.controlsContainer.appendChild(prevBtn);
+
+            // Current Page Indicator
+            const indicator = document.createElement('span');
+            indicator.className = 'custom-paginator-indicator';
+            indicator.textContent = ` Page ${this.currentPage} of ${pageCount} `;
+            this.controlsContainer.appendChild(indicator);
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.classList.add('custom-paginator-btn');
+            nextBtn.textContent = 'Next »';
+            nextBtn.disabled = this.currentPage === pageCount || pageCount === 0;
+            nextBtn.onclick = () => this.renderPage(this.currentPage + 1);
+            this.controlsContainer.appendChild(nextBtn);
         }
     }
 
