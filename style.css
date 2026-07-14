@@ -1929,7 +1929,7 @@ h2 {
     justify-content: center !important; /* Centers the pagination block on screen */
     gap: 12px !important;               /* Space out elements without margins */
     margin: 5px 0 !important;          /* Clean spacing above and below the block */
-    width: 95% !important;
+    width: 90% !important;
     padding: 10px;
 }
 
