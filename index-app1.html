@@ -151,17 +151,13 @@
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
-                  <div class="inner-content">
-                      <div id="results-positive-paginated"></div>
-                  </div>
+                <div id="results-positive-paginated"></div>
             </div>
 
             <!-- PANEL 5 -->
             <div id="panel-5" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
-                  <div class="inner-content">
-                      <div id="results-negative-paginated"></div>
-                  </div>
+                <div id="results-negative-paginated"></div>
             </div>
 
             <!-- PANEL 6 -->
@@ -261,7 +257,7 @@
     const DEFAULT_SP_KEY = '__PASSPHRASE__';
     const DEFAULT_SP = 'enter-your-secret-passcode-here';
     const ITEMS_PER_PAGE = 20;
-    const MASTERY_STREAK_NEEDED = 4;
+    const MASTERY_STREAK_NEEDED = 0;
     const QUESTIONS_PER_QUIZ = 30;
     const MINIMUM_VOCAB_WORD_COUNT = 200;
 
@@ -986,7 +982,7 @@
         const label = document.getElementById('results-positive-label');
         label.innerText='Words you have learned';
         const masteredWordsDiv = document.getElementById(containerId);
-        masteredWordsDiv.style='max-width:600px;display:flex;gap:20px;width:100%;margin:0 auto;';
+        masteredWordsDiv.style='max-width:345px;margin-left:20px;display:flex;gap:20px;width:100%;margin:0 auto;';
         masteredWordsDiv.innerHTML='';
         let masteredWords = [];
         const progress = getAllProgress();
@@ -1010,6 +1006,7 @@
         const label = document.getElementById('results-negative-label');
         label.innerText='Words requiring more study';
         const wordsThatNeedMoreWorkDiv = document.getElementById(containerId);
+        wordsThatNeedMoreWorkDiv.style='max-width:345px;margin-left:20px;display:flex;gap:20px;width:100%;margin:0 auto;';
         wordsThatNeedMoreWorkDiv.innerHTML='';
         const progress = getAllProgress();
         let words = [];
@@ -1032,6 +1029,7 @@
 
     let negtouchStartX = 0;
     let negtouchEndX = 0;
+    const negControlsContainer = document.createElement('div');
     class NegativeListPaginator {
         constructor(containerId, dataArray, itemsPerPage = 10) {
             this.container = document.getElementById(containerId);
@@ -1047,7 +1045,7 @@
             this.itemsPerPage = itemsPerPage;
             this.currentPage = 1;
             if(dataArray && dataArray.length>0) {
-                this.controlsContainer = document.createElement('div');
+                this.controlsContainer = negControlsContainer;
                 this.controlsContainer.className = 'pagination-controls';
                 this.container.before(this.controlsContainer);
                 this.renderPage(1);
@@ -1128,6 +1126,7 @@
 
     let postouchStartX = 0;
     let postouchEndX = 0;
+    const poscontrolsContainer = document.createElement('div');
     class PositiveListPaginator {
         constructor(containerId, dataArray, itemsPerPage = 10) {
             this.container = document.getElementById(containerId);
@@ -1143,7 +1142,7 @@
             this.itemsPerPage = itemsPerPage;
             this.currentPage = 1;
             if(dataArray && dataArray.length>0) {
-                this.controlsContainer = document.createElement('div');
+                this.controlsContainer = poscontrolsContainer;
                 this.controlsContainer.className = 'pagination-controls';
                 this.container.before(this.controlsContainer);
                 this.renderPage(1);
