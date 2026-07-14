@@ -1879,6 +1879,7 @@ h2 {
 .inner-content {
   background-color: #f9f9f9;
   margin-left: 20px;
+  max-width: 320px;
 }
 
 /* Style the scrollbar to guarantee it stays visible */

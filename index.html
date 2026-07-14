@@ -1038,8 +1038,12 @@
             if(dataArray && dataArray.length>0) {
                 this.controlsContainer = document.createElement('div');
                 this.controlsContainer.className = 'pagination-controls';
-                this.container.before(this.controlsContainer);
                 this.container.after(this.controlsContainer);
+
+                this.controlsContainer2 = document.createElement('div');
+                this.controlsContainer2.className = 'pagination-controls';
+                this.container.before(this.controlsContainer2);
+
                 this.renderPage(1);
             } else {
                 this.container.innerHTML='None needing review.';
@@ -1077,7 +1081,7 @@
         renderControls() {
             const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
             this.controlsContainer.innerHTML = '';
-
+            this.controlsContainer2.innerHTML = '';
             // Previous Button
             const prevBtn = document.createElement('button');
             prevBtn.classList.add('custom-paginator-btn');
@@ -1085,13 +1089,14 @@
             prevBtn.disabled = this.currentPage === 1;
             prevBtn.onclick = () => this.renderPage(this.currentPage - 1);
             this.controlsContainer.appendChild(prevBtn);
+            this.controlsContainer2.appendChild(prevBtn);
 
             // Current Page Indicator
             const indicator = document.createElement('span');
             indicator.className = 'custom-paginator-indicator';
             indicator.textContent = ` Page ${this.currentPage} of ${pageCount} `;
             this.controlsContainer.appendChild(indicator);
-
+            this.controlsContainer2.appendChild(indicator);
             // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.classList.add('custom-paginator-btn');
@@ -1099,6 +1104,7 @@
             nextBtn.disabled = this.currentPage === pageCount || pageCount === 0;
             nextBtn.onclick = () => this.renderPage(this.currentPage + 1);
             this.controlsContainer.appendChild(nextBtn);
+            this.controlsContainer2.appendChild(nextBtn);
         }
     }
 
@@ -1111,8 +1117,10 @@
             if(dataArray && dataArray.length>0) {
                 this.controlsContainer = document.createElement('div');
                 this.controlsContainer.className = 'pagination-controls';
-                this.container.before(this.controlsContainer);
                 this.container.after(this.controlsContainer);
+                this.controlsContainer2 = document.createElement('div');
+                this.controlsContainer2.className = 'pagination-controls';
+                this.container.after(this.controlsContainer2);
                 this.renderPage(1);
             } else {
                 this.container.innerHTML='None needing review.';
@@ -1152,7 +1160,7 @@
         renderControls() {
             const pageCount = Math.ceil(this.allData.length / this.itemsPerPage);
             this.controlsContainer.innerHTML = '';
-
+            this.controlsContainer2.innerHTML = '';
             // Previous Button
             const prevBtn = document.createElement('button');
             prevBtn.classList.add('custom-paginator-btn');
@@ -1160,13 +1168,13 @@
             prevBtn.disabled = this.currentPage === 1;
             prevBtn.onclick = () => this.renderPage(this.currentPage - 1);
             this.controlsContainer.appendChild(prevBtn);
-
+            this.controlsContainer2.appendChild(prevBtn);
             // Current Page Indicator
             const indicator = document.createElement('span');
             indicator.className = 'custom-paginator-indicator';
             indicator.textContent = ` Page ${this.currentPage} of ${pageCount} `;
             this.controlsContainer.appendChild(indicator);
-
+            this.controlsContainer2.appendChild(indicator);
             // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.classList.add('custom-paginator-btn');
@@ -1174,6 +1182,7 @@
             nextBtn.disabled = this.currentPage === pageCount || pageCount === 0;
             nextBtn.onclick = () => this.renderPage(this.currentPage + 1);
             this.controlsContainer.appendChild(nextBtn);
+            this.controlsContainer2.appendChild(nextBtn);
         }
     }
 
