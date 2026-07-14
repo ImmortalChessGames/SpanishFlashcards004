@@ -177,11 +177,13 @@
 
     .container {
         background-color: var(--card-bg);
-        padding: 30px;
         border-radius: 12px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        width: 90%;
-        max-width: 600px;
+        width: 100%;
+        max-width: 375px; /* Centers and limits content */
+        margin: 0 auto;    /* Keeps content centered on larger screens */
+        padding: 0 16px;   /* Prevents text from touching the screen edges */
+        box-sizing: border-box; 
     }
 
     h1 {
@@ -1917,4 +1919,3 @@ h2 {
     display: block; /* Or 'inline-block' depending on your layout */
   }
 }
-

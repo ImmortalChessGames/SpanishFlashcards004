@@ -1665,6 +1665,10 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
             word = word.substring(0,word.length-1);
         }
 
+        if(uniqueResults.length==1 && word.toUpperCase()===textValue.toUpperCase()) {
+            throw new Error("Same value was returned from itranslate , throwing an exception so that Google Translate is used instead.");
+        }
+
         listHtml += "<li>" + word + "</li>";
         oneLineTranslation += (word + "; ");
     });
