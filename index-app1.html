@@ -1009,6 +1009,7 @@
         wordsThatNeedMoreWorkDiv.style='max-width:345px;margin-left:20px;display:flex;gap:20px;width:100%;margin:0 auto;';
         wordsThatNeedMoreWorkDiv.innerHTML='';
         const progress = getAllProgress();
+alert(JSON.stringify(progress));
         let words = [];
         const availableWords = masterData.filter(item => {
             const itemProgress = progress[item.spanish];
@@ -1023,6 +1024,7 @@
         });
         label.innerText = label.innerText + ' ['+words.length+']';
         words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
+alert(JSON.stringify(words));
         new NegativeListPaginator(containerId, words, 16);
     }
 
