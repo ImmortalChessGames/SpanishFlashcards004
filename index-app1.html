@@ -36,12 +36,12 @@
         <div class="tabs-wrapper">
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
-                <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">Read</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">Quiz</button>
-                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">Words</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">Review</button>
-                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">Know</button>
-                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">Config</button>
+                <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">&#x1F4BB;</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">&#x1F4DD;</button>
+                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F524;</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x2705;</button>
+                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x274C;</button>
+                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">&#128295;</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -150,22 +150,18 @@
 
             <!-- PANEL 4 -->
             <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
-                <div class="scroll-wrapper">
+                <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
                   <div class="inner-content">
-                      <div id="results-negative-paginated"></div>
+                      <div id="results-positive-paginated"></div>
                   </div>
-                </div> 
             </div>
 
             <!-- PANEL 5 -->
             <div id="panel-5" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
-                <div class="scroll-wrapper">
+                <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
                   <div class="inner-content">
-                      <div id="results-positive-paginated"></div>
+                      <div id="results-negative-paginated"></div>
                   </div>
-                </div>  
             </div>
 
             <!-- PANEL 6 -->
@@ -1005,7 +1001,7 @@
             }
             label.innerText = label.innerText + ' ['+masteredWords.length+']';
             masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-            new PositiveListPaginator(containerId, masteredWords, 16);
+            new PositiveListPaginator(containerId, masteredWords, 25);
         } 
     }
 
@@ -1030,7 +1026,7 @@
         });
         label.innerText = label.innerText + ' ['+words.length+']';
         words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
-        new NegativeListPaginator(containerId, words, 16);
+        new NegativeListPaginator(containerId, words, 25);
     }
 
     class NegativeListPaginator {
