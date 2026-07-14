@@ -1041,7 +1041,7 @@
 
             this.container.addEventListener('touchend', (e) => {
                 negtouchEndX = e.changedTouches[0].screenX;
-                neghandleSwipe();
+                this.neghandleSwipe();
             }, { passive: true });
             this.allData = dataArray;
             this.itemsPerPage = itemsPerPage;
@@ -1058,12 +1058,12 @@
         neghandleSwipe() {
             const threshold = 50; // Minimum swipe distance in pixels
             if (negtouchEndX < negtouchStartX - threshold) {
-                if(pageCount>0 && this.currentPage<pageCount) {
+                if(this.pageCount>0 && this.currentPage<pageCount) {
                     this.renderPage(this.currentPage + 1);
                 }
             }
             if (negtouchEndX > negtouchStartX + threshold) {       
-                if(pageCount>0 && this.currentPage>0) {
+                if(this.pageCount>0 && this.currentPage>0) {
                     this.renderPage(this.currentPage - 1);
                 }             
             }
@@ -1136,7 +1136,7 @@
 
             this.container.addEventListener('touchend', (e) => {
                 postouchEndX = e.changedTouches[0].screenX;
-                poshandleSwipe();
+                this.poshandleSwipe();
             }, { passive: true });
             this.allData = dataArray;
             this.itemsPerPage = itemsPerPage;
@@ -1153,12 +1153,12 @@
         poshandleSwipe() {
             const threshold = 50; // Minimum swipe distance in pixels
             if (postouchEndX < postouchStartX - threshold) {
-                if(pageCount>0 && this.currentPage<pageCount) {
+                if(this.pageCount>0 && this.currentPage<pageCount) {
                     this.renderPage(this.currentPage + 1);
                 }
             }
             if (postouchEndX > postouchStartX + threshold) {       
-                if(pageCount>0 && this.currentPage>0) {
+                if(this.pageCount>0 && this.currentPage>0) {
                     this.renderPage(this.currentPage - 1);
                 }             
             }
