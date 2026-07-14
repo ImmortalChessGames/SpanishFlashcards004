@@ -1911,7 +1911,7 @@ h2 {
 
   margin: 0 auto; width: 100vw; height: auto; object-fit: cover;
 
-}
+} 
 
 /* 2. Show the image only on smartphone screens */
 @media only screen and (max-width: 768px) {
