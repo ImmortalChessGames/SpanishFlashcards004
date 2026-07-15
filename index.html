@@ -18,6 +18,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
+<script src="https://unpkg.com/es-compromise"></script>
 <div class="main-container">
     <div id="viewer">
 <!--
@@ -315,6 +316,21 @@
     const appModalCloseTrigger = document.getElementById("appModalClose");
 
     let deepDiveWarningAlreadyShown;
+
+    function getLemma(word) {
+        if (word && word.trim().length > 0) {
+            const doc = esCompromise(word);
+            doc.compute('root');
+            const data = doc.json();
+            if (data && data.length > 0) {
+                const results = data[0].terms.map(term => {
+                    return `${term.root || term.text.toLowerCase()}`;
+                });
+                return results[0]; 
+            }
+        }
+        return null;
+    }
 
     function consoleLogOnlyIfLocal(p) {
         if (window.location.protocol === 'file:') {
@@ -1941,7 +1957,10 @@ function processSentence(input) {
             }
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
-                sendTranslationRequest(cleanWord);
+
+                const lemma = getLemma(cleanWord);
+                console.log('word='+cleanWord+', lemma='+lemma);
+                sendTranslationRequest((lemma && lemma.trim().length>0) ? lemma : cleanWord);
                 //translateText(cleanWord);
             });
             wordBox.appendChild(span);
