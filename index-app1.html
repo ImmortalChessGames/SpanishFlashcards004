@@ -285,6 +285,7 @@
     const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
     const api3KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoBl3w4dnl5l1/a+xjpVKCrXxul2ROtEcogoGEktfZUDEJwvjmuhCJVrVvfzC7cipF6msKIC/NluiNzZWtqGYWJeEE8hsXhZWE5w9UiLIsfvq3Q==';
     const api4KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoPFnFkLzxHmYOnYMhldqJT7PNfFfKKwmmhkht9E/JVtL+WCi/XziDoHMP9YqbYvVAHI6yJOkSeNOy2dkVRT/k+X2SWCCixFFI7j4mUHYA9Y6JQ==';
+    const api5KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoH6XRYSOZt7bxMK6l068LSxMinGRITB22FayT0e0kw6DbUoi9+YpQSk9u2jlSMSj+aDEwMTzWX38f0SNYX+vHdc=';
     const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
 
@@ -1723,7 +1724,7 @@ function reloadVocabDataset(element) {
    document.getElementsByClassName("tab-btn")[0].click();
 }
 
-async function translateText(textToTranslate) {
+async function translateText_Google(textToTranslate) {
     if (!textToTranslate.trim()) return;
     const trKey = await decrypt(api2KeyEncrypted, true);
     if (!trKey) {
@@ -1764,18 +1765,67 @@ async function translateText(textToTranslate) {
     }
 }
 
+async function translateText_Google_MW(textToTranslate) {
+  if (!textToTranslate.trim()) return;
+  const trKey = await decrypt(api5KeyEncrypted, true);
+  if (!trKey) {
+    alert("Error (2) connecting .");
+    return;
+  }
+  // 1. Remove accents to match the Merriam-Webster lookup index
+  const cleanLookupWord = textToTranslate
+    .normalize("NFD")               
+    .replace(/[\u0300-\u036f]/g, "") 
+    .trim()
+    .toLowerCase();
+  
+  // 2. URL-encode just in case there are spaces or special characters (like ñ)
+  const encodedWord = encodeURIComponent(cleanLookupWord);
+  const url = 'https://www.dictionaryapi.com/api/v3/references/spanish/json/'+encodedWord+'?key='+trKey;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      // Handle the fallback if MW still returns string suggestions
+      if (data.length === 0 || typeof data[0] === 'string') {
+        console.log("Word not found. Suggestions:", data);
+        return;
+      }
+
+      const cleanTranslations = new Set();
+
+      data.forEach(entry => {
+        if (entry.shortdef && Array.isArray(entry.shortdef)) {
+          entry.shortdef.forEach(item => {
+            let text = item.includes(":") ? item.split(":").pop() : item;
+            text.split(",").forEach(w => {
+              const trimmed = w.trim();
+              if (trimmed) cleanTranslations.add(trimmed);
+            });
+          });
+        }
+      });
+
+      // Convert Set to a semicolon-separated string
+      const translatedText = Array.from(cleanTranslations).join('; ');
+      console.log(`Translations for "${textToTranslate}":`, translatedText);
+      const uiDiv = document.getElementById('translationResponse');
+      parseAndDisplayUnique_MW(textToTranslate, translatedText, uiDiv);
+        setTimeout(() => {
+        document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
+        }, 50); 
+      return translatedText;
+    })
+    .catch(error => { console.error("API Error:", error); translateText_Google(textToTranslate); });
+}
 
 async function sendTranslationRequest(textValue) {
-
     const uiDiv = document.getElementById('translationResponse');
-
     if (!textValue) {
         alert("Please provide input text.");
         return;
     }
-
     uiDiv.innerHTML = "<em>Processing translation and parsing metadata...</em>";
-
     const requestPayload = {
         source: {
             dialect: "es-ES",
@@ -1786,9 +1836,7 @@ async function sendTranslationRequest(textValue) {
             dialect: "en-US"
         }
     };
-
     const proxyUrl = `https://cors.io/?url=https://web-api.itranslateapp.com/v3/texts/translate`;
-
     try {
         const response = await fetch(proxyUrl, {
             method: "POST",
@@ -1797,26 +1845,18 @@ async function sendTranslationRequest(textValue) {
             },
             body: JSON.stringify(requestPayload)
         });
-
         if (!response.ok) {
             throw new Error("Proxy server returned HTTP status: " + response.status);
         }
-        
         const responseData = await response.json();
-
         consoleLogOnlyIfLocal(responseData);
-
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
-
         setTimeout(() => {
           document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
         }, 50); 
-
-
     } catch(err) {
         consoleLogOnlyIfLocal(err + ' switching to another provider.');
-        return translateText(textValue);
-//        uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
+        return translateText_Google_MW(textValue);
     }
 }
 
@@ -1824,6 +1864,48 @@ function clickSaveWord(e) {
     document.getElementById('saveWordButton').click();
     showToast('Saved successfully.');
     e.preventDefault();
+}
+
+function parseAndDisplayUnique_MW(textValue, data, visualContainer) {
+    // 1. Initialize an array to keep items in their natural sequence
+    let orderedResults = [];
+
+    // 2. Safely capture the main target translation string first
+    if (data && data.trim().length>0) {
+        orderedResults = data.toLowerCase().trim().split('; ');
+    }
+
+    // 4. Run the final data array through a Set structure to remove duplicates
+    const uniqueResults = Array.from(new Set(orderedResults));
+
+    // 5. Build clean layout tree lists 
+    if (uniqueResults.length === 0) {
+        visualContainer.innerHTML = "<p style='color:#718096;'>No translations were found in the response object.</p>";
+        return;
+    }
+
+    let oneLineTranslation = '';
+    let listHtml = "<ol class='translation-list'>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</li>";
+    uniqueResults.slice(0,5).forEach((word) => {
+        if(word.endsWith('.')) {
+            word = word.substring(0,word.length-1);
+        }
+        if(uniqueResults.length==1 && word.toUpperCase()===textValue.toUpperCase()) {
+            throw new Error("Same value was returned from itranslate , throwing an exception so that Google Translate is used instead.");
+        }
+        listHtml += "<li>" + word + "</li>";
+        oneLineTranslation += (word + "; ");
+    });
+    if(oneLineTranslation.length>0 && oneLineTranslation.endsWith("; ")) {
+        oneLineTranslation = oneLineTranslation.trim().substring(0,oneLineTranslation.trim().length-1);
+    }
+    listHtml += "</ol>";
+
+    document.getElementById('spanishWord').value=textValue;
+    document.getElementById('englishTranslation').value=oneLineTranslation;
+
+    visualContainer.innerHTML = listHtml;
 }
 
 function parseAndDisplayUnique(textValue, data, visualContainer) {
@@ -1961,7 +2043,6 @@ function processSentence(input) {
                 const lemma = getLemma(cleanWord);
                 console.log('word='+cleanWord+', lemma='+lemma);
                 sendTranslationRequest((lemma && lemma.trim().length>0) ? lemma : cleanWord);
-                //translateText(cleanWord);
             });
             wordBox.appendChild(span);
         }
