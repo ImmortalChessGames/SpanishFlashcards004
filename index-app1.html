@@ -251,6 +251,14 @@
   </div>
 </div>
 
+<div id="sys-splash-overlay-root">
+    <img class="sys-splash-centered-img" src="icon-512.png" alt="Rapid SVB">
+    <div class="sys-splash-progress-track">
+        <div id="sys-splash-progress-fill"></div>
+    </div>
+    <div id="sys-splash-percentage-text">Loading... 0%</div>
+</div>
+
 <script>
     const DEFAULT_LOCAL_STORAGE_KEY = '___spanish_vocab___';
     const DEFAULT_LOCAL_STORAGE_STORIES_KEY = '___spanish_v_stories___';
@@ -2615,6 +2623,47 @@ function handleSwipe() {
     displayIncognitoWarning();
     repaintReviewTab();
     getsetPassphrase();
+
+
+    (function () {
+        // Run immediately to trap interactions if splash is active
+        const initSplash = function () {
+            const progressBar = document.getElementById("sys-splash-progress-fill");
+            const progressText = document.getElementById("sys-splash-percentage-text");
+            const splashScreen = document.getElementById("sys-splash-overlay-root");
+
+            if (!progressBar || !progressText || !splashScreen) return;
+
+            let progress = 0;
+            const intervalDuration = 20; 
+
+            const interval = setInterval(function () {
+                progress += 1;
+                progressBar.style.width = progress + "%";
+                progressText.innerText = "Loading... " + progress + "%";
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Fade out animation
+                    splashScreen.style.opacity = "0";
+                    
+                    // Complete destruction from view tree to release memory
+                    setTimeout(function () {
+                        splashScreen.style.display = "none";
+                    }, 500);
+                }
+            }, intervalDuration);
+        };
+
+        // Initialize as soon as DOM structure is interactive
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initSplash);
+        } else {
+            initSplash();
+        }
+    })();
+
 
 </script>
 </body>
