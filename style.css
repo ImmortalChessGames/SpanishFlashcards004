@@ -1982,7 +1982,7 @@ h2 {
     width: 120px;
     height: auto;
     margin-bottom: 30px;
-    margin-top: -250px; /* Shifts the logo up by 100px */
+    margin-top: -300px; /* Shifts the logo up by 100px */
     animation: sysSplashPulseAnim 2s infinite;}
 
 #sys-splash-overlay-root .sys-splash-progress-track {

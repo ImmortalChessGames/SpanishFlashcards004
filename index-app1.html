@@ -316,6 +316,12 @@
 
     let deepDiveWarningAlreadyShown;
 
+    function consoleLogOnlyIfLocal(p) {
+        if (window.location.protocol === 'file:') {
+            console.log(p);
+        }
+    }
+
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
       appModalElement.classList.remove("is-visible");
@@ -420,7 +426,16 @@
 
     // 2. LOCAL STORAGE MANAGEMENT & PROGRESS TRACKING
     function getAllProgress() {
-        return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+        const p = JSON.parse(localStorage.getItem(PROGRESS_KEY));
+        consoleLogOnlyIfLocal('In getAllProgress(): \\n' + JSON.stringify(p, null, 2));
+        return p || {};
+    }
+
+    function saveAllProgress(progress) {
+        consoleLogOnlyIfLocal('Before saveAllProgress(): \\n' + JSON.stringify(progress, null, 2));
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+        const p = JSON.parse(localStorage.getItem(PROGRESS_KEY));
+        consoleLogOnlyIfLocal('After saveAllProgress(): \\n' + JSON.stringify(progress, null, 2));
     }
 
     function recordUserAnswer(spanishWord, isCorrect) {
@@ -441,7 +456,7 @@
             progress[spanishWord].cs = 0; // Reset streak instantly on wrong answer
             progress[spanishWord].tw += 1;
         }
-        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+        saveAllProgress(progress);
         lastWordHelped = null;
         repaintReviewTab();
         return progress[spanishWord].cs; // Return updated streak for immediate rendering
@@ -457,7 +472,7 @@
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
         if(currentQuestionIndex>=0 && currentQuestionIndex<QUESTIONS_PER_QUIZ) {
-            console.log('Quiz in progress, returning.');
+            consoleLogOnlyIfLocal('Quiz in progress, returning.');
             return;
         }
         score = 0;
@@ -858,7 +873,7 @@
             if(showPopup===true) {
                 showDynamicPopup('Error','Password is wrong.', 3000);
             }
-            console.log('Decryption failed. Incorrect password or broken text.');
+            consoleLogOnlyIfLocal('Decryption failed. Incorrect password or broken text.');
         }
         return null;
     }
@@ -1384,7 +1399,7 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log(data);
+        consoleLogOnlyIfLocal(data);
       } catch (error) {
         console.error("Could not load JSON:", error);
       }
@@ -1393,7 +1408,7 @@
     function readArticle() {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
-            console.log("Speech stopped.");
+            consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             let text = '';
             if(dataset && dataset.length>0 && dataset.length<50) {
@@ -1773,7 +1788,7 @@ async function sendTranslationRequest(textValue) {
         
         const responseData = await response.json();
 
-        console.log(responseData);
+        consoleLogOnlyIfLocal(responseData);
 
         parseAndDisplayUnique(textValue, JSON.parse(responseData.body), uiDiv);
 
@@ -1783,7 +1798,7 @@ async function sendTranslationRequest(textValue) {
 
 
     } catch(err) {
-        console.log(err + ' switching to another provider.');
+        consoleLogOnlyIfLocal(err + ' switching to another provider.');
         return translateText(textValue);
 //        uiDiv.innerHTML = "<span style='color:#e53e3e;'><strong>Error:</strong> " + err.message + ". Check your network or verify proxy status.</span>";
     }
@@ -1984,7 +1999,7 @@ async function processWordHelp(word) {
                       throw new Error(data.error.message);
                     }
                     const rawJson = data.candidates[0].content.parts[0].text;
-                    console.log(rawJson);  
+                    consoleLogOnlyIfLocal(rawJson);  
                     if(rawJson && rawJson.length>0) {
                         const jsonObj = JSON.parse(rawJson);
                         loadArticle(jsonObj);
@@ -2011,7 +2026,7 @@ async function processWordHelp(word) {
                       showDynamicPopup('Warning', warnMsg, 1500);
                   }
                   // Wait before trying again (2s, then 4s, etc.)
-                  console.log(`Waiting ${currentDelay / 1000}s before next attempt...`);
+                  consoleLogOnlyIfLocal(`Waiting ${currentDelay / 1000}s before next attempt...`);
                   await new Promise(resolve => setTimeout(resolve, currentDelay));
                   currentDelay *= 2; 
                 }
@@ -2266,7 +2281,7 @@ async function loadVocabData(loadDefaults) {
             existingData = [];
         }
     }
-    console.log("Loading default vocabulary words.");
+    consoleLogOnlyIfLocal("Loading default vocabulary words.");
     const response = await fetch('./defaults_big4.json');
     let data = await response.json(); 
 //let data = [{"spanish":"madre","english":"mom"},{"spanish":"padre","english":"daddy"},{"spanish":"man","english":"hombre"},{"spanish":"hospital","english":"hospital"}];
@@ -2275,7 +2290,7 @@ async function loadVocabData(loadDefaults) {
         return !(score && score >= wordSimilaritySlider.value);
     });
     if(!loadDefaults || loadDefaults===false) {
-        console.log("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
+        consoleLogOnlyIfLocal("Not loading default vocabulary words, but will make sure there are at least " + MINIMUM_VOCAB_WORD_COUNT + " words to start with.");
         if(existingData.length<MINIMUM_VOCAB_WORD_COUNT) {
             const startingIndx = existingData.length;
             for(i=startingIndx;i<MINIMUM_VOCAB_WORD_COUNT;i++) {
@@ -2305,19 +2320,19 @@ async function loadVocabData(loadDefaults) {
     console.error("Failed to parse JSON file:", error);
   }
   // load dynamic data sets
-    console.log('Loading dynamic stories');
+    consoleLogOnlyIfLocal('Loading dynamic stories');
     const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
     if(storiesMapJson && storiesMapJson.length>0) {
         const storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
         if(storiesMap && storiesMap.size>0) {
             for (const [key, responseText] of storiesMap) {
                if(key && key.length>0 && responseText && responseText.length>10) {
-                console.log('Found dynamic ' + key);
+                consoleLogOnlyIfLocal('Found dynamic ' + key);
                 let newOptionName = key;
                 if(newOptionName.length > 50) {
                     newOptionName = newOptionName.substring(0,50);
                 }   
-                console.log('newOptionName='+newOptionName);
+                consoleLogOnlyIfLocal('newOptionName='+newOptionName);
                 document.getElementById("sm-chooseDataset").add(new Option(">> "+newOptionName, responseText), 1);
              }
           }
@@ -2326,7 +2341,7 @@ async function loadVocabData(loadDefaults) {
 }
 
 function smLoadDefaultVocabulary() {
-    console.log("Loading vocabulary words.");
+    consoleLogOnlyIfLocal("Loading vocabulary words.");
     loadVocabData(true);
     resetQuizProgress();
     updateDisplayData();
@@ -2337,7 +2352,7 @@ function smLoadDefaultVocabulary() {
 function smDeleteAllVocabulary() {
     const userApproved = confirm("Are you sure you want to delete all of your vocabulary words?");
     if (userApproved) {
-        console.log("Deleting all vocabulary words.");
+        consoleLogOnlyIfLocal("Deleting all vocabulary words.");
         localStorage.setItem(getStorageKey(), []);
         loadVocabData(false);
         resetQuizProgress();
@@ -2350,7 +2365,7 @@ function smDeleteAllVocabulary() {
         window.location.reload();
     } else {
         // Code to run if the user clicked "Cancel"
-        console.log("Not going to delete all vocabulary words.");
+        consoleLogOnlyIfLocal("Not going to delete all vocabulary words.");
     }
 }
 
@@ -2429,7 +2444,7 @@ async function fetchArticle() {
                 if(!responseText) {
                     responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
-                console.log(responseText);
+                consoleLogOnlyIfLocal(responseText);
                 let responseObj = JSON.parse(responseText);
                 if(responseObj.summary) {
                     if(responseObj.related_topics) {
@@ -2460,7 +2475,7 @@ async function fetchArticle() {
                 if(newOptionName.length > 50) {
                     newOptionName = newOptionName.substring(0,50);
                 }   
-                console.log('newOptionName='+newOptionName);
+                consoleLogOnlyIfLocal('newOptionName='+newOptionName);
                 const selectElt = document.getElementById("sm-chooseDataset");
                 const newOptionKey = ">> "+newOptionName;
                 selectElt.add(new Option(newOptionKey, responseText), 1);
@@ -2489,7 +2504,7 @@ async function fetchArticle() {
               showDynamicPopup('Warning', warnMsg, 1500);
           }
           // Wait before trying again (2s, then 4s, etc.)
-          console.log(`Waiting ${currentDelay / 1000}s before next attempt...`);
+          consoleLogOnlyIfLocal(`Waiting ${currentDelay / 1000}s before next attempt...`);
           await new Promise(resolve => setTimeout(resolve, currentDelay));
           currentDelay *= 2; 
         }
@@ -2502,7 +2517,7 @@ function displayIncognitoWarning() {
     if (navigator.storage && navigator.storage.estimate) {
       navigator.storage.estimate().then(estimate => {
         if (estimate.quota < 5000000000) {
-          console.log("Likely Incognito Mode");
+          consoleLogOnlyIfLocal("Likely Incognito Mode");
           showDynamicPopup('Warning','The page will not work well in Private / Incognito mode.', 5000);
         } 
       });
@@ -2561,7 +2576,7 @@ function handleSwipe() {
         const text = spanishTextInput.innerText.trim();
 
         if (!key) {
-          console.log("Error (1) connecting.");
+          consoleLogOnlyIfLocal("Error (1) connecting.");
           return;
         }
         if (!text) {
