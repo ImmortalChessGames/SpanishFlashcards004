@@ -269,6 +269,7 @@
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
     const MINIMUM_VOCAB_WORD_COUNT = 200;
+    const PROCESSING_TRANSLATION_MSG = "<em>Processing translation and parsing metadata...</em>";
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -632,22 +633,6 @@
     function endQuiz(score, totalQuestions) {
       showDynamicPopup('Quiz Completed','You completed the quiz with the score of ' + score + ' out of '+ totalQuestions +'.', 5000);
       resetQuizProgress();
-    }
-
-    function parseToBulletedList(text) {
-        const sentences = text.split('\n\n');
-        const listItems = sentences
-          .filter(sentence => sentence.trim() !== '')
-          .map(sentence => {
-            const trimmed = sentence.trim();
-            
-            // RegEx finds (...) and wraps it in a styled span tag
-            const formattedText = trimmed.replace(/(\([^)]+\))/g, '<span class="parenthesis-text">$1</span>');
-            
-            return `<li class="word-help-bullet-list-item">${formattedText}</li>`;
-          })
-          .join('');
-        return `<ul class="word-help-bullet-list-container">${listItems}</ul>`;
     }
 
     function renderQuestionToUI(questionObj) {
@@ -1812,7 +1797,10 @@ async function translateText_MW(textToTranslate) {
         }, 50); 
       return translatedText;
     })
-    .catch(error => { console.error("API Error:", error); translateText_Google(textToTranslate); });
+    .catch(error => { 
+        console.log("MW API failed due to:", error); 
+        translateText_Google(textToTranslate); 
+    });
 }
 
 async function sendTranslationRequest(textValue) {
@@ -1821,7 +1809,7 @@ async function sendTranslationRequest(textValue) {
         alert("Please provide input text.");
         return;
     }
-    uiDiv.innerHTML = "<em>Processing translation and parsing metadata...</em>";
+    uiDiv.innerHTML = PROCESSING_TRANSLATION_MSG;
     const requestPayload = {
         source: {
             dialect: "es-ES",
@@ -1857,7 +1845,12 @@ async function sendTranslationRequest(textValue) {
 }
 
 function clickSaveWord(e) {
-    document.getElementById('saveWordButton').click();
+//    const spanishVal = document.getElementById('spanishWord').value.trim();
+//    const englishVal = document.getElementById('englishTranslation').value.trim();
+    const visibleInput = e.target;
+    const hiddenInput = visibleInput.parentElement.parentElement.nextElementSibling;
+
+    saveWord(hiddenInput.id, hiddenInput.value);
     showToast('Saved successfully.');
     e.preventDefault();
 }
@@ -1882,7 +1875,7 @@ function parseAndDisplayUnique_MW(textValue, data, visualContainer) {
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</a></li>";
     uniqueResults.slice(0,5).forEach((word) => {
         if(word.endsWith('.')) {
             word = word.substring(0,word.length-1);
@@ -1897,11 +1890,16 @@ function parseAndDisplayUnique_MW(textValue, data, visualContainer) {
         oneLineTranslation = oneLineTranslation.trim().substring(0,oneLineTranslation.trim().length-1);
     }
     listHtml += "</ol>";
+    listHtml += ("<input type='hidden' id='"+textValue+"' value='"+oneLineTranslation+"'></input>");
 
     document.getElementById('spanishWord').value=textValue;
     document.getElementById('englishTranslation').value=oneLineTranslation;
 
-    visualContainer.innerHTML = listHtml;
+    if(visualContainer.innerHTML===PROCESSING_TRANSLATION_MSG) {
+        visualContainer.innerHTML = '';
+    }
+
+    visualContainer.innerHTML += listHtml;
 }
 
 function parseAndDisplayUnique(textValue, data, visualContainer) {
@@ -1937,7 +1935,7 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</a></li>";
     uniqueResults.slice(0,5).forEach((word) => {
 
         if(word.endsWith('.')) {
@@ -1955,11 +1953,16 @@ function parseAndDisplayUnique(textValue, data, visualContainer) {
         oneLineTranslation = oneLineTranslation.trim().substring(0,oneLineTranslation.trim().length-1);
     }
     listHtml += "</ol>";
+    listHtml += ("<input type='hidden' id='"+textValue+"' value='"+oneLineTranslation+"'></input>");
 
     document.getElementById('spanishWord').value=textValue;
     document.getElementById('englishTranslation').value=oneLineTranslation;
 
-    visualContainer.innerHTML = listHtml;
+    if(visualContainer.innerHTML===PROCESSING_TRANSLATION_MSG) {
+        visualContainer.innerHTML = '';
+    }
+
+    visualContainer.innerHTML += listHtml;
 }
 
 
@@ -1983,7 +1986,7 @@ function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visual
 
     let oneLineTranslation = '';
     let listHtml = "<ol class='translation-list'>";
-    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</a>"+"</li>";
+    listHtml += "<li>" + textValue + "&nbsp;<a class='pressed-link' href='#' onclick='clickSaveWord(event);'>[Save]</a></a>"+"</li>";
     uniqueResults.slice(0,5).forEach((word) => {
 
         if(word.endsWith('.')) {
@@ -1997,11 +2000,16 @@ function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visual
         oneLineTranslation = oneLineTranslation.trim().substring(0,oneLineTranslation.trim().length-1);
     }
     listHtml += "</ol>";
+    listHtml += ("<input type='hidden' id='"+textValue+"' value='"+oneLineTranslation+"'>");
 
     document.getElementById('spanishWord').value=textValue;
     document.getElementById('englishTranslation').value=oneLineTranslation;
 
-    visualContainer.innerHTML = listHtml;
+    if(visualContainer.innerHTML===PROCESSING_TRANSLATION_MSG) {
+        visualContainer.innerHTML = '';
+    }
+
+    visualContainer.innerHTML += listHtml;
 }
 
 function processSentence(input) {
@@ -2037,7 +2045,16 @@ function processSentence(input) {
             span.addEventListener('click', () => {
                 const lemma = getLemma(cleanWord);
                 console.log('word='+cleanWord+', lemma='+lemma);
-                sendTranslationRequest((lemma && lemma.trim().length>0) ? lemma : cleanWord);
+
+                if(!lemma || lemma===cleanWord) {
+                    sendTranslationRequest(cleanWord);
+                } else {
+                    if(lemma && lemma.trim().length>0) {
+                        sendTranslationRequest(lemma.trim());
+                    }
+                    sendTranslationRequest(cleanWord);
+                }
+
             });
             wordBox.appendChild(span);
         }
