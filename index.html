@@ -1102,7 +1102,7 @@
                 }
             }
             if (negtouchEndX > negtouchStartX + threshold) {       
-                if(pageCount>0 && this.currentPage>0) {
+                if(pageCount>0 && this.currentPage>1) {
                     this.renderPage(this.currentPage - 1);
                 }             
             }
@@ -1205,7 +1205,7 @@
                 }
             }
             if (postouchEndX > postouchStartX + threshold) {       
-                if(pageCount>0 && this.currentPage>0) {
+                if(pageCount>0 && this.currentPage>1) {
                     this.renderPage(this.currentPage - 1);
                 }             
             }
@@ -1765,7 +1765,7 @@ async function translateText_Google(textToTranslate) {
     }
 }
 
-async function translateText_Google_MW(textToTranslate) {
+async function translateText_MW(textToTranslate) {
   if (!textToTranslate.trim()) return;
   const trKey = await decrypt(api5KeyEncrypted, true);
   if (!trKey) {
@@ -1778,22 +1778,18 @@ async function translateText_Google_MW(textToTranslate) {
     .replace(/[\u0300-\u036f]/g, "") 
     .trim()
     .toLowerCase();
-  
   // 2. URL-encode just in case there are spaces or special characters (like ñ)
   const encodedWord = encodeURIComponent(cleanLookupWord);
   const url = 'https://www.dictionaryapi.com/api/v3/references/spanish/json/'+encodedWord+'?key='+trKey;
-
   fetch(url)
     .then(response => response.json())
     .then(data => {
       // Handle the fallback if MW still returns string suggestions
       if (data.length === 0 || typeof data[0] === 'string') {
         console.log("Word not found. Suggestions:", data);
-        return;
+        throw new Error("MW - Word not found: " + cleanLookupWord);
       }
-
       const cleanTranslations = new Set();
-
       data.forEach(entry => {
         if (entry.shortdef && Array.isArray(entry.shortdef)) {
           entry.shortdef.forEach(item => {
@@ -1856,7 +1852,7 @@ async function sendTranslationRequest(textValue) {
         }, 50); 
     } catch(err) {
         consoleLogOnlyIfLocal(err + ' switching to another provider.');
-        return translateText_Google_MW(textValue);
+        return translateText_MW(textValue);
     }
 }
 
@@ -2042,6 +2038,8 @@ function processSentence(input) {
 
                 const lemma = getLemma(cleanWord);
                 console.log('word='+cleanWord+', lemma='+lemma);
+alert('cleanWord_'+cleanWord);
+alert('lemma_'+lemma);
                 sendTranslationRequest((lemma && lemma.trim().length>0) ? lemma : cleanWord);
             });
             wordBox.appendChild(span);
