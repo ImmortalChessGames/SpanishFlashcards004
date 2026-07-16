@@ -581,7 +581,7 @@ li { background: #f9f9fb; border-radius: 4px; }
 }
 
 .tabs-wrapper {
-  max-width: 600px;
+  max-width: 375px;
   font-family: system-ui, sans-serif;
 }
 
