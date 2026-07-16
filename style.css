@@ -616,7 +616,7 @@ li { background: #f9f9fb; border-radius: 4px; }
 /* Hidden by default, revealed via active state */
 .tab-panel {
   display: none;
-  padding: 24px 8px;
+  padding: 0px 8px;
   animation: fadeIn 0.3s ease;
 }/* --- CRITICAL TAB NAVIGATION CONTROL --- */
 .tab-panel {
@@ -1489,8 +1489,8 @@ h2 {
 
 .top-right-text {
   position: relative;        /* Pulls it out of normal flow to float it */
-  top: -25px;                 /* 12px down from the parent div's top edge */
-  right: 2px;               /* 12px left from the parent div's right edge */
+  top: -8px;                 /* 12px down from the parent div's top edge */
+  right: 20px;               /* 12px left from the parent div's right edge */
   font-size: 16px;           /* 12px text size */
   text-align: right;         /* Right-justifies the text lines */
   line-height: 1.2;
