@@ -1263,16 +1263,25 @@
     function saveWord(spanishVal, englishVal) {
         if (spanishVal && englishVal) {
             let currentVocab = getVocabFromStorage();
-            
-            // Check if Spanish word already exists to avoid exact duplicates
-            const exists = currentVocab.some(item => item.spanish.toLowerCase() === spanishVal.toLowerCase());
-            if (exists) {
-                return;
-            }
 
+            let index = currentVocab.findIndex(x => x.spanish.toLowerCase() === spanishVal.toLowerCase());
+            if (index !== -1) {
+                currentVocab.splice(index, 1);
+            }
             currentVocab.push({ spanish: spanishVal, english: englishVal });
+
+            index = quizVocab.findIndex(x => x.spanish.toLowerCase() === spanishVal.toLowerCase());
+            if (index !== -1) {
+                quizVocab.splice(index, 1);
+            }
             quizVocab.push({ spanish: spanishVal, english: parseAndGetFirst(englishVal) });
+
+            index = masterData.findIndex(x => x.spanish.toLowerCase() === spanishVal.toLowerCase());
+            if (index !== -1) {
+                masterData.splice(index, 1);
+            }
             masterData.push({ spanish: spanishVal, english: englishVal });
+
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
 
             // Go to page 1 to let the user see where it fits alphabetically or search it
