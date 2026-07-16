@@ -2035,11 +2035,8 @@ function processSentence(input) {
             }
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
-
                 const lemma = getLemma(cleanWord);
                 console.log('word='+cleanWord+', lemma='+lemma);
-alert('cleanWord_'+cleanWord);
-alert('lemma_'+lemma);
                 sendTranslationRequest((lemma && lemma.trim().length>0) ? lemma : cleanWord);
             });
             wordBox.appendChild(span);
