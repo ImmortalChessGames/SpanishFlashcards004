@@ -39,10 +39,11 @@
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">&#x1F4BB;</button>
                 <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">&#x1F4DD;</button>
-                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F524;</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x2705;</button>
-                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x274C;</button>
-                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">&#128295;</button>
+                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F9E0;</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x1F524;</button>
+                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x2705;</button>
+                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">&#x274C;</button>
+                <button class="tab-btn" data-target="#panel-7" role="tab" aria-selected="false">&#128295;</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -125,7 +126,15 @@
             </div>
 
             <!-- PANEL 3 -->
-            <div id="panel-3" class="tab-panel" role="tabpanel">
+            <div id="panel-3" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
+              <div class="clz-quiz-wrapper">
+                <h2 id="clz-loading" style="display: none;" class="inline-heading">Loading question...</h2>
+                <div id="clz-dynamic-quiz-target"></div>
+              </div>
+            </div>
+
+            <!-- PANEL 4 -->
+            <div id="panel-4" class="tab-panel" role="tabpanel">
                 <div>
                     <form id="wordForm">
                         <label for="spanishWord">Spanish Word:</label>
@@ -149,20 +158,20 @@
                 </div>
             </div>
 
-            <!-- PANEL 4 -->
-            <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
+            <!-- PANEL 5 -->
+            <div id="panel-5" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
                 <div id="results-positive-paginated"></div>
             </div>
 
-            <!-- PANEL 5 -->
-            <div id="panel-5" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
+            <!-- PANEL 6 -->
+            <div id="panel-6" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
                 <div id="results-negative-paginated"></div>
             </div>
 
-            <!-- PANEL 6 -->
-            <div id="panel-6" class="tab-panel" role="tabpanel">
+            <!-- PANEL 7 -->
+            <div id="panel-7" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
@@ -287,6 +296,7 @@
     const api3KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoBl3w4dnl5l1/a+xjpVKCrXxul2ROtEcogoGEktfZUDEJwvjmuhCJVrVvfzC7cipF6msKIC/NluiNzZWtqGYWJeEE8hsXhZWE5w9UiLIsfvq3Q==';
     const api4KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoPFnFkLzxHmYOnYMhldqJT7PNfFfKKwmmhkht9E/JVtL+WCi/XziDoHMP9YqbYvVAHI6yJOkSeNOy2dkVRT/k+X2SWCCixFFI7j4mUHYA9Y6JQ==';
     const api5KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoH6XRYSOZt7bxMK6l068LSxMinGRITB22FayT0e0kw6DbUoi9+YpQSk9u2jlSMSj+aDEwMTzWX38f0SNYX+vHdc=';
+    const api6KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoPG00xyjuicCRGlP2w+pNaKieqHwh4Lh8hC3hX170Uwy9q9MpnUm4TfgxUMpTUiVleL7eDDAohyMyqRdUBGj7YINqDZ+COiXW+prtjr7CeNQ4A==';
     const salt = new Uint8Array([89, 163, 36, 4, 143, 130, 72, 72, 175, 93, 8, 134, 78, 14, 161, 160]);
     let quizVocab = [];
 
@@ -343,7 +353,7 @@
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
       appModalElement.classList.remove("is-visible");
-      document.getElementsByClassName("tab-btn")[5].click();
+      document.getElementsByClassName("tab-btn")[6].click();
       setTimeout(() => {
         document.getElementById('sm-secret').scrollIntoView({ behavior: 'smooth' });
       }, 50); 
@@ -1459,7 +1469,7 @@
                     setTimeout(() => {
                       gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
                     }, 50); 
-                    document.getElementsByClassName("tab-btn")[5].click();
+                    document.getElementsByClassName("tab-btn")[6].click();
                     document.getElementById('gsv-submit-btn').click();                    
                 });
                 addlTopicLinks.appendChild(dynamicLink);
@@ -2156,6 +2166,116 @@ async function processWordHelp(word) {
     }
 }
 
+async function generateClozures() {
+    document.getElementById('clz-loading').style.display='block';
+    const progress = getAllProgress();
+    let words = [];
+    const availableWords = masterData.filter(item => {
+        const itemProgress = progress[item.spanish];
+        return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+    });
+    let availableReviewWords = availableWords.filter(item => {
+        const itemProgress = progress[item.spanish];
+        if(itemProgress && itemProgress.tw > 1) {
+            words.push({ spanish:item.spanish, english:item.english, tw:itemProgress.tw});
+        }
+        return itemProgress && itemProgress.tw > 0;
+    });
+    words = shuffleArray(words);
+    words = getRandomElements(words, words.length>10 ? 10 : words.length);
+    if(words && words.length>0) {
+      consoleLogOnlyIfLocal('Clozures generation: ' + words.length + ' words available for clozure quiz.');
+      const key = await decrypt(api6KeyEncrypted, true);
+      if(key == null) {
+         showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
+         return;
+      }
+      const systemInstruction = 
+        "You are an expert Spanish language master tutor:\n\n" +
+        "Given a spanish a comma-separated list of up to 10 Spanish words, for each word provide 3 real-world advanced-level example sentences using this word (include the english language translation, plus 4 (similar but different, cannot be synonyms) distractor words) to show real situational context. Ensure each spanish word in an example sentence is inside pipe | characters. " + 
+        "Return a JSON array of objects. Each object has three properties: spanish with spanish sentence and english with the english translation, and an array of 4 distractor words." +
+        "JSON properties should be named exactly as spanish, english, distractors." + 
+        "CRITICAL: Do not return any other information exception except the JSON array of objects.";
+
+     let wordsAsString;
+     for(i=0; i<words.length; i++) {
+        const cleanWordMatch = words[i].spanish.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
+        consoleLogOnlyIfLocal('Clozure word: ' + cleanWordMatch);
+        if (cleanWordMatch) {
+            wordsAsString += cleanWordMatch + ', ';
+        }
+     }
+     if(wordsAsString && wordsAsString.length>1) {
+        wordsAsString = wordsAsString.substring(0,wordsAsString.length-2);
+        const maxRetries = 5;
+        let currentDelay = 2000; // Start with a 2-second wait on failure
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            // 1. Set up the AbortController for the timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); 
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
+                const response = await fetch(url, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Provide up to 30 Spanish language sentences (3 for each word) that demonstrate how these Spanish words are used. Include 4 (similar but different, cannot be synonyms) distractor words for each: "${wordsAsString}". Ensure each spanish word in an example sentence is inside pipe | characters.` }] }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                    generationConfig: { 
+                      temperature: 0.2,
+                      responseMimeType: "text/plain" 
+                    }
+                  })
+                });
+                const data = await response.json();
+                if (data.error) {
+                  throw new Error(data.error.message);
+                }
+                const rawJson = data.candidates[0].content.parts[0].text;
+consoleLogOnlyIfLocal('Just before call to get clozures ++++++++++++++++++++++++++++');
+                consoleLogOnlyIfLocal(rawJson);  
+                if(rawJson && rawJson.length>0) {
+                    const jsonObj = JSON.parse(rawJson);
+                    clzBuildQuiz(jsonObj);
+
+             //       loadArticle(jsonObj);
+             //       document.getElementsByClassName("tab-btn")[0].click();
+             //       const topRightTextElt = document.getElementById('top-right-text');
+             //       topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 📢 ';
+             //       document.getElementById('word-help').innerHTML="";
+             //       lastWordHelped = word;
+                    break;
+                }
+            } catch (error) {
+              clearTimeout(timeoutId); // Ensure timer cleans up on error
+         //     document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
+              const isTimeout = error.name === 'AbortError';
+              const warnMsg = `Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`;
+              console.warn(warnMsg);
+              showDynamicPopup('Warning.', warnMsg, 1500);
+              // If we used all retries, throw the final error up to your application
+              if (attempt === maxRetries) {
+                const errMsg = `Gemini API completely failed after ${maxRetries} attempts.`;
+                showDynamicPopup('Error', errMsg, 1500);
+                throw new Error(errMsg);
+              } else {
+                  showDynamicPopup('Warning', warnMsg, 1500);
+              }
+              // Wait before trying again (2s, then 4s, etc.)
+              consoleLogOnlyIfLocal(`Waiting ${currentDelay / 1000}s before next attempt...`);
+              await new Promise(resolve => setTimeout(resolve, currentDelay));
+              currentDelay *= 2; 
+            }
+        }
+     } 
+    } else {
+       consoleLogOnlyIfLocal('Clozures generation: No words available for clozure quiz.');
+    }
+    document.getElementById('clz-loading').style.display='none';
+}
+
     // Grab all tab buttons and all content panels
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabPanels = document.querySelectorAll('.tab-panel');
@@ -2187,6 +2307,23 @@ async function processWordHelp(word) {
       toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
       }, 1000);
+    }
+
+    function getRandomElements(arr, n) {
+      const result = [];
+      const max = Math.min(n, arr.length);
+      const seen = new Set();
+
+      while (result.length < max) {
+        const randomIndex = Math.floor(Math.random() * arr.length);
+        
+        if (!seen.has(randomIndex)) {
+          seen.add(randomIndex);
+          result.push(arr[randomIndex]);
+        }
+      }
+
+      return result;
     }
 
     function shuffleArray(array) {
@@ -2760,7 +2897,6 @@ function handleSwipe() {
     repaintReviewTab();
     getsetPassphrase();
 
-
     (function () {
         // Run immediately to trap interactions if splash is active
         const initSplash = function () {
@@ -2800,6 +2936,201 @@ function handleSwipe() {
         }
     })();
 
+  let clzCurrentIndex = 0;
+  let clzScoreCount = 0;
+  let clzTimeoutTracker = null;
+  let clzActiveDataset = [];
+  const clzTargetContainer = document.getElementById('clz-dynamic-quiz-target');
+
+  function clzShuffleArray(array) {
+    const target = [...array];
+    for (let i = target.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [target[i], target[j]] = [target[j], target[i]];
+    }
+    return target;
+  }
+
+  function clzBuildQuiz(clzQuizDataRaw) {
+    clzTargetContainer.innerHTML = '';
+    clzActiveDataset = clzShuffleArray(clzQuizDataRaw);
+    clzActiveDataset.forEach((item, qIndex) => {
+      const originalWordMatch = item.spanish.match(/\|(.*?)\|/);
+      const correctAnswer = originalWordMatch ? originalWordMatch[1] : "";
+      const maskedSpanish = item.spanish.replace(/\|.*?\|/, `<span class="clz-blank-space" id="clz-blank-${qIndex}">&nbsp;</span>`);
+
+      const options = [...item.distractors, correctAnswer];
+      const shuffledOptions = clzShuffleArray(options);
+
+      const card = document.createElement('div');
+      card.className = `clz-question-card ${qIndex === 0 ? 'clz-active-card' : ''}`;
+      card.id = `clz-card-${qIndex}`;
+      
+      let optionsHTML = `<div class="clz-options-stack" id="clz-stack-${qIndex}">`;
+      shuffledOptions.forEach((option, oIndex) => {
+        optionsHTML += `
+          <label class="clz-option-item" id="clz-lbl-${qIndex}-${oIndex}" onclick="window.clzProcessSelection(${qIndex}, '${option.replace(/'/g, "\\'")}', '${correctAnswer.replace(/'/g, "\\'")}', ${oIndex})">
+            <input type="radio" style="width:auto;" name="clz-radio-group-${qIndex}" value="${option}">
+            ${option}
+          </label>
+        `;
+      });
+      optionsHTML += `</div>`;
+
+      card.innerHTML = `
+        <div class="clz-translation-box" id="clz-trans-box-${qIndex}">${item.english}</div>
+        <div class="clz-sentence">${qIndex + 1}. ${maskedSpanish}</div>
+        ${optionsHTML}
+        <div class="clz-control-row">
+          <button class="clz-toggle-trans-btn" id="clz-trans-btn-${qIndex}" onclick="window.clzToggleTranslationView(${qIndex})">Show Translation</button>
+          <div class="clz-status-feedback" id="clz-status-${qIndex}"></div>
+        </div>
+      `;
+
+      clzTargetContainer.appendChild(card);
+    });
+  }
+
+  window.clzProcessSelection = function(qIndex, selectedValue, correctAnswer, selectedOIndex) {
+    clearTimeout(clzTimeoutTracker);
+
+    const statusFeedback = document.getElementById(`clz-status-${qIndex}`);
+    const textBlank = document.getElementById(`clz-blank-${qIndex}`);
+    const optionsStack = document.getElementById(`clz-stack-${qIndex}`);
+    const selectedLabel = document.getElementById(`clz-lbl-${qIndex}-${selectedOIndex}`);
+    
+    const radioInput = selectedLabel.querySelector('input');
+    if (radioInput) radioInput.checked = true;
+
+    const labels = optionsStack.getElementsByClassName('clz-option-item');
+    for (let label of labels) {
+      label.classList.add('clz-state-disabled');
+    }
+
+    if (selectedValue === correctAnswer) {
+      clzScoreCount++;
+      selectedLabel.classList.add('clz-state-correct');
+      statusFeedback.className = 'clz-status-feedback clz-text-success';
+      statusFeedback.textContent = '✓ Correct!';
+      textBlank.textContent = correctAnswer;
+      textBlank.style.color = '#2ecc71';
+      textBlank.style.borderColor = '#2ecc71';
+
+      clzTimeoutTracker = setTimeout(() => {
+        clzAdvanceToNextQuestion();
+      }, 1000);
+    } else {
+      selectedLabel.classList.add('clz-state-incorrect');
+      statusFeedback.className = 'clz-status-feedback clz-text-danger';
+      statusFeedback.textContent = '✗ Incorrect';
+      for (let i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.trim() === correctAnswer) {
+          labels[i].classList.add('clz-state-correct');
+        }
+      }
+    }
+  };
+
+  window.clzProcessSelection = function(qIndex, selectedValue, correctAnswer, selectedOIndex) {
+    clearTimeout(clzTimeoutTracker);
+
+    const statusFeedback = document.getElementById(`clz-status-${qIndex}`);
+    const textBlank = document.getElementById(`clz-blank-${qIndex}`);
+    const optionsStack = document.getElementById(`clz-stack-${qIndex}`);
+    const selectedLabel = document.getElementById(`clz-lbl-${qIndex}-${selectedOIndex}`);
+    
+    const radioInput = selectedLabel.querySelector('input');
+    if (radioInput) radioInput.checked = true;
+
+    const labels = optionsStack.getElementsByClassName('clz-option-item');
+    for (let label of labels) {
+      label.classList.add('clz-state-disabled');
+    }
+
+    if (selectedValue === correctAnswer) {
+      clzScoreCount++;
+      selectedLabel.classList.add('clz-state-correct');
+      statusFeedback.className = 'clz-status-feedback clz-text-success';
+      statusFeedback.textContent = '✓ Correct!';
+      textBlank.textContent = correctAnswer;
+      textBlank.style.color = '#2ecc71';
+      textBlank.style.borderColor = '#2ecc71';
+
+      clzTimeoutTracker = setTimeout(() => {
+        clzAdvanceToNextQuestion();
+      }, 1000);
+    } else {
+      selectedLabel.classList.add('clz-state-incorrect');
+      statusFeedback.className = 'clz-status-feedback clz-text-danger';
+      statusFeedback.textContent = '✗ Incorrect';
+      
+      for (let i = 0; i < labels.length; i++) {
+        if (labels[i].textContent.trim() === correctAnswer) {
+          labels[i].classList.add('clz-state-correct');
+        }
+      }
+
+      if(clzCurrentIndex < clzActiveDataset.length) {
+        if (!statusFeedback.nextElementSibling) {
+          const nextQuestionLink = document.createElement('a');
+          nextQuestionLink.classList.add('flash-link');
+          nextQuestionLink.textContent = '>>';
+          nextQuestionLink.addEventListener('click', () => {
+            clzAdvanceToNextQuestion();     
+          });
+          statusFeedback.after(nextQuestionLink);
+        }
+      }
+    }
+  };
+
+  function clzAdvanceToNextQuestion() {
+    const activeCard = document.getElementById(`clz-card-${clzCurrentIndex}`);
+    if (activeCard) {
+      activeCard.classList.remove('clz-active-card');
+      
+      const transBox = document.getElementById(`clz-trans-box-${clzCurrentIndex}`);
+      const transBtn = document.getElementById(`clz-trans-btn-${clzCurrentIndex}`);
+      if (transBox) transBox.classList.remove('clz-is-visible');
+      if (transBtn) transBtn.textContent = 'Show Translation';
+    }
+
+    clzCurrentIndex++;
+
+    if (clzCurrentIndex < clzActiveDataset.length) {
+      const nextCard = document.getElementById(`clz-card-${clzCurrentIndex}`);
+      if (nextCard) nextCard.classList.add('clz-active-card');
+    } else {
+      const percentageScore = Math.round((clzScoreCount / clzActiveDataset.length) * 100);
+      clzTargetContainer.innerHTML = `
+        <div class="clz-score-screen">
+          <h2>Quiz Finished!</h2>
+          <p>Your results:</p>
+          <div class="clz-score-display">${clzScoreCount} / ${clzActiveDataset.length}</div>
+          <p>Success Rate: <strong>${percentageScore}%</strong></p>
+          <button class="clz-reset-btn" onclick="window.clzRestartQuiz()">Restart Quiz</button>
+        </div>
+      `;
+    }
+  }
+
+  window.clzToggleTranslationView = function(index) {
+    const transBox = document.getElementById(`clz-trans-box-${index}`);
+    const transBtn = document.getElementById(`clz-trans-btn-${index}`);
+    if (transBox && transBtn) {
+      const isVisible = transBox.classList.toggle('clz-is-visible');
+      transBtn.textContent = isVisible ? 'Hide Translation' : 'Show Translation';
+    }
+  };
+
+  window.clzRestartQuiz = function() {
+    clzCurrentIndex = 0;
+    clzScoreCount = 0;
+    generateClozures();
+    showDynamicPopup('Clozures','Generating another clozures-style quiz.', 2000);
+  };
+
+  generateClozures();
 
 </script>
 </body>
