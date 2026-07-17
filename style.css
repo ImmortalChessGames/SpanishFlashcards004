@@ -2104,7 +2104,7 @@ h2 {
   background: #f8f9fa;
   border: 1px solid blue;
   border-radius: 6px;
-  padding: 3px 5px;
+  padding: 12px 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2278,7 +2278,7 @@ h2 {
 
     /* Trigger styling */
     .popup-trigger {
-      color: #0066cc;
+      color: red;
       text-decoration: underline;
       cursor: pointer;
     }
@@ -2288,7 +2288,7 @@ h2 {
   position: fixed;
   
   /* 1. Push top-left corner to horizontal middle, and 15% from top */
-  top: 18%; 
+  top: 15%; 
   left: 50%;
   
   /* 2. Shift the popup left by exactly half of its own width */
@@ -2300,7 +2300,8 @@ h2 {
   
   /* Visual styling */
   padding: 20px;
-  background: #FFCCCB;
+  min-height: 80px;
+  background: #EAEEE9;
   border: 1px solid #ccc;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   border-radius: 8px;
