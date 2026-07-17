@@ -1574,7 +1574,7 @@ h2 {
 .narrow-progress {
   /* Controls the physical length of the bar */
   width: 100%;
-  max-width: 300px; 
+  max-width: 365px; 
   
   /* Controls the thickness (making it thin/narrow) */
   height: 8px; 
