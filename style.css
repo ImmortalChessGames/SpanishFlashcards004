@@ -2126,18 +2126,6 @@ h2 {
 .clz-status-feedback.clz-text-success { color: #2ecc71; }
 .clz-status-feedback.clz-text-danger { color: #e74c3c; }
 
-.clz-translation-box {
-  margin-top: 15px;
-  padding: 12px;
-  background: #f9f9f9;
-  font-size: 1.2rem;
-  font-style: italic;
-  color: darkGreen;
-  display: none;
-}
-.clz-translation-box.clz-is-visible {
-  display: block;
-}
 .clz-score-screen {
   text-align: center;
   padding: 30px 10px;
@@ -2186,6 +2174,21 @@ h2 {
 /* Clear hover feedback */
 .red-flash:hover {
   filter: brightness(1.2);
+
+.text-flow-container {
+  /* Defines exactly two columns */
+  column-count: 2; 
+  
+  /* Adds spacing gap between the text blocks */
+  column-gap: 30px; 
+  
+  /* Optional: Adds a visual line between the blocks */
+  column-rule: 1px solid #ccc; 
+  
+  /* Restricts height so text is forced to move to column 2 */
+  height: 200px; 
+  width: 100%;
+}
 }
 
 

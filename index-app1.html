@@ -129,7 +129,9 @@
             <div id="panel-3" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
               <div class="clz-quiz-wrapper">
                 <h2 id="clz-loading" style="display: none;" class="inline-heading">Loading question...</h2>
-                <div id="clz-dynamic-quiz-target"></div>
+                <div id="clz-dynamic-quiz-target">
+                </div>
+                <progress id="clz-progress-bar" style="max-width:100%" class="narrow-progress"></progress>
               </div>
             </div>
 
@@ -2978,11 +2980,12 @@ function handleSwipe() {
       optionsHTML += `</div>`;
 
       card.innerHTML = `
-        <div class="clz-translation-box" id="clz-trans-box-${qIndex}">${item.english}</div>
+         <div class='text-flow-container'>
         <div class="clz-sentence">${qIndex + 1}. ${maskedSpanish}</div>
+        <div class="english-text">${item.english}</div>
+        </div>
         ${optionsHTML}
         <div class="clz-control-row">
-          <button class="clz-toggle-trans-btn" id="clz-trans-btn-${qIndex}" onclick="window.clzToggleTranslationView(${qIndex})">Show Translation</button>
           <div class="clz-status-feedback" id="clz-status-${qIndex}"></div>
         </div>
       `;
@@ -2993,7 +2996,10 @@ function handleSwipe() {
 
   window.clzProcessSelection = function(qIndex, selectedValue, correctAnswer, selectedOIndex) {
     clearTimeout(clzTimeoutTracker);
-
+    const clzProgress = document.getElementById(`clz-progress-bar`);
+    clzProgress.min=1;
+    clzProgress.max=clzActiveDataset.length;
+    clzProgress.value=clzCurrentIndex+1;
     const statusFeedback = document.getElementById(`clz-status-${qIndex}`);
     const textBlank = document.getElementById(`clz-blank-${qIndex}`);
     const optionsStack = document.getElementById(`clz-stack-${qIndex}`);
@@ -3018,52 +3024,15 @@ function handleSwipe() {
 
       clzTimeoutTracker = setTimeout(() => {
         clzAdvanceToNextQuestion();
-      }, 1000);
+      }, 2000);
     } else {
       selectedLabel.classList.add('clz-state-incorrect');
       statusFeedback.className = 'clz-status-feedback clz-text-danger';
       statusFeedback.textContent = '✗ Incorrect';
-      for (let i = 0; i < labels.length; i++) {
-        if (labels[i].textContent.trim() === correctAnswer) {
-          labels[i].classList.add('clz-state-correct');
-        }
-      }
-    }
-  };
+      textBlank.textContent = 'Wrong!';
+      textBlank.style.color = 'darkRed';
+      textBlank.style.borderColor = 'darkRed';
 
-  window.clzProcessSelection = function(qIndex, selectedValue, correctAnswer, selectedOIndex) {
-    clearTimeout(clzTimeoutTracker);
-
-    const statusFeedback = document.getElementById(`clz-status-${qIndex}`);
-    const textBlank = document.getElementById(`clz-blank-${qIndex}`);
-    const optionsStack = document.getElementById(`clz-stack-${qIndex}`);
-    const selectedLabel = document.getElementById(`clz-lbl-${qIndex}-${selectedOIndex}`);
-    
-    const radioInput = selectedLabel.querySelector('input');
-    if (radioInput) radioInput.checked = true;
-
-    const labels = optionsStack.getElementsByClassName('clz-option-item');
-    for (let label of labels) {
-      label.classList.add('clz-state-disabled');
-    }
-
-    if (selectedValue === correctAnswer) {
-      clzScoreCount++;
-      selectedLabel.classList.add('clz-state-correct');
-      statusFeedback.className = 'clz-status-feedback clz-text-success';
-      statusFeedback.textContent = '✓ Correct!';
-      textBlank.textContent = correctAnswer;
-      textBlank.style.color = '#2ecc71';
-      textBlank.style.borderColor = '#2ecc71';
-
-      clzTimeoutTracker = setTimeout(() => {
-        clzAdvanceToNextQuestion();
-      }, 1000);
-    } else {
-      selectedLabel.classList.add('clz-state-incorrect');
-      statusFeedback.className = 'clz-status-feedback clz-text-danger';
-      statusFeedback.textContent = '✗ Incorrect';
-      
       for (let i = 0; i < labels.length; i++) {
         if (labels[i].textContent.trim() === correctAnswer) {
           labels[i].classList.add('clz-state-correct');
