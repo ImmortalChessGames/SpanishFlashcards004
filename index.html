@@ -128,10 +128,10 @@
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
               <div class="clz-quiz-wrapper">
-                <h2 id="clz-loading" style="display: none;" class="inline-heading">Loading question...</h2>
+                <h2 id="clz-loading" style="display: none;" class="is-loading">Loading clozures...</h2>
+                <progress id="clz-progress-bar" style="max-width:100%" class="narrow-progress"></progress>
                 <div id="clz-dynamic-quiz-target">
                 </div>
-                <progress id="clz-progress-bar" style="max-width:100%" class="narrow-progress"></progress>
               </div>
             </div>
 
@@ -2170,6 +2170,8 @@ async function processWordHelp(word) {
 
 async function generateClozures() {
     document.getElementById('clz-loading').style.display='block';
+    document.getElementById(`clz-progress-bar`).style='display: none; width: 100%;';
+    const model = 'gemini-3.1-flash-lite';
     const progress = getAllProgress();
     let words = [];
     const availableWords = masterData.filter(item => {
@@ -2194,9 +2196,9 @@ async function generateClozures() {
       }
       const systemInstruction = 
         "You are an expert Spanish language master tutor:\n\n" +
-        "Given a spanish a comma-separated list of up to 10 Spanish words, for each word provide 3 real-world advanced-level example sentences using this word (include the english language translation, plus 4 (similar but different, cannot be synonyms) distractor words) to show real situational context. Ensure each spanish word in an example sentence is inside pipe | characters. " + 
+        "Given a spanish a comma-separated list of up to 10 Spanish words, for each word provide 3 real-world advanced-level example sentences using this word (include the english language translation, plus 4 (should not be very similar in meaning) distractor words) to show real situational context. Ensure each spanish word in an example sentence is inside pipe | characters. Also list each distractor and provide an explanation of why the distractor words do not make sense (do not begin the sentence with 'These distractor(s) are'." + 
         "Return a JSON array of objects. Each object has three properties: spanish with spanish sentence and english with the english translation, and an array of 4 distractor words." +
-        "JSON properties should be named exactly as spanish, english, distractors." + 
+        "JSON properties should be named exactly as spanish, english, distractors, explanation." + 
         "CRITICAL: Do not return any other information exception except the JSON array of objects.";
 
      let wordsAsString;
@@ -2211,19 +2213,18 @@ async function generateClozures() {
         wordsAsString = wordsAsString.substring(0,wordsAsString.length-2);
         const maxRetries = 5;
         let currentDelay = 2000; // Start with a 2-second wait on failure
-
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             // 1. Set up the AbortController for the timeout
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000); 
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=`+key;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/`+model+`:generateContent?key=`+key;
                 const response = await fetch(url, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Provide up to 30 Spanish language sentences (3 for each word) that demonstrate how these Spanish words are used. Include 4 (similar but different, cannot be synonyms) distractor words for each: "${wordsAsString}". Ensure each spanish word in an example sentence is inside pipe | characters.` }] }],
+                    contents: [{ parts: [{ text: `Provide up to 30 Spanish language sentences (3 for each word) that demonstrate how these Spanish words are used. Include 4 (should not be very similar in meaning) distractor words for each: "${wordsAsString}" and explanations. Ensure each spanish word in an example sentence is inside pipe | characters.` }] }],
                     systemInstruction: { parts: [{ text: systemInstruction }] },
                     generationConfig: { 
                       temperature: 0.2,
@@ -2236,23 +2237,15 @@ async function generateClozures() {
                   throw new Error(data.error.message);
                 }
                 const rawJson = data.candidates[0].content.parts[0].text;
-consoleLogOnlyIfLocal('Just before call to get clozures ++++++++++++++++++++++++++++');
+                consoleLogOnlyIfLocal('Just before call to get clozures ++++++++++++++++++++++++++++');
                 consoleLogOnlyIfLocal(rawJson);  
                 if(rawJson && rawJson.length>0) {
                     const jsonObj = JSON.parse(rawJson);
                     clzBuildQuiz(jsonObj);
-
-             //       loadArticle(jsonObj);
-             //       document.getElementsByClassName("tab-btn")[0].click();
-             //       const topRightTextElt = document.getElementById('top-right-text');
-             //       topRightTextElt.textContent='Word: ' + capitalizeFirstLetter(word) + ' 📢 ';
-             //       document.getElementById('word-help').innerHTML="";
-             //       lastWordHelped = word;
                     break;
                 }
             } catch (error) {
               clearTimeout(timeoutId); // Ensure timer cleans up on error
-         //     document.getElementById('word-help').innerHTML="<p class=''>Error Loading Example Usages...</p>";
               const isTimeout = error.name === 'AbortError';
               const warnMsg = `Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`;
               console.warn(warnMsg);
@@ -2275,6 +2268,7 @@ consoleLogOnlyIfLocal('Just before call to get clozures ++++++++++++++++++++++++
     } else {
        consoleLogOnlyIfLocal('Clozures generation: No words available for clozure quiz.');
     }
+    document.getElementById(`clz-progress-bar`).style='display: block';
     document.getElementById('clz-loading').style.display='none';
 }
 
@@ -3000,7 +2994,16 @@ function handleSwipe() {
       card.innerHTML = `
          <div class='text-flow-container'>
         <div class="clz-sentence">${qIndex + 1}. ${maskedSpanish}</div>
-        <div class="english-text">${item.english}</div>
+        <div class="english-text">${item.english}
+
+        <span class="popup-wrapper" tabindex="0">
+            <span class="popup-trigger">Explain</span>
+            <span class="popup-content">
+            💡 ${item.explanation}
+            </span>
+        </span>
+
+        </div>
         </div>
         ${optionsHTML}
         <div class="clz-control-row">

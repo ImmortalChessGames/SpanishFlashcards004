@@ -93,6 +93,17 @@
         font-weight:400;
         border: 2px dashed green;   
     }
+    .explanation-text {
+        font-size: 0.9rem;
+        color: #555D50;
+        margin-top: 20px;
+        min-height: 30px;
+        margin-bottom: 20px;
+        background-color: lightGray;
+        padding:15px;
+        font-weight:400;
+        border: 2px dashed #555D50;   
+    }
     .action-row {
         display: flex;
         gap: 10px;
@@ -337,7 +348,40 @@
 
     .sm-container {
         background-color: var(--sm-card-bg);
-        padding: 25px;
+        padding: 25px;    /* Wrapper needs a tabIndex or interactive element to hold focus */
+    .popup-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Trigger styling */
+    .popup-trigger {
+      color: red;
+      font-size: 18px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Hide popup by default */
+    .popup-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 8px;
+      padding: 12px;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      width: 200px;
+      z-index: 10;
+    }
+
+    /* Show popup when wrapper or any child inside it has focus */
+    .popup-wrapper:focus-within .popup-content {
+      display: block;
+    }
         border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         width: 100%;
@@ -2060,7 +2104,7 @@ h2 {
   background: #f8f9fa;
   border: 1px solid blue;
   border-radius: 6px;
-  padding: 12px 15px;
+  padding: 3px 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2175,21 +2219,96 @@ h2 {
 .red-flash:hover {
   filter: brightness(1.2);
 
-.text-flow-container {
-  /* Defines exactly two columns */
-  column-count: 2; 
-  
-  /* Adds spacing gap between the text blocks */
-  column-gap: 30px; 
-  
-  /* Optional: Adds a visual line between the blocks */
-  column-rule: 1px solid #ccc; 
-  
-  /* Restricts height so text is forced to move to column 2 */
-  height: 200px; 
-  width: 100%;
-}
+    .text-flow-container {
+      /* Defines exactly two columns */
+      column-count: 2; 
+      
+      /* Adds spacing gap between the text blocks */
+      column-gap: 30px; 
+      
+      /* Optional: Adds a visual line between the blocks */
+      column-rule: 1px solid #ccc; 
+      
+      /* Restricts height so text is forced to move to column 2 */
+      height: 200px; 
+      width: 100%;
+    }
 }
 
+/* The loading element container */
+.is-loading {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none; /* Prevents user clicks while loading */
+  user-select: none;
+}
 
+/* The animated shimmer overlay */
+.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100__
+  );
+  background-color: #C9DFEC; /* Tint over the element */
+  opacity: 0.5;
+  transform: translateX(-100%);
+  animation: shimmer 1.5s infinite;
+}
+
+/* Smooth left-to-right movement */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+    /* Wrapper needs a tabIndex or interactive element to hold focus */
+    .popup-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Trigger styling */
+    .popup-trigger {
+      color: #0066cc;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+.popup-content {
+  display: none;
+  position: fixed;
+  
+  /* 1. Push top-left corner to horizontal middle, and 15% from top */
+  top: 18%; 
+  left: 50%;
+  
+  /* 2. Shift the popup left by exactly half of its own width */
+  transform: translateX(-50%);
+  
+  /* 3. Explicitly set box sizing so padding doesn't break alignment */
+  box-sizing: border-box;
+  width: 365px; /* Adjust width as needed */
+  
+  /* Visual styling */
+  padding: 20px;
+  background: #FFCCCB;
+  border: 1px solid #ccc;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  z-index: 9999;
+}
+
+    /* Show popup when wrapper or any child inside it has focus */
+    .popup-wrapper:focus-within .popup-content {
+      display: block;
+    }
 
