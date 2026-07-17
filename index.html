@@ -2943,6 +2943,24 @@ function handleSwipe() {
   let clzTimeoutTracker = null;
   let clzActiveDataset = [];
   const clzTargetContainer = document.getElementById('clz-dynamic-quiz-target');
+  let clztouchStartX = 0;
+  let clztouchEndX = 0;
+
+  clzTargetContainer.addEventListener('touchstart', (e) => {
+      clztouchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  clzTargetContainer.addEventListener('touchend', (e) => {
+      clztouchEndX = e.changedTouches[0].screenX;
+      this.clzhandleSwipe();
+  }, { passive: true });
+
+  function clzhandleSwipe() {
+    const threshold = 10; // Minimum swipe distance in pixels
+    if (clztouchEndX < clztouchStartX - threshold) {
+        clzAdvanceToNextQuestion();
+    }
+  }
 
   function clzShuffleArray(array) {
     const target = [...array];
@@ -3043,7 +3061,7 @@ function handleSwipe() {
         if (!statusFeedback.nextElementSibling) {
           const nextQuestionLink = document.createElement('a');
           nextQuestionLink.classList.add('flash-link');
-          nextQuestionLink.textContent = '>>';
+          nextQuestionLink.textContent = 'Next >>';
           nextQuestionLink.addEventListener('click', () => {
             clzAdvanceToNextQuestion();     
           });
