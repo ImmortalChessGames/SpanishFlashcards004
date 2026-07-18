@@ -2288,15 +2288,15 @@ h2 {
   position: fixed;
   
   /* 1. Push top-left corner to horizontal middle, and 15% from top */
-  top: 15%; 
-  left: 50%;
+  top: 33%; 
+  left: 60%;
   
   /* 2. Shift the popup left by exactly half of its own width */
   transform: translateX(-50%);
   
   /* 3. Explicitly set box sizing so padding doesn't break alignment */
   box-sizing: border-box;
-  width: 365px; /* Adjust width as needed */
+  width: 200px; /* Adjust width as needed */
   
   /* Visual styling */
   padding: 20px;

@@ -2172,7 +2172,7 @@ async function generateClozures() {
     document.getElementById('clz-loading').style.display='block';
     document.getElementById(`clz-progress-bar`).style='display: none; width: 100%;';
     const model = 'gemini-3.1-flash-lite';
-    const max_words = 50;
+    const max_words = 40;
     const progress = getAllProgress();
     let words = [];
     const availableWords = masterData.filter(item => {
@@ -2196,14 +2196,13 @@ async function generateClozures() {
       }
       const systemInstruction = 
         "You are an expert Spanish language master tutor:\n\n" +
-        "Given a spanish a comma-separated list of up to "+max_words+" Spanish words, for each word provide 1 real-world advanced-level example sentences using this word (include the english language translation, plus 4 (should not be very similar in meaning) distractor words) to show real situational context. Ensure each spanish word in an example sentence is inside pipe | characters. Also list each distractor and provide an explanation of why the distractor words do not make sense (do not begin the sentence with 'These distractor(s) are'." + 
+        "Given a spanish a comma-separated list of up to "+max_words+" Spanish words or phrases, for each word provide 1 real-world advanced-level example sentences using this word (include the english language translation, plus 4 (should not be very similar in meaning) distractor words) to show real situational context. Ensure each spanish word in an example sentence is inside pipe | characters. Also list each distractor and provide an explanation of why the distractor words do not make sense (do not begin the sentence with 'These distractor(s) are'." + 
         "Return a JSON array of objects. Each object has three properties: spanish with spanish sentence and english with the english translation, and an array of 4 distractor words." +
         "JSON properties should be named exactly as spanish, english, distractors, explanation. Constraints: The sentences must be completely original. Never repeat a sentence structure you have used previously. Also do not return the same words even if there are multiple meanings for such a word." + 
         "CRITICAL: Do not return any other information exception except the JSON array of objects.";
-
      let wordsAsString = '';
      for(i=0; i<words.length; i++) {
-        const cleanWordMatch = words[i].spanish.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
+        const cleanWordMatch = words[i].spanish.match(/[\s0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         consoleLogOnlyIfLocal('Clozure word: ' + cleanWordMatch);
         if (cleanWordMatch) {
             wordsAsString += cleanWordMatch + ', ';
