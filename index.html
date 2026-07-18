@@ -568,6 +568,13 @@
         return weightedItems[weightedItems.length - 1].item;
     }
 
+    function findEnglishTranslation(word) {
+        const w = masterData.filter(item => {
+            return word===item.spanish;
+        });
+
+        return (w && w.length>0) ? w[0].english : null;
+    }
 
     // 4. MULTIPLE CHOICE QUESTION GENERATOR (SINGLE ITEM)
     function generateSingleQuestion(selectedWordItem, fullData, numChoices = 4) {
@@ -2971,10 +2978,12 @@ function handleSwipe() {
       const originalWordMatch = item.spanish.match(/\|(.*?)\|/);
       const correctAnswer = originalWordMatch ? originalWordMatch[1] : "";
       const maskedSpanish = item.spanish.replace(/\|.*?\|/, `<span class="clz-blank-space" id="clz-blank-${qIndex}">&nbsp;</span>`);
-
       const options = [...item.distractors, correctAnswer];
       const shuffledOptions = clzShuffleArray(options);
-
+      let englishTranslation = findEnglishTranslation(correctAnswer);
+      if(englishTranslation && englishTranslation.trim().length>0) {
+          englishTranslation = parseAndGetFirst(englishTranslation);
+      }
       const card = document.createElement('div');
       card.className = `clz-question-card ${qIndex === 0 ? 'clz-active-card' : ''}`;
       card.id = `clz-card-${qIndex}`;
@@ -2983,9 +2992,9 @@ function handleSwipe() {
       let optionsHTML = `<div class="clz-options-stack" id="clz-stack-${qIndex}">`;
       shuffledOptions.forEach((option, oIndex) => {
         optionsHTML += `
-          <label class="clz-option-item" id="clz-lbl-${qIndex}-${oIndex}">
+          <label class="clz-option-item" id="clz-lbl-${qIndex}-${oIndex}" data-option='${option}'>
             <input type="radio" style="width:auto;" name="clz-radio-group-${qIndex}" value="${option}" onclick="window.clzProcessSelection(${qIndex}, '${option.replace(/'/g, "\\'")}', '${correctAnswer.replace(/'/g, "\\'")}', ${oIndex})">
-            ${option}
+            ${option} <span id='eng-translation-${qIndex}-${oIndex}' style='font-style:italic;font-weight: 400;display:none;'>&nbsp;(${englishTranslation})</span>
           </label>
         `;
       });
@@ -3032,6 +3041,12 @@ function handleSwipe() {
       label.classList.add('clz-state-disabled');
     }
 
+  for (let i = 0; i < labels.length; i++) {
+    if (labels[i].dataset.option.trim() === correctAnswer) {
+      document.getElementById('eng-translation-'+qIndex+'-'+i).style.display='block';
+    }
+  }
+
     if (selectedValue === correctAnswer) {
       clzScoreCount++;
       selectedLabel.classList.add('clz-state-correct');
@@ -3053,7 +3068,7 @@ function handleSwipe() {
       textBlank.style.borderColor = 'darkRed';
 
       for (let i = 0; i < labels.length; i++) {
-        if (labels[i].textContent.trim() === correctAnswer) {
+        if (labels[i].dataset.option.trim() === correctAnswer) {
           labels[i].classList.add('clz-state-correct');
         }
       }
