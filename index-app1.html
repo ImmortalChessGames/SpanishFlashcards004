@@ -2979,6 +2979,7 @@ function handleSwipe() {
       card.className = `clz-question-card ${qIndex === 0 ? 'clz-active-card' : ''}`;
       card.id = `clz-card-${qIndex}`;
       
+      let showEnglishLink = `<a id="clz-english-${qIndex}" style="font-style:underline;font-size:16px;color:darkGreen;" href="#" onclick="document.getElementById('clz-hidden-${qIndex}').style.display='block';this.remove();">Translate</a>`;
       let optionsHTML = `<div class="clz-options-stack" id="clz-stack-${qIndex}">`;
       shuffledOptions.forEach((option, oIndex) => {
         optionsHTML += `
@@ -2992,16 +2993,14 @@ function handleSwipe() {
 
       card.innerHTML = `
          <div class='text-flow-container'>
-        <div class="clz-sentence">${qIndex + 1}. ${maskedSpanish}</div>
-        <div class="english-text">${item.english}
-
+        <div class="clz-sentence">${qIndex + 1}. ${maskedSpanish} ${showEnglishLink}</div>
+        <div id="clz-hidden-${qIndex}" class="english-text" style="display: none;">${item.english}
         <span class="popup-wrapper" tabindex="0">
             <span class="popup-trigger">Explain</span>
             <span class="popup-content">
             💡 ${item.explanation}
             </span>
         </span>
-
         </div>
         </div>
         ${optionsHTML}
@@ -3101,6 +3100,11 @@ function handleSwipe() {
         </div>
       `;
     }
+
+    const activeCards = document.querySelectorAll('.clz-active-card');
+    Array.from(activeCards).slice(0, -1).forEach(e => {
+       e.classList.remove('clz-active-card');
+    });
   }
 
   window.clzToggleTranslationView = function(index) {
