@@ -570,7 +570,7 @@
 
     function findEnglishTranslation(word) {
         const w = masterData.filter(item => {
-            return word===item.spanish;
+            return word.toLowerCase()===item.spanish.toLowerCase();
         });
 
         return (w && w.length>0) ? w[0].english : null;
@@ -1663,7 +1663,7 @@
         }
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(wordToSpeak);
+          const utterance = new SpeechSynthesisUtterance(wordToSpeak.trim());
           utterance.lang = 'es-ES'; 
           utterance.rate = rateSlider.value; 
           window.speechSynthesis.speak(utterance);
@@ -2994,7 +2994,7 @@ function handleSwipe() {
         optionsHTML += `
           <label class="clz-option-item" id="clz-lbl-${qIndex}-${oIndex}" data-option='${option}'>
             <input type="radio" style="width:auto;" name="clz-radio-group-${qIndex}" value="${option}" onclick="window.clzProcessSelection(${qIndex}, '${option.replace(/'/g, "\\'")}', '${correctAnswer.replace(/'/g, "\\'")}', ${oIndex})">
-            ${option} <span id='eng-translation-${qIndex}-${oIndex}' style='font-style:italic;font-weight: 400;display:none;'>&nbsp;(${englishTranslation})</span>
+            ${option} <a href='#' style='text-decoration:none;margin-right:3px;margin-left:4px;' onclick='speakWordSpanish("${option}");'>🗣️</a> <span id='eng-translation-${qIndex}-${oIndex}' style='font-style:italic;font-weight: 400;display:none;'>&nbsp;(${englishTranslation})</span>
           </label>
         `;
       });
