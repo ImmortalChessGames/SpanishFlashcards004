@@ -2315,13 +2315,13 @@ async function generateClozures() {
       const result = [];
       const max = Math.min(n, arr.length);
       const seen = new Set();
-
+      const shuffledArr = shuffleArray(arr);
       while (result.length < max) {
-        const randomIndex = Math.floor(Math.random() * arr.length);
+        const randomIndex = Math.floor(Math.random() * shuffledArr.length);
         
         if (!seen.has(randomIndex)) {
           seen.add(randomIndex);
-          result.push(arr[randomIndex]);
+          result.push(shuffledArr[randomIndex]);
         }
       }
 
@@ -3041,11 +3041,11 @@ function handleSwipe() {
       label.classList.add('clz-state-disabled');
     }
 
-  for (let i = 0; i < labels.length; i++) {
-    if (labels[i].dataset.option.trim() === correctAnswer) {
-      document.getElementById('eng-translation-'+qIndex+'-'+i).style.display='block';
+    for (let i = 0; i < labels.length; i++) {
+      if (labels[i].dataset.option.trim() === correctAnswer) {
+        document.getElementById('eng-translation-'+qIndex+'-'+i).style.display='block';
+      }
     }
-  }
 
     if (selectedValue === correctAnswer) {
       clzScoreCount++;
