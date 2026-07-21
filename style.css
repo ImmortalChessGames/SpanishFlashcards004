@@ -1913,10 +1913,10 @@ h2 {
 }
 
 .scroll-wrapper {
-  max-height: 50vh; 
+  max-height: 70vh; 
   overflow-y: auto;
   overflow-x: hidden; 
-  border: 1px solid #d3d3d3; 
+  border: 0px solid #d3d3d3; 
   border-radius: 10px; 
   padding: 5px; 
   margin-left:5px;
@@ -2083,6 +2083,8 @@ h2 {
   font-size: 1.1rem;
   color: #2c3e50;
   line-height: 1.6;
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 .clz-blank-space {
   font-weight: bold;
@@ -2314,4 +2316,51 @@ h2 {
     }
 
 
+/* Unique namespace container to isolate your search component */
+.cc-search-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  max-width: 600px !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  box-sizing: border-box !important;
+}
+
+/* Force border-box sizing layout only inside your component */
+.cc-search-container *, 
+.cc-search-container *::before, 
+.cc-search-container *::after {
+  box-sizing: inherit !important;
+}
+
+/* Individual card styling */
+.cc-search-container .cc-result-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease-in-out !important;
+  margin: 0 !important;
+}
+
+/* Card hover effect */
+.cc-search-container .cc-result-card:hover {
+  border-color: #cbd5e1 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Link styling */
+.cc-search-container .cc-result-link {
+  color: darkGreen !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  margin-left: 20px !important;
+  margin-bottom: 10px !important;
+}
+
+/* Link hover effect */
+.cc-search-container .cc-result-link:hover {
+  text-decoration: underline !important;
+  color: #1d4ed8 !important;
+}
 
