@@ -38,7 +38,7 @@
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">&#x1F4BB;</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">&#x1F1FC;</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">📖</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F4DD;</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x1F9E0;</button>
                 <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x1F524;</button>
@@ -1568,12 +1568,11 @@
             spanishText.innerText=item.spanish;
 
             //TODO;
-            if(!englishText.textContent || englishText.textContent.length<1) {
-                if(spanishText.textContent && spanishText.textContent.length>0) {
-                    englishText.textContent=await translateText_Google(spanishText.textContent);
-                }
-            }
-
+            //if(!englishText.textContent || englishText.textContent.length<1) {
+            //    if(spanishText.textContent && spanishText.textContent.length>0) {
+            //        englishText.textContent=await translateText_Google(spanishText.textContent);
+            //   }
+            //}
 
             englishText.classList.add('hidden');
             spanishText.classList.add('hidden');
