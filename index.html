@@ -2221,34 +2221,37 @@ function cleanForCompare(str) {
 
 // Intelligently breaks text into sentences without splitting on initials or common abbreviations
 function splitIntoSentences(text) {
-    if (!text) return [];
+  if (!text) return [];
 
-    // 1. Protect single-letter initials (like W. or F.) followed by a space or another initial
-    text = text.replace(/(\b[A-Za-z])\.(?=\s|\b)/g, "$1___DOT___");
+  // 1. Protect single-letter initials (like W. or F.) followed by a space or another initial
+  text = text.replace(/(\b[A-Za-z])\.(?=\s|\b)/g, "$1___DOT___");
 
-    // 2. Protect common Spanish abbreviations that use periods but don't end sentences
-    const abbreviations = [
-        "adm", "art", "cap", "cia", "cm", "col", "cta", "doc", "ee.uu", "ee", "uu",
-        "ej", "etc", "fra", "gral", "ib", "ibid", "id", "irreg", "kg", "km", "lic",
-        "ltd", "max", "min", "mr", "mrs", "ms", "num", "n.o", "op", "pág", "pag",
-        "pp", "prof", "reg", "rep", "sig", "sr", "sra", "srta", "st", "univ", "vol",
-        "vto", "vs"
-    ];
+  // 2. Protect common Spanish abbreviations
+  const abbreviations = [
+    "adm", "art", "cap", "cia", "cm", "col", "cta", "doc", "ee.uu", "ee", "uu", 
+    "ej", "etc", "fra", "gral", "ib", "ibid", "id", "irreg", "kg", "km", "lic", 
+    "ltd", "max", "min", "mr", "mrs", "ms", "num", "n.o", "op", "pág", "pag", 
+    "pp", "prof", "reg", "rep", "sig", "sr", "sra", "srta", "st", "univ", "vol", 
+    "vto", "vs"
+  ];
+  
+  abbreviations.forEach(function(abb) {
+    const regex = new RegExp("\\b(" + abb + ")\\.", "gi");
+    text = text.replace(regex, "$1___DOT___");
+  });
 
-    abbreviations.forEach(function(abb) {
-        const regex = new RegExp("\\b(" + abb + ")\\.", "gi");
-        text = text.replace(regex, "$1___DOT___");
-    });
+  // FIX: Split using a lookahead so punctuation stays with the sentence.
+  // This splits at any space that is immediately preceded by . ! or ?
+  const sentenceMatches = text.split(/(?<=[.!?])\s+/);
 
-    // 3. Perform the actual sentence splitting now that initials are safe
-    const sentenceMatches = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
+  // 4. Restore the original periods back to the split sentences and filter out empty strings
+  const cleanSentences = sentenceMatches
+    .map(function(sentence) { 
+      return sentence.replace(/___DOT___/g, ".").trim(); 
+    })
+    .filter(sentence => sentence.length > 0); // Remove any accidental empty tracks
 
-    // 4. Restore the original periods back to the split sentences
-    const cleanSentences = sentenceMatches.map(function(sentence) {
-        return sentence.replace(/___DOT___/g, ".");
-    });
-
-    return cleanSentences;
+  return cleanSentences;
 }
 
 async function searchWikipedia() {
@@ -2352,7 +2355,7 @@ async function searchWikipedia() {
 async function loadWikiArticle(title, url){
     showDynamicPopup('Wikipedia Article', 'Attempting to load article: ' + title, 1000);
     const statusDiv = document.getElementById("wikiStatusDiv");
-    statusDiv.innerText = "Loading " + encodeURIComponent(title) + "...";
+    statusDiv.innerText = "Loading " + title + "...";
     try {
         let extractUrl = ES_API + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json";
         let response = await fetch(extractUrl);
@@ -2367,21 +2370,28 @@ async function loadWikiArticle(title, url){
         let rawParagraphs = cleanedText.split("\n");
         let validParagraphs = [];
 
-        rawParagraphs.forEach(function(line) {
-            let trimmedLine = line.trim();
+        if (rawParagraphs && rawParagraphs.length > 0) {
+          for (let k = 0; k < rawParagraphs.length; k++) {
+            const rp = rawParagraphs[k];
+            if (!rp) continue; // Skip if null/undefined
+
+            const trimmedLine = rp.trim();
             
-            if (trimmedLine.length === 0 || trimmedLine.startsWith("==")) {
-                return;
+            // FIX: Skip headings; length check removed as it is handled below
+            if (trimmedLine.startsWith("==") || trimmedLine.length === 0) {
+              continue; 
             }
 
-            let words = trimmedLine.split(/\s+/).filter(function(w) { return w.length > 0; });
-            let textSentences = splitIntoSentences(trimmedLine);
+            const words = trimmedLine.split(/\s+/).filter(w => w.length > 0);
+            const textSentences = splitIntoSentences(trimmedLine);
 
             // Enforce minimum threshold structure rules to discard citation junk
             if (words.length >= 12 && textSentences.length >= 2) {
-                validParagraphs.push(trimmedLine);
+              validParagraphs.push(trimmedLine);
             }
-        });
+          }
+        }
+
         let continuousText = validParagraphs.join(" ");
         let sentences = splitIntoSentences(continuousText);
         let jsonArray = sentences.map(sentence => {
