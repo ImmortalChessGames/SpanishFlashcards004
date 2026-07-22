@@ -38,7 +38,7 @@
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">&#x1F4BB;</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">📖</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">😽</button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F4DD;</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x1F9E0;</button>
                 <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x1F524;</button>
@@ -96,7 +96,7 @@
 
             <!-- PANEL 2 -->
             <div id="panel-2" class="tab-panel" role="tabpanel">
-                <input id="wikiQueryInput" value="">
+                <input id="wikiQueryInput" value="" maxlength="50" placeholder="E.g. Major WWII Battles">
                 <button id="wikiSearchBtn" onclick="searchWikipedia();">Search Wikipedia</button>
                 <div id="wikiStatusDiv" style="padding:20px;font-weight:bold;"></div>
                 <div class="scroll-wrapper">
@@ -2240,19 +2240,18 @@ function splitIntoSentences(text) {
     text = text.replace(regex, "$1___DOT___");
   });
 
-  // FIX: Split using a lookahead so punctuation stays with the sentence.
-  // This splits at any space that is immediately preceded by . ! or ?
-  const sentenceMatches = text.split(/(?<=[.!?])\s+/);
+  // FIX: Explicitly match a sentence block ending with punctuation OR the end of text.
+  // This captures even if sentences are separated by hidden tabs, newlines, or no space at all.
+  const sentenceMatches = text.match(/[^.!?]+([.!?]+|\s|$)/g) || [];
 
-  // 4. Restore the original periods back to the split sentences and filter out empty strings
-  const cleanSentences = sentenceMatches
+  // 4. Restore original periods, trim white space, and toss out empty lines
+  return sentenceMatches
     .map(function(sentence) { 
       return sentence.replace(/___DOT___/g, ".").trim(); 
     })
-    .filter(sentence => sentence.length > 0); // Remove any accidental empty tracks
-
-  return cleanSentences;
+    .filter(sentence => sentence.trim().length > 0);
 }
+
 
 async function searchWikipedia() {
     const model = 'gemini-3.1-flash-lite';
@@ -2397,7 +2396,8 @@ async function loadWikiArticle(title, url){
         let jsonArray = sentences.map(sentence => {
             let cleanSentence = sentence.trim();
             return {
-                english: "",
+//                english: "",
+                english: cleanSentence, // for now just put spanish 
                 spanish: cleanSentence
             };
         }).filter(obj => obj.spanish.length > 0);
@@ -3379,6 +3379,16 @@ function handleSwipe() {
   };
 
   generateClozures();
+
+  document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
+    // Check if the pressed key is "Enter"
+    if (event.key === "Enter") {
+      // Prevent default form/input behavior if necessary
+      event.preventDefault(); 
+      // Trigger the button click programmatically
+      document.getElementById('wikiSearchBtn').click(); 
+    }
+  });
 
 </script>
 </body>
