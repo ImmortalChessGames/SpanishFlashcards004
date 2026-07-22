@@ -1608,7 +1608,7 @@
 
     function showNext() {
         document.getElementById('menu-toggle').checked=false;
-        let randomize = dataset.length >= 100;
+        let randomize = dataset.length >= 5000;
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -2364,6 +2364,13 @@ async function loadWikiArticle(title, url){
         let pageId = Object.keys(pages);
         let rawText = pages[pageId].extract || "";
 
+        if(rawText.indexOf("Wikipedia todavía no tiene una página llamada")>-1) {
+            const msg = "This article does not have sufficient information. Try a different article or search query.";
+            statusDiv.innerText = msg;
+            showDynamicPopup('Wikipedia Article', msg + ": " + title, 1000);
+            return [];
+        }
+
         let cleanedText = cleanArticle(rawText);
 
         let rawParagraphs = cleanedText.split("\n");
@@ -2385,14 +2392,24 @@ async function loadWikiArticle(title, url){
             const textSentences = splitIntoSentences(trimmedLine);
 
             // Enforce minimum threshold structure rules to discard citation junk
-            if (words.length >= 12 && textSentences.length >= 2) {
+            if (words.length >= 25 && textSentences.length >= 1) {
               validParagraphs.push(trimmedLine);
+            } else {
+                console.log("Skipping (words length='"+words.length+"'), (textSentences.length='"+textSentences.length+"')..." + trimmedLine);
             }
           }
         }
 
         let continuousText = validParagraphs.join(" ");
         let sentences = splitIntoSentences(continuousText);
+
+        if(!sentences || sentences.length<1) {
+            const msg = "This article does not have sufficient information. Try a different article or search query.";
+            statusDiv.innerText = msg;
+            showDynamicPopup('Wikipedia Article', msg + ": " + title, 1000);
+            return [];
+        }
+
         let jsonArray = sentences.map(sentence => {
             let cleanSentence = sentence.trim();
             return {
