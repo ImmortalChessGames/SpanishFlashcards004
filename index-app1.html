@@ -1567,13 +1567,6 @@
             englishText.textContent = item.english;
             spanishText.innerText=item.spanish;
 
-            //TODO;
-            //if(!englishText.textContent || englishText.textContent.length<1) {
-            //    if(spanishText.textContent && spanishText.textContent.length>0) {
-            //        englishText.textContent=await translateText_Google(spanishText.textContent);
-            //   }
-            //}
-
             englishText.classList.add('hidden');
             spanishText.classList.add('hidden');
 
@@ -1691,8 +1684,15 @@
         }
     }
 
-translateBtn.addEventListener('click', function() {
-    englishText.classList.remove('hidden');
+translateBtn.addEventListener('click', async function() {
+    if(!englishText.textContent || englishText.textContent.length<1) {
+        if(spanishText.textContent && spanishText.textContent.length>0) {
+            englishText.textContent=await callGemmaToTranslateToEnglish(spanishText.textContent, englishText);
+       }
+    } else {
+        englishText.classList.remove('hidden');
+    }
+
     translateBtn.disabled=true;
 });
 
@@ -2252,6 +2252,76 @@ function splitIntoSentences(text) {
     .filter(sentence => sentence.trim().length > 0);
 }
 
+async function callGemmaToTranslateToEnglish(spanish,englishText) {
+//    const englishTextSpinner = document.getElementById('englishText-spinner');
+///alert(englishTextSpinner);
+//    englishTextSpinner.style.display='block';
+ englishText.classList.remove('hidden');
+englishText.textContent='Loading translation...';
+    const model = 'gemma-4-31b-it';
+    showDynamicPopup('Translation', 'Translating Spanish text. Can take 10+ seconds.', 1500);
+    if (!spanish) {
+        return;
+    }
+    consoleLogOnlyIfLocal('Translating spanish text: ' + spanish);
+    const key = await decrypt(api1KeyEncrypted, true);
+    if(key == null) {
+       showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
+       return;
+    }
+    const systemInstruction = `You are a Spanish to English translator. You output ONLY English text`;
+    const prompt = `Generate a TEXT containing an Egnlish translation of Spanish text: "${spanish}".`;
+    const maxRetries = 5;
+    let currentDelay = 2000; // Start with a 2-second wait on failure
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        // 1. Set up the AbortController for the timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); 
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/`+model+`:generateContent?key=`+key;
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: { 
+                  temperature: 0.1,
+                  candidateCount: 1, 
+                  responseMimeType: "text/plain" 
+                }
+              })
+            });
+            const data = await response.json();
+            if (data.error) {
+              throw new Error(data.error.message);
+            }
+            const translation = data.candidates[0].content.parts[1].text;
+            englishText.textContent=translation;
+            return translation;
+        } catch (error) {
+          clearTimeout(timeoutId); // Ensure timer cleans up on error
+          const isTimeout = error.name === 'AbortError';
+          const warnMsg = `Attempt ${attempt} failed. Reason: ${isTimeout ? 'Timeout (15s exceeded)' : error.message}`;
+          console.warn(warnMsg);
+          showDynamicPopup('Warning.', warnMsg, 1500);
+          // If we used all retries, throw the final error up to your application
+          if (attempt === maxRetries) {
+            const errMsg = `Gemma API completely failed after ${maxRetries} attempts.`;
+            showDynamicPopup('Error', errMsg, 1500);
+            throw new Error(errMsg);
+          } else {
+              showDynamicPopup('Warning', warnMsg, 1500);
+          }
+          // Wait before trying again (2s, then 4s, etc.)
+          consoleLogOnlyIfLocal(`Waiting ${currentDelay / 1000}s before next attempt...`);
+          await new Promise(resolve => setTimeout(resolve, currentDelay));
+          currentDelay *= 2; 
+        } finally {
+   //          englishTextSpinner.style.display='none';
+        }
+    } 
+}
 
 async function searchWikipedia() {
     const model = 'gemini-3.1-flash-lite';
@@ -2356,7 +2426,7 @@ async function loadWikiArticle(title, url){
     const statusDiv = document.getElementById("wikiStatusDiv");
     statusDiv.innerText = "Loading " + title + "...";
     try {
-        let extractUrl = ES_API + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json";
+        let extractUrl = ES_API + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json&redirects=1";
         let response = await fetch(extractUrl);
         let data = await response.json();
 
@@ -2403,21 +2473,14 @@ async function loadWikiArticle(title, url){
         let continuousText = validParagraphs.join(" ");
         let sentences = splitIntoSentences(continuousText);
 
-        if(!sentences || sentences.length<1) {
-            const msg = "This article does not have sufficient information. Try a different article or search query.";
-            statusDiv.innerText = msg;
-            showDynamicPopup('Wikipedia Article', msg + ": " + title, 1000);
-            return [];
-        }
-
         let jsonArray = sentences.map(sentence => {
             let cleanSentence = sentence.trim();
             return {
-//                english: "",
-                english: cleanSentence, // for now just put spanish 
+                english: "",
+                //english: cleanSentence, // for now just put spanish 
                 spanish: cleanSentence
             };
-        }).filter(obj => obj.spanish.length > 0);
+        }).filter(obj => obj.spanish.length > 10);
         loadArticle(jsonArray);
         statusDiv.innerText = 'Article loaded successfully.';
         document.getElementsByClassName("tab-btn")[0].click();
