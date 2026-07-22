@@ -1596,7 +1596,9 @@
         } else {
          newValue = (v/(1.0*max))*100.0;
         }
-        document.getElementById('progress-bar').value = newValue;
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.value = newValue;
+        progressBar.title = 'Page ' + (v+1) + ' of ' + (max+1);
     }
 
     function showNext() {
@@ -2253,11 +2255,8 @@ function splitIntoSentences(text) {
 }
 
 async function callGemmaToTranslateToEnglish(spanish,englishText) {
-//    const englishTextSpinner = document.getElementById('englishText-spinner');
-///alert(englishTextSpinner);
-//    englishTextSpinner.style.display='block';
- englishText.classList.remove('hidden');
-englishText.textContent='Loading translation...';
+    englishText.classList.remove('hidden');
+    englishText.textContent='Loading translation...';
     const model = 'gemma-4-31b-it';
     showDynamicPopup('Translation', 'Translating Spanish text. Can take 10+ seconds.', 1500);
     if (!spanish) {
