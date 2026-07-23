@@ -435,25 +435,18 @@
         return prevRow[b.length];
     }
 
-
     function generateQuizWords() {
       try {
         currentQuestionIndex = -1;
         const allWords = masterData;
         if (!Array.isArray(allWords) || allWords.length === 0) return [];
-
-        // Shuffle the array elements randomly
-        const shuffled = [...allWords].sort(() => 0.5 - Math.random());
-
-        // Slice out exactly 30 words from the shuffled list
-
+        const uniqueByMapFirst = [...new Map(allWords.map(item => [item.spanish, item]).reverse()).values()].reverse();
+        const shuffled = [...uniqueByMapFirst].sort(() => 0.5 - Math.random());
         const quizWords = shuffled.slice(0, QUESTIONS_PER_QUIZ);
-
         const quizQuestionCount = document.getElementById('quiz-question-count');
         if(quizQuestionCount) {
             quizQuestionCount.innerText = 'There are a total of ' + quizWords.length + ' questions';
         }
-
         return quizWords;
       } catch (error) {
         console.error("Error generating quiz:", error);
@@ -2653,27 +2646,6 @@ async function generateClozures() {
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
-    }
-
-    function generateQuiz(data, numChoices = 4) {
-        const quizQuestionCount = document.getElementById('quiz-question-count');
-        quizQuestionCount.innerText = 'There are a total of ' + data.length + ' questions';
-      return data.map((item) => {
-        const correctAnswer = item.english;
-        const distractors = data
-          .filter((obj) => obj.english !== correctAnswer)
-          .map((obj) => obj.english);
-        
-        const shuffledDistractors = shuffleArray([...distractors]).slice(0, numChoices - 1);
-        const allChoices = shuffleArray([...shuffledDistractors, correctAnswer]);
-
-        return {
-          spanishWord: item.spanish,
-          question: `${item.spanish}`,
-          choices: allChoices,
-          answer: correctAnswer
-        };
-      });
     }
 
     const quizBox = document.getElementById("quiz-box");
