@@ -2444,8 +2444,10 @@ async function loadWikiArticle(title, url){
             if (!rp) continue; // Skip if null/undefined
 
             const trimmedLine = rp.trim();
-            
-            // FIX: Skip headings; length check removed as it is handled below
+
+            if(trimmedLine==='== Notas ==' || trimmedLine==='Referencias') {
+                break;
+            }
             if (trimmedLine.startsWith("==") || trimmedLine.length === 0) {
               continue; 
             }
@@ -2546,7 +2548,23 @@ async function generateClozures() {
                     systemInstruction: { parts: [{ text: systemInstruction }] },
                     generationConfig: { 
                       temperature: 0.2,
-                      responseMimeType: "text/plain" 
+                      responseMimeType: "application/json", // Changed from text/plain to application/json
+                      responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                          type: "OBJECT",
+                          properties: {
+                            spanish: { type: "STRING" },
+                            english: { type: "STRING" },
+                            distractors: {
+                              type: "ARRAY",
+                              items: { type: "STRING" }
+                            },
+                            explanation: { type: "STRING" }
+                          },
+                          required: ["spanish", "english", "distractors", "explanation"]
+                        }
+                      }
                     }
                   })
                 });
