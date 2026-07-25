@@ -695,13 +695,14 @@
             btn.className = 'quiz-btn'; 
             btn.innerText = choiceText;
             
-            // Inline override style to cancel standard text visibility delay transitions if needed
-            btn.style.opacity = "1"; 
-            btn.style.animation = "none";
+            // FIX: Force a native keyframe animation timeline inline.
+            // This runs completely independently of browser reflow optimizations or parent hidden states.
+            btn.style.animation = 'fadeInLinear 1000ms ease-in forwards';
 
             btn.addEventListener('click', (e) => handleAnswerSubmit(choiceText, e.target));
             container.appendChild(btn);
         });
+
 
         const linkContainer = document.createElement('div');
         linkContainer.classList.add('link-container');
@@ -2235,16 +2236,158 @@ function splitIntoSentences(text) {
     text = text.replace(regex, "$1___DOT___");
   });
 
-  // FIX: Explicitly match a sentence block ending with punctuation OR the end of text.
-  // This captures even if sentences are separated by hidden tabs, newlines, or no space at all.
-  const sentenceMatches = text.match(/[^.!?]+([.!?]+|\s|$)/g) || [];
+  // 3. Initial split by punctuation marks
+  const rawMatches = text.split(/(?<=[.!?;:¿¡])\s*/g);
+  
+  // Clean up whitespace and drop empty strings
+  const initialSentences = rawMatches
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
 
-  // 4. Restore original periods, trim white space, and toss out empty lines
-  return sentenceMatches
-    .map(function(sentence) { 
-      return sentence.replace(/___DOT___/g, ".").trim(); 
-    })
-    .filter(sentence => sentence.trim().length > 0);
+  // Helper function to count words
+  const getWordCount = (str) => {
+    const cleanStr = str.replace(/___DOT___/g, "");
+    const words = cleanStr.match(/\b\w+\b/g);
+    return words ? words.length : 0;
+  };
+
+  // 4. Process groupings and apply ellipsis splits on sentences > 20 words
+  const finalSentences = [];
+  let currentBuffer = "";
+
+  initialSentences.forEach((sentence) => {
+    const currentWordCount = getWordCount(sentence);
+
+    // FIX: If a single sentence is strictly over 20 words, split it into roughly equal halves
+    if (currentWordCount > 20) {
+      if (currentBuffer) {
+        finalSentences.push(currentBuffer);
+        currentBuffer = "";
+      }
+
+      // Break sentence down by individual words to calculate a clean physical midpoint
+      const words = sentence.split(/\s+/);
+      const midPoint = Math.ceil(words.length / 2);
+      
+      let part1 = words.slice(0, midPoint).join(" ");
+      let part2 = words.slice(midPoint).join(" ");
+
+      // Strip trailing punctuation (like commas or semicolons) from part 1 before attaching ellipses
+      part1 = part1.replace(/[,;:]+$/, "");
+      
+      finalSentences.push(part1 + "...");
+      finalSentences.push("..." + part2);
+      return;
+    }
+
+    // Standard short sentence grouping logic (< 10 words)
+    if (!currentBuffer) {
+      currentBuffer = sentence;
+    } else {
+      if (getWordCount(currentBuffer) < 10) {
+        currentBuffer += " " + sentence;
+      } else {
+        finalSentences.push(currentBuffer);
+        currentBuffer = sentence;
+      }
+    }
+  });
+
+  if (currentBuffer) {
+    finalSentences.push(currentBuffer);
+  }
+
+  // 5. Restore original periods
+  return finalSentences.map(function(sentence) { 
+    return sentence.replace(/___DOT___/g, "."); 
+  });
+}
+
+function splitIntoSentences(text) {
+  if (!text) return [];
+
+  // 1. Protect single-letter initials (like W. or F.) followed by a space or another initial
+  text = text.replace(/(\b[A-Za-z])\.(?=\s|\b)/g, "$1___DOT___");
+
+  // 2. Protect common Spanish abbreviations
+  const abbreviations = [
+    "adm", "art", "cap", "cia", "cm", "col", "cta", "doc", "ee.uu", "ee", "uu", 
+    "ej", "etc", "fra", "gral", "ib", "ibid", "id", "irreg", "kg", "km", "lic", 
+    "ltd", "max", "min", "mr", "mrs", "ms", "num", "n.o", "op", "pág", "pag", 
+    "pp", "prof", "reg", "rep", "sig", "sr", "sra", "srta", "st", "univ", "vol", 
+    "vto", "vs"
+  ];
+  
+  abbreviations.forEach(function(abb) {
+    const regex = new RegExp("\\b(" + abb + ")\\.", "gi");
+    text = text.replace(regex, "$1___DOT___");
+  });
+
+  // 3. Initial split by punctuation marks
+  const rawMatches = text.split(/(?<=[.!?;:¿¡])\s*/g);
+  
+  // Clean up whitespace and drop empty strings
+  const initialSentences = rawMatches
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+
+  // Helper function to count words
+  const getWordCount = (str) => {
+    const cleanStr = str.replace(/___DOT___/g, "");
+    const words = cleanStr.match(/\b\w+\b/g);
+    return words ? words.length : 0;
+  };
+
+  // 4. Process groupings and apply ellipsis splits on sentences > 40 words
+  const finalSentences = [];
+  let currentBuffer = "";
+
+  initialSentences.forEach((sentence) => {
+    const currentWordCount = getWordCount(sentence);
+
+    // FIX: Changed threshold limit to 40 words
+    if (currentWordCount > 40) {
+      if (currentBuffer) {
+        finalSentences.push(currentBuffer);
+        currentBuffer = "";
+      }
+
+      // Break sentence down by individual words to calculate a clean physical midpoint
+      const words = sentence.split(/\s+/);
+      const midPoint = Math.ceil(words.length / 2);
+      
+      let part1 = words.slice(0, midPoint).join(" ");
+      let part2 = words.slice(midPoint).join(" ");
+
+      // Strip trailing punctuation (like commas or semicolons) from part 1 before attaching ellipses
+      part1 = part1.replace(/[,;:]+$/, "");
+      
+      finalSentences.push(part1 + "...");
+      finalSentences.push("..." + part2);
+      return;
+    }
+
+    // Standard short sentence grouping logic (< 10 words)
+    if (!currentBuffer) {
+      currentBuffer = sentence;
+    } else {
+      if (getWordCount(currentBuffer) < 10) {
+        currentBuffer += " " + sentence;
+      } else {
+        finalSentences.push(currentBuffer);
+        currentBuffer = sentence;
+      }
+    }
+  });
+
+  if (currentBuffer) {
+    finalSentences.push(currentBuffer);
+  }
+
+  // 5. Restore original periods
+  return finalSentences.map(function(sentence) { 
+    return sentence.replace(/___DOT___/g, "."); 
+  });
 }
 
 async function callGemmaToTranslateToEnglish(spanish,englishText) {
