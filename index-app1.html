@@ -59,7 +59,7 @@
                     </div> 
                     <div class="display-card">
                         <div id="wordBox" class="word-box"></div>
-                        <progress id="progress-bar" class="narrow-progress"></progress>
+                        <progress id="article-progress"></progress>
                         <div id="englishText" class="english-text hidden"></div>
                         <div id="translationResponse"></div>
                         <div id="spanishText" style="margin: 15px;"></div>
@@ -1494,7 +1494,7 @@
         }
         if(articleDataset && articleDataset.length>0) {
             dataset = articleDataset;
-            document.getElementById('progress-bar').max=100;
+            document.getElementById('article-progress').max=100;
             history = [];
             historyIndex = -1;
         }
@@ -1581,6 +1581,25 @@
         }
     }
 
+    async function displayCard_doNotPaintSlide(item) {
+        if(item) {
+            currentItem = item;
+
+            englishText.textContent = item.english;
+            spanishText.innerText=item.spanish;
+
+            englishText.classList.add('hidden');
+            spanishText.classList.add('hidden');
+
+            translateBtn.disabled=false;
+            
+            prevBtn.disabled = (historyIndex <= 0);
+            prevBtn2.disabled = (historyIndex <= 0);
+            nextBtn.disabled = (historyIndex >= dataset.length-1);
+            nextBtn2.disabled = (historyIndex >= dataset.length-1);
+        }
+    }
+
     function updateProgressBar(v,max) {
         let newValue = 100;
         if(v==0) {
@@ -1590,10 +1609,55 @@
         } else {
          newValue = (v/(1.0*max))*100.0;
         }
-        const progressBar = document.getElementById('progress-bar');
+        const progressBar = document.getElementById('article-progress');
         progressBar.value = newValue;
         progressBar.title = 'Page ' + (v+1) + ' of ' + (max+1);
     }
+
+const progressBar = document.getElementById('article-progress');
+
+function updateProgress(e) {
+  // Get the bounding left position and total width of the element
+  const rect = progressBar.getBoundingClientRect();
+  
+  // Calculate click position relative to the element width (0 to 1)
+  const clickX = e.clientX - rect.left;
+  const widthPercentage = clickX / rect.width;
+  
+  // Constrain between 0 and 1
+  const finalPercentage = Math.max(0, Math.min(1, widthPercentage));
+  
+  // Map to the max attribute scale
+  const newValue = Math.round(finalPercentage * progressBar.max);
+  
+  // Update UI
+  progressBar.value = newValue;
+  const y = historyIndex;
+  const x = Math.round((1.0 * dataset.length) * finalPercentage);
+  if(y<x) {
+     for(let i=y; i<=x; i++) {
+         if(i==x) {
+             showNext();
+         }
+         else { 
+             showNext_doNotPaintSlide(); 
+         }
+     } 
+  } else if(x<y) {
+     for(let i=y; i>=x; i--) {
+         if(i==x) {
+             showPrevious();
+         }
+         else { 
+             showPrevious_doNotPaintSlide(); 
+         }
+     }
+  }
+}
+progressBar.addEventListener('click', updateProgress);
+progressBar.addEventListener('mousedown', (e) => {
+  updateProgress(e);
+});
 
     function showNext() {
         document.getElementById('menu-toggle').checked=false;
@@ -1634,6 +1698,47 @@
          document.getElementById('englishTranslation').value='';
       }
     }
+
+    function showNext_doNotPaintSlide() {
+        document.getElementById('menu-toggle').checked=false;
+        let randomize = dataset.length >= 5000;
+        if (historyIndex < history.length - 1) {
+            historyIndex++;
+            displayCard_doNotPaintSlide(history[historyIndex]);
+            document.getElementById('translationResponse').innerHTML='';
+            updateProgressBar(historyIndex, dataset.length-1);
+            return;
+        }
+        const randomIndex = Math.floor(Math.random() * dataset.length);
+        const indx = randomize ? randomIndex : historyIndex+1;
+        const item = dataset[indx];
+
+        history.push(item);
+        historyIndex++;
+ 
+        displayCard_doNotPaintSlide(item);
+
+        updateProgressBar(historyIndex, dataset.length-1);
+
+        document.getElementById('ai-tutor-resultOutput').replaceChildren();
+        document.getElementById('translationResponse').innerHTML='';
+        document.getElementById('spanishWord').value='';
+        document.getElementById('englishTranslation').value='';
+
+    }
+
+    function showPrevious_doNotPaintSlide() {
+      if (historyIndex > 0) {
+         historyIndex--;
+         displayCard_doNotPaintSlide(history[historyIndex]);
+         updateProgressBar(historyIndex,dataset.length-1);
+         document.getElementById('ai-tutor-resultOutput').replaceChildren();
+         document.getElementById('translationResponse').innerHTML='';
+         document.getElementById('spanishWord').value='';
+         document.getElementById('englishTranslation').value='';
+      }
+    }
+
 
     function readArticleOutloud(articleText) {
         if (!articleText) {
