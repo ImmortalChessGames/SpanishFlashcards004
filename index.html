@@ -2379,7 +2379,7 @@ function splitIntoSentences(text) {
       let part2 = words.slice(midPoint).join(" ");
 
       // Strip trailing punctuation (like commas or semicolons) from part 1 before attaching ellipses
-      part1 = part1.replace(/[,;:]+$/, "");
+      part1 = part1.replace(/[,;]+$/, "");
       
       finalSentences.push(part1 + "...");
       finalSentences.push("..." + part2);
@@ -2581,30 +2581,28 @@ async function searchWikipedia() {
        showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
        return;
     }
-/*
-    const systemInstruction = `You are a precise data extraction engine. You output ONLY raw, valid JSON. 
-    Do NOT include markdown formatting, backticks, or any conversational text. 
-    All Wikipedia URLs must be absolute, pointing to the Spanish subdomain: "https://es.wikipedia.org/". 
-    Ensure proper URL-encoding for Spanish accents and special characters (like %C3%AD).`;
-    const prompt = `Generate a JSON object containing an array named "results" of up to 100 objects that would appear on Spanish Wikipedia based on the English search query: "${query}". Only include in results if the article is of sufficient length, ideally >10 sentences.
-    Each object in the array must strictly have exactly two properties: "title" and "url".`;
-*/
-const systemInstruction = `You are a precise cross-lingual data extraction and semantic search engine. You output ONLY raw, valid JSON. Do NOT include markdown formatting, backticks, or any conversational text. 
 
-Your task is to map English concepts to their EXACT, existing Spanish Wikipedia article titles using official interlanguage/Wikidata mappings (not literal translations). 
+const systemInstruction = `You are a precise cross-lingual data extraction engine. You output ONLY raw, valid JSON. Do NOT include markdown formatting, backticks, or any conversational text. 
 
-All Wikipedia URLs must be absolute, pointing to the Spanish subdomain: https://es.wikipedia.org/. Ensure proper URL-encoding for Spanish accents and special characters. If a concept or its related topics do not have verified, existing articles on Spanish Wikipedia, completely exclude them from the results.`;
+Your task is to map English concepts to their EXACT, existing Spanish Wikipedia article titles using official Wikidata/interlanguage mappings. 
 
-const prompt = `Generate a JSON object containing an array named "results" of up to 100 objects that would appear on Spanish Wikipedia based on the English search query: "${query}".
+CRITICAL DIACRITIC RULES:
+1. Spanish Wikipedia titles are case-sensitive and strictly require proper orthographic accent marks (e.g., "Incidente del paso Diátlov", NOT "Diatlov").
+2. You must preserve all Spanish tildes (á, é, í, ó, ú, ñ) in both the "title" string and the "url" string.
+3. All Wikipedia URLs must be absolute, pointing to the Spanish subdomain (https://wikipedia.org) and must be properly percent-encoded (e.g., "Diátlov" becomes "Di%C3%A1tlov").
 
-To populate this array, follow this two-step process:
-1. TARGET: Identify the primary article matching the English query using its exact Spanish Wikipedia title (e.g., "Somerton Man" maps to "Caso Tamam Shud").
-2. MORELIKE EXPANSION: Simulate Wikipedia's "morelike" search operator for that primary article. Add up to 50 contextually, historically, or semantically related Spanish Wikipedia articles (e.g., similar unsolved mysteries, historical context, or related cryptographic cases).
+If a concept or its related topics do not have verified, existing articles on Spanish Wikipedia, completely exclude them from the results.`;
+
+const prompt = `Generate a JSON object containing an array named "results" of up to 100 objects that actually exist on Spanish Wikipedia based on the English search query: "${query}".
+
+To populate this array, execute this semantic mapping process:
+1. TARGET RESOLUTION: Identify the primary article matching the English query. Do not translate literally. Resolve the English concept to its Spanish Wikipedia equivalent via its Wikidata concept (e.g., "Dyatlov Pass incident" resolving to "Incidente del paso Diátlov", "Somerton Man" to "Caso Tamam Shud").
+2. ACCENT VERIFICATION: Double-check the Spanish title. Ensure it contains the correct Spanish grammar, word order, and necessary accent marks (á, é, í, ó, ú). 
+3. MORELIKE EXPANSION: Simulate Wikipedia's "morelike" search operator for that primary article. Add up to 50 contextually, historically, or semantically related Spanish Wikipedia articles (e.g., similar unsolved mysteries, historical context, or related events) using their exact Spanish titles.
 
 Strict Constraints:
-- Only include articles that actually exist on es.wikipedia.org and are of sufficient length (>10 sentences).
-- Do not translate titles literally; use actual Spanish Wikipedia slugs.
-- Each object in the array must strictly have exactly two properties: "title" (the exact Spanish title) and "url" (the valid, url-encoded Spanish Wikipedia link).`;
+- Only include articles that actually exist on es.wikipedia.org.
+- Each object in the array must strictly have exactly two properties: "title" (the exact Spanish title with correct accents) and "url" (the valid, percent-encoded Spanish Wikipedia link).`;
 
     const maxRetries = 5;
     let currentDelay = 2000; // Start with a 2-second wait on failure
