@@ -2342,7 +2342,7 @@ function splitIntoSentences(text) {
   });
 
   // 3. Initial split by punctuation marks
-  const rawMatches = text.split(/(?<=[.!?;:¿¡])\s*/g);
+  const rawMatches = text.split(/(?<=[.!?;¿¡])\s*/g);
   
   // Clean up whitespace and drop empty strings
   const initialSentences = rawMatches
@@ -2497,9 +2497,8 @@ function splitIntoSentences(text) {
 
 async function callGemmaToTranslateToEnglish(spanish,englishText) {
     englishText.classList.remove('hidden');
-    englishText.textContent='Loading translation...';
+    englishText.innerHTML='Loading translation <img style="color:red;vertical-align:bottom;" src="loading.gif"/>';
     const model = 'gemma-4-31b-it';
-    showDynamicPopup('Translation', 'Translating Spanish text. Can take 10+ seconds.', 1500);
     if (!spanish) {
         return;
     }
