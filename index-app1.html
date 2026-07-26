@@ -294,6 +294,7 @@
     const MINIMUM_VOCAB_WORD_COUNT = 200;
     const PROCESSING_TRANSLATION_MSG = "<em>Processing translation and parsing metadata...</em>";
     const ES_API = "https://es.wikipedia.org/w/api.php?origin=*";
+    const EN_API = "https://en.wikipedia.org/w/api.php?origin=*";
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -2580,12 +2581,31 @@ async function searchWikipedia() {
        showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
        return;
     }
+/*
     const systemInstruction = `You are a precise data extraction engine. You output ONLY raw, valid JSON. 
     Do NOT include markdown formatting, backticks, or any conversational text. 
-    All Wikipedia URLs must be absolute, pointing to the Spanish subdomain: "https://wikipedia.org". 
+    All Wikipedia URLs must be absolute, pointing to the Spanish subdomain: "https://es.wikipedia.org/". 
     Ensure proper URL-encoding for Spanish accents and special characters (like %C3%AD).`;
     const prompt = `Generate a JSON object containing an array named "results" of up to 100 objects that would appear on Spanish Wikipedia based on the English search query: "${query}". Only include in results if the article is of sufficient length, ideally >10 sentences.
     Each object in the array must strictly have exactly two properties: "title" and "url".`;
+*/
+const systemInstruction = `You are a precise cross-lingual data extraction and semantic search engine. You output ONLY raw, valid JSON. Do NOT include markdown formatting, backticks, or any conversational text. 
+
+Your task is to map English concepts to their EXACT, existing Spanish Wikipedia article titles using official interlanguage/Wikidata mappings (not literal translations). 
+
+All Wikipedia URLs must be absolute, pointing to the Spanish subdomain: https://es.wikipedia.org/. Ensure proper URL-encoding for Spanish accents and special characters. If a concept or its related topics do not have verified, existing articles on Spanish Wikipedia, completely exclude them from the results.`;
+
+const prompt = `Generate a JSON object containing an array named "results" of up to 100 objects that would appear on Spanish Wikipedia based on the English search query: "${query}".
+
+To populate this array, follow this two-step process:
+1. TARGET: Identify the primary article matching the English query using its exact Spanish Wikipedia title (e.g., "Somerton Man" maps to "Caso Tamam Shud").
+2. MORELIKE EXPANSION: Simulate Wikipedia's "morelike" search operator for that primary article. Add up to 50 contextually, historically, or semantically related Spanish Wikipedia articles (e.g., similar unsolved mysteries, historical context, or related cryptographic cases).
+
+Strict Constraints:
+- Only include articles that actually exist on es.wikipedia.org and are of sufficient length (>10 sentences).
+- Do not translate titles literally; use actual Spanish Wikipedia slugs.
+- Each object in the array must strictly have exactly two properties: "title" (the exact Spanish title) and "url" (the valid, url-encoded Spanish Wikipedia link).`;
+
     const maxRetries = 5;
     let currentDelay = 2000; // Start with a 2-second wait on failure
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -2618,15 +2638,14 @@ async function searchWikipedia() {
                 if(items && items.results && items.results.length>0) {
                     statusDiv.innerText = "Select an article below:";
                     items.results.forEach(item => {
-                        let url = item.url;
                         let title = decodeURIComponent(item.title);
                         const resultCard = document.createElement('div');
                         resultCard.classList.add('cc-result-card');
                         const link = document.createElement('a');
                         link.href = "#";
                         link.addEventListener('click', function(event) {
-                            event.preventDefault(); 
-                            loadWikiArticle(title, url);
+                            event.preventDefault();
+                            loadWikiArticle(title, ES_API);
                         });
                         link.classList.add('cc-result-link');
                         link.textContent = title.replaceAll('_',' ');
@@ -2665,7 +2684,7 @@ async function loadWikiArticle(title, url){
     const statusDiv = document.getElementById("wikiStatusDiv");
     statusDiv.innerText = "Loading " + title + "...";
     try {
-        let extractUrl = ES_API + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json&redirects=1";
+        let extractUrl = url + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json&redirects=1";
         let response = await fetch(extractUrl);
         let data = await response.json();
 
@@ -2673,11 +2692,15 @@ async function loadWikiArticle(title, url){
         let pageId = Object.keys(pages);
         let rawText = pages[pageId].extract || "";
 
-        if(rawText.indexOf("Wikipedia todavía no tiene una página llamada")>-1) {
-            const msg = "This article does not have sufficient information. Try a different article or search query.";
-            statusDiv.innerText = msg;
-            showDynamicPopup('Wikipedia Article', msg + ": " + title, 1000);
-            return [];
+        if(rawText.length<100 || rawText.indexOf("Wikipedia todavía no tiene una página llamada")>-1) {
+            if(ES_API===url) {
+                return loadWikiArticle(title, EN_API);
+            } else {
+                const msg = "This article does not have sufficient information. Try a different article or search query.";
+                statusDiv.innerText = msg;
+                showDynamicPopup('Wikipedia Article', msg + ": " + title, 1000);
+                return [];
+            }
         }
 
         let cleanedText = cleanArticle(rawText);
