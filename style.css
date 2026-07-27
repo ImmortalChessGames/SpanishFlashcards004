@@ -2405,13 +2405,12 @@ h2 {
   border-radius: 4px;
 }
 
-
 .popup-div {
   display: none; /* Hidden by default */
   position: fixed;
   z-index: 9999;
   max-width: 375px;
-  top: 25%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
