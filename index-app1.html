@@ -2745,6 +2745,31 @@ async function loadWikiArticle(title, url){
         }).filter(obj => obj.spanish.length > 10);
         loadArticle(jsonArray);
         statusDiv.innerText = 'Article loaded successfully.';
+        const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
+        let storiesMap;
+        if(storiesMapJson && storiesMapJson.length>0) {
+            storiesMap = new Map(Object.entries(JSON.parse(storiesMapJson)));
+        } else {
+            storiesMap = new Map();
+        }
+        const wikipediaArticleId = 'Last Wikipedia Article';
+        const articlejson = JSON.stringify(jsonArray);
+        if(storiesMap) {
+            storiesMap.set(wikipediaArticleId, articlejson);
+            const json = JSON.stringify(Object.fromEntries(storiesMap));
+            localStorage.setItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY, json);
+        }
+
+        const selectElt = document.getElementById("sm-chooseDataset");
+        const newOptionKey = ">> " + wikipediaArticleId;
+        const existingOptionIndex = Array.from(selectElt.options).findIndex(opt => opt.text === newOptionKey);
+        if (existingOptionIndex !== -1) {
+            selectElt.options[existingOptionIndex].value = articlejson;
+        } else {
+            selectElt.add(new Option(newOptionKey, articlejson), 1);
+        }
+        selectElt.value = articlejson;
+
         document.getElementsByClassName("tab-btn")[0].click();
         showDynamicPopup('Wikipedia Article', 'Article loaded successfully.', 500);
         const topRightTextElt = document.getElementById('top-right-text');
