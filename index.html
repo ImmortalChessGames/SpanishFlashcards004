@@ -1991,7 +1991,7 @@ async function translateText_MW(textToTranslate) {
     });
 }
 
-async function sendTranslationRequest_Local(textValue) {
+function sendTranslationRequest_Local(textValue) {
     const uiDiv = document.getElementById('translationResponse');
     if (!textValue) {
         alert("Please provide input text.");
@@ -2006,12 +2006,14 @@ async function sendTranslationRequest_Local(textValue) {
             setTimeout(() => {
               document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
             }, 50); 
+            return translation;
+        } else {
+            consoleLogOnlyIfLocal('Did not find local translation for ' + textValue + ': ' +translation);
         }
-        return null;
     } catch(err) {
         consoleLogOnlyIfLocal(err + ' switching to another provider.');
-        return translateText_MW(textValue);
     }
+    return null;
 }
 
 
@@ -2296,16 +2298,16 @@ function processSentence(input) {
                 console.log('word='+cleanWord+', lemma='+lemma);
 
                 if(!lemma || lemma===cleanWord) {
-                    if(!sendTranslationRequest_Local(cleanWord)) {
+                    if((sendTranslationRequest_Local(cleanWord))===null) {
                         sendTranslationRequest(cleanWord);
                     }
                 } else {
                     if(lemma && lemma.trim().length>0) {
-                        if(!sendTranslationRequest_Local(lemma.trim())) {
+                        if((sendTranslationRequest_Local(lemma.trim()))===null) {
                             sendTranslationRequest(lemma.trim());
                         }
                     }
-                    if(!sendTranslationRequest_Local(cleanWord)) {
+                    if((sendTranslationRequest_Local(cleanWord))===null) {
                         sendTranslationRequest(cleanWord);
                     }
                 }
