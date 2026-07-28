@@ -62,7 +62,8 @@
                         <div id="wordBox" class="word-box"></div>
                         <progress id="article-progress"></progress>
                         <div id="englishText" class="english-text hidden"></div>
-                        <div id="translationResponse"></div>
+                        <div id="dictionaryLookupPopupOverlay" class="popup-overlay" onclick="toggleDictionaryLookupPopup(false);"></div>
+                        <div id="translationResponse" class="popup-div" onclick="toggleDictionaryLookupPopup(false);"></div>
                         <div id="spanishText" style="margin: 15px;"></div>
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
@@ -367,6 +368,12 @@
         if (window.location.protocol === 'file:') {
             console.log(p);
         }
+    }
+
+    function toggleDictionaryLookupPopup(show) {
+        const displayValue = show ? 'block' : 'none';
+        document.getElementById('translationResponse').style.display = displayValue;
+        document.getElementById('dictionaryLookupPopupOverlay').style.display = displayValue;
     }
 
     // Close modal via click on 'x'
@@ -2311,6 +2318,7 @@ function processSentence(input) {
                         sendTranslationRequest(cleanWord);
                     }
                 }
+                toggleDictionaryLookupPopup(true);
 
             });
             wordBox.appendChild(span);
