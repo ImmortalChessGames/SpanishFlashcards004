@@ -61,8 +61,7 @@
                         <div id="wordBox" class="word-box"></div>
                         <progress id="article-progress"></progress>
                         <div id="englishText" class="english-text hidden"></div>
-                        <div id="dictionaryLookupPopupOverlay" class="popup-overlay" onclick="toggleDictionaryLookupPopup(false);"></div>
-                        <div id="translationResponse" class="popup-div" onclick="toggleDictionaryLookupPopup(false);"></div>
+                        <div id="translationResponse"></div>
                         <div id="spanishText" style="margin: 15px;"></div>
                         <div id="ai-tutor-container">
                           <div class="ai-tutor-card">
@@ -339,6 +338,8 @@
 
     let wordHelp;
     let lastWordHelped;
+
+    const WIKI_BOOKMARK_KEY = '___wiki_bookmark___';
     
     // Scoped variable declarations using the updated IDs
     const appModalElement = document.getElementById("appModalWrapper");
@@ -366,12 +367,6 @@
             console.log(p);
         }
     }
-
-function toggleDictionaryLookupPopup(show) {
-  const displayValue = show ? 'block' : 'none';
-  document.getElementById('translationResponse').style.display = displayValue;
-  document.getElementById('dictionaryLookupPopupOverlay').style.display = displayValue;
-}
 
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
@@ -1515,7 +1510,31 @@ function toggleDictionaryLookupPopup(show) {
         } else {
             topRightTextElt.style='cursor: default;';
         }
-        showNext();
+
+
+        if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
+           topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
+             const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
+            if(savedWikiPage) {
+                if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
+                     for(let i=0; i<=savedWikiPage; i++) {
+                         if(i==savedWikiPage) {
+                             showNext();
+                         } else { 
+                             showNext_doNotPaintSlide(); 
+                         }
+                     } 
+                }  else {
+                    localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
+                    showNext();
+                }  
+            }  else {
+                localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
+                showNext();
+            }                
+        } else {
+            showNext();
+        }            
     }
 
     // Parse the embedded raw string automatically on load
@@ -1562,6 +1581,16 @@ function toggleDictionaryLookupPopup(show) {
         document.getElementById('nextBtn').click();
     }
 
+    function saveLastWikiPage(historyIndex) {
+        const topRightTextElt = document.getElementById('top-right-text');
+        if(historyIndex && (historyIndex>=0 && historyIndex <= dataset.length-1)) {
+            if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
+               topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
+                   localStorage.setItem(WIKI_BOOKMARK_KEY, historyIndex);
+            }             
+        }
+    }
+
     async function displayCard(item) {
         if(item) {
             currentItem = item;
@@ -1586,6 +1615,8 @@ function toggleDictionaryLookupPopup(show) {
             } else {
                 textToSpeak = null;
             }
+            
+            saveLastWikiPage(historyIndex);
         }
     }
 
@@ -1605,6 +1636,8 @@ function toggleDictionaryLookupPopup(show) {
             prevBtn2.disabled = (historyIndex <= 0);
             nextBtn.disabled = (historyIndex >= dataset.length-1);
             nextBtn2.disabled = (historyIndex >= dataset.length-1);
+
+            saveLastWikiPage(item.spanish);
         }
     }
 
@@ -2210,7 +2243,7 @@ function processSentence(input) {
                     }
                     sendTranslationRequest(cleanWord);
                 }
-                toggleDictionaryLookupPopup(true);
+
             });
             wordBox.appendChild(span);
         }
@@ -2776,11 +2809,12 @@ async function loadWikiArticle(title, url){
             selectElt.add(new Option(newOptionKey, articlejson), 1);
         }
         selectElt.value = articlejson;
-
+        localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
         document.getElementsByClassName("tab-btn")[0].click();
         showDynamicPopup('Wikipedia Article', 'Article loaded successfully.', 500);
         const topRightTextElt = document.getElementById('top-right-text');
-        topRightTextElt.textContent=title.replaceAll('_',' ');
+        topRightTextElt.textContent='Wiki: '+title.replaceAll('_',' ');
+
     } catch (error) {
         statusDiv.innerText = "'" + title + "': Error occurred.";
         console.error(error);
