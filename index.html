@@ -19,6 +19,7 @@
 </head>
 <body>
 <script src="https://unpkg.com/es-compromise"></script>
+<script src="EnEsDict.js"></script>
 <div class="main-container">
     <div id="viewer">
 <!--
@@ -1510,8 +1511,6 @@
         } else {
             topRightTextElt.style='cursor: default;';
         }
-
-
         if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
            topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
              const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
@@ -1992,6 +1991,63 @@ async function translateText_MW(textToTranslate) {
     });
 }
 
+async function sendTranslationRequest_Local(textValue) {
+    const uiDiv = document.getElementById('translationResponse');
+    if (!textValue) {
+        alert("Please provide input text.");
+        return;
+    }
+    uiDiv.innerHTML = PROCESSING_TRANSLATION_MSG;
+    try {
+        const translation = getTranslation(textValue);
+        if(translation && translation.length>0) {
+            console.log('Found local translation for ' + textValue + ': ' +translation);
+            parseAndDisplayUnique_Local(textValue, translation, uiDiv);
+            setTimeout(() => {
+              document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
+            }, 50); 
+        }
+        return null;
+    } catch(err) {
+        consoleLogOnlyIfLocal(err + ' switching to another provider.');
+        return translateText_MW(textValue);
+    }
+}
+
+
+
+/**
+ * Queries the dictionary module across optimized prefix maps using NLP Lemmatization.
+ * @param {string} spanishWord
+ * @returns {string|null}
+ */
+function getTranslation(spanishWord) {
+  if (!spanishWord) return null;
+  
+  let cleanWord = spanishWord.trim().toLowerCase();
+  if (typeof esCompromise === 'function') {
+    try {
+      const doc = esCompromise(cleanWord);
+      doc.compute('root');
+      const data = doc.json();
+      if (data && data.length > 0 && data.terms && data.terms.length > 0) {
+        cleanWord = data.terms[0].root || data.terms[0].text.toLowerCase();
+      }
+    } catch(e) {}
+  }
+  
+  cleanWord = cleanWord.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  
+  const prefix = cleanWord.length >= 2 ? cleanWord.substring(0, 2) : cleanWord;
+  const safePrefix = prefix.replace(/[^a-zA-Z0-9]/g, '_');
+  
+  const targetMap = masterDictionaryRegistry[safePrefix];
+  if (targetMap && targetMap.has(cleanWord)) {
+    return targetMap.get(cleanWord);
+  }
+  return null;
+}
+
 async function sendTranslationRequest(textValue) {
     const uiDiv = document.getElementById('translationResponse');
     if (!textValue) {
@@ -2042,6 +2098,10 @@ function clickSaveWord(e) {
     saveWord(hiddenInput.id, hiddenInput.value);
     showToast('Saved successfully.');
     e.preventDefault();
+}
+
+function parseAndDisplayUnique_Local(textValue, data, visualContainer) {
+    parseAndDisplayUnique_MW(textValue, data, visualContainer);
 }
 
 function parseAndDisplayUnique_MW(textValue, data, visualContainer) {
@@ -2236,12 +2296,18 @@ function processSentence(input) {
                 console.log('word='+cleanWord+', lemma='+lemma);
 
                 if(!lemma || lemma===cleanWord) {
-                    sendTranslationRequest(cleanWord);
+                    if(!sendTranslationRequest_Local(cleanWord)) {
+                        sendTranslationRequest(cleanWord);
+                    }
                 } else {
                     if(lemma && lemma.trim().length>0) {
-                        sendTranslationRequest(lemma.trim());
+                        if(!sendTranslationRequest_Local(lemma.trim())) {
+                            sendTranslationRequest(lemma.trim());
+                        }
                     }
-                    sendTranslationRequest(cleanWord);
+                    if(!sendTranslationRequest_Local(cleanWord)) {
+                        sendTranslationRequest(cleanWord);
+                    }
                 }
 
             });
