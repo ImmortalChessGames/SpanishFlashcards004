@@ -99,7 +99,10 @@
             <!-- PANEL 2 -->
             <div id="panel-2" class="tab-panel" role="tabpanel">
                 <input id="wikiQueryInput" value="" maxlength="50" placeholder="E.g. Major WWII Battles">
-                <button id="wikiSearchBtn" onclick="searchWikipedia();">Search Wikipedia</button>
+                <div class="link-container">
+                    <button id="wikiSearchBtn" onclick="searchWikipedia();" style="margin-top:10px;width:40%;background-color:#5c67f2;color:white;font-weight:bold;font-size:16px;">Search Wikipedia</button>
+                    <button id="wikiGotoBtn" onclick="goToWikiBookmarkedArticle();" style="margin-top:10px;width:40%;background-color:#ff4d4d;color:white;font-weight:bold;font-size:16px;">Last Bookmarked</button>
+                </div>
                 <div id="wikiStatusDiv" style="padding:20px;font-weight:bold;"></div>
                 <div class="scroll-wrapper">
                     <div id="wikiResultsDiv" class="cc-search-container"></div>
@@ -1470,6 +1473,18 @@
         } 
     }
 
+    function toggleWikiBookmark() {
+         const gotoWikiBtn = document.getElementById('wikiGotoBtn');
+         const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
+         if(savedWikiPage) {
+            if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
+                 gotoWikiBtn.disabled=false;
+                 return;
+            }   
+        }                
+        gotoWikiBtn.disabled=true;
+    }
+
     function loadArticle(d) {
         wordhelp = null;
         let articleDataset = [];
@@ -1521,7 +1536,7 @@
         if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
            topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
              const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
-            if(savedWikiPage) {
+             if(savedWikiPage) {
                 if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                      for(let i=0; i<=savedWikiPage; i++) {
                          if(i==savedWikiPage) {
@@ -1540,7 +1555,8 @@
             }                
         } else {
             showNext();
-        }            
+        }     
+        toggleWikiBookmark();               
     }
 
     // Parse the embedded raw string automatically on load
@@ -2677,6 +2693,24 @@ async function callGemmaToTranslateToEnglish(spanish,englishText) {
    //          englishTextSpinner.style.display='none';
         }
     } 
+}
+
+function goToWikiBookmarkedArticle() {
+  const textToFind = '>> Last Wikipedia Article';
+  const dropdown = document.getElementById('sm-chooseDataset');
+  const optionToSelect = Array.from(dropdown.options).find(
+    (option) => option.text.trim() === textToFind.trim()
+  );
+  if (optionToSelect) {
+    optionToSelect.selected = true;
+    consoleLogOnlyIfLocal(`Successfully selected text: ${optionToSelect.text}`);
+// Create and dispatch the change event
+    const changeEvent = new Event('change', { bubbles: true }); 
+    dropdown.dispatchEvent(changeEvent);
+  } else {
+    consoleLogOnlyIfLocal("Text not found in dropdown.");
+    showDynamicPopup('Wikipedia', 'Your last Wikipedia article bookmark not found.', 1500);
+  }
 }
 
 async function searchWikipedia() {
@@ -3868,6 +3902,8 @@ function handleSwipe() {
       document.getElementById('wikiSearchBtn').click(); 
     }
   });
+
+  toggleWikiBookmark();
 
 </script>
 </body>
