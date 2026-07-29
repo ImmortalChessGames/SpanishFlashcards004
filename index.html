@@ -1422,6 +1422,7 @@
     // 8. Initial Load
     document.addEventListener('DOMContentLoaded', function() {
         updateDisplayData();
+        toggleWikiBookmark(true);
     });
 
     let dataset = [];
@@ -1473,12 +1474,15 @@
         } 
     }
 
-    function toggleWikiBookmark() {
+    function toggleWikiBookmark(clickTheButton) {
          const gotoWikiBtn = document.getElementById('wikiGotoBtn');
          const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
          if(savedWikiPage) {
             if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                  gotoWikiBtn.disabled=false;
+                 if(clickTheButton && clickTheButton===true) {
+                    gotoWikiBtn.click();
+                 }                 
                  return;
             }   
         }                
@@ -1556,7 +1560,7 @@
         } else {
             showNext();
         }     
-        toggleWikiBookmark();               
+        toggleWikiBookmark(false);               
     }
 
     // Parse the embedded raw string automatically on load
@@ -3902,8 +3906,6 @@ function handleSwipe() {
       document.getElementById('wikiSearchBtn').click(); 
     }
   });
-
-  toggleWikiBookmark();
 
 </script>
 </body>
