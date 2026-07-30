@@ -103,9 +103,13 @@
                     <button id="wikiSearchBtn" onclick="searchWikipedia();" style="margin-top:10px;width:40%;background-color:#5c67f2;color:white;font-weight:bold;font-size:16px;">Search Wikipedia</button>
                     <button id="wikiGotoBtn" onclick="goToWikiBookmarkedArticle();" style="margin-top:10px;width:40%;background-color:#ff4d4d;color:white;font-weight:bold;font-size:16px;">Last Bookmarked</button>
                 </div>
-                <div id="wikiStatusDiv" style="padding:20px;font-weight:bold;"></div>
-                <div class="scroll-wrapper">
+                <div id="wikiSearchResults" class="scroll-wrapper" style="margin-top:10px;">
+                    <div id="wikiStatusDiv" style="padding:20px;font-weight:bold;"></div>
                     <div id="wikiResultsDiv" class="cc-search-container"></div>
+                </div>  
+                <div id="wikiSearchSuggestions" class="scroll-wrapper">
+                    <div id="wikiArticleSuggestiosStatusDiv" style="padding:5px;"></div>
+                    <ul id="wiki-suggestions-list"></ul>
                 </div>
             </div>
 
@@ -297,6 +301,7 @@
     const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
     const MINIMUM_VOCAB_WORD_COUNT = 200;
+    const WIKIPEDIA_SUGGESTIONS_FILENAME = "wikipedia-suggestions.txt";
     const PROCESSING_TRANSLATION_MSG = "<em>Processing translation and parsing metadata...</em>";
     const ES_API = "https://es.wikipedia.org/w/api.php?origin=*";
     const EN_API = "https://en.wikipedia.org/w/api.php?origin=*";
@@ -311,6 +316,9 @@
     const nextPageBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
     const googleTranslateAPIUrl = `https://www.googleapis.com/language/translate/v2`;
+
+    const wikiSearchSuggestionsDiv = document.getElementById('wikiSearchSuggestions');
+    const wikiSearchResultsDiv = document.getElementById('wikiSearchResults');
 
     const api1KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoEHhgC23MZ+zInz2AwJPYUQ5wLeTIGgvphRV9aU7NB7WtQ4WFrsVNCC1YY7BsqDQkXUhnPJPBSuPYSCb/GYAsHC9+bOPevpJAG8SCE6LSguglA==';
     const api2KeyEncrypted = 'WaMkBI+CSEivXQiGTg6hoECQ3+KCxELrOugTUzjgp1xJC2R3uwsQO3BDhcgSRJeRjGHt09acwERw3bPJb51v+weimFm9vvkysfpA4/Wk5xkxgNE=';
@@ -1419,6 +1427,19 @@
         }
     });
 
+  async function loadWikiSuggestions() {
+      const text = await loadLocaTextFile(WIKIPEDIA_SUGGESTIONS_FILENAME);
+      if (!text) return;
+      const list = document.getElementById('wiki-suggestions-list');
+      list.innerHTML = '';
+      const json = await decrypt(text);
+      const jsonArr = JSON.parse(json);
+      generateWikiArticleSuggestionsList(jsonArr);
+
+      const statusDiv = document.getElementById("wikiArticleSuggestiosStatusDiv");
+      statusDiv.innerText = "150+ Interesting Article";
+  }
+
     // 8. Initial Load
     document.addEventListener('DOMContentLoaded', function() {
         updateDisplayData();
@@ -1443,17 +1464,18 @@
     const statTotal = document.getElementById('statTotal');
     let textToSpeak = null;
 
-    async function loadLocalJsonFile(jsonFile) {
+    async function loadLocaTextFile(filename) {
       try {
-        const response = await fetch(jsonFile);
+        const response = await fetch(filename);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        consoleLogOnlyIfLocal(data);
+        const data = await response.text();
+        return data;
       } catch (error) {
-        console.error("Could not load JSON:", error);
+        console.error("Could not load TEXT:", error);
       }
+      return null;
     }
 
     function readArticle() {
@@ -2718,6 +2740,8 @@ function goToWikiBookmarkedArticle() {
 }
 
 async function searchWikipedia() {
+    wikiSearchSuggestionsDiv.style.display='none';
+    wikiSearchResultsDiv.style.display='block';
     const model = 'gemini-3.1-flash-lite';
     showDynamicPopup('Wikipedia', 'Searching Wikipedia...', 1500);
     const queryInputElement = document.getElementById("wikiQueryInput");
@@ -2797,7 +2821,7 @@ Strict Constraints:
                         link.href = "#";
                         link.addEventListener('click', function(event) {
                             event.preventDefault();
-                            loadWikiArticle(title, ES_API);
+                            loadWikiArticle(title, ES_API, true);
                         });
                         link.classList.add('cc-result-link');
                         link.textContent = title.replaceAll('_',' ');
@@ -2807,6 +2831,15 @@ Strict Constraints:
                 } else {
                     statusDiv.innerText = "No results found.";
                 }
+                const clearSearchResults = document.createElement('a');
+                clearSearchResults.textContent = 'Clear search results.';
+                clearSearchResults.href = '#';
+                clearSearchResults.style = 'padding:5px;color:blue;font-size:14px;';
+                clearSearchResults.addEventListener('click', function() {
+                  wikiSearchSuggestionsDiv.style.display='block';
+                  wikiSearchResultsDiv.style.display='none';         
+                });
+                statusDiv.appendChild(clearSearchResults);
                 return;
             }
         } catch (error) {
@@ -2827,14 +2860,25 @@ Strict Constraints:
           consoleLogOnlyIfLocal(`Waiting ${currentDelay / 1000}s before next attempt...`);
           await new Promise(resolve => setTimeout(resolve, currentDelay));
           currentDelay *= 2; 
+          wikiSearchSuggestionsDiv.style.display='block';
+          wikiSearchResultsDiv.style.display='none';
         }
     }
 }
 
-async function loadWikiArticle(title, url){
+async function loadWikiArticle(title, url, flag){
     showDynamicPopup('Wikipedia Article', 'Attempting to load article: ' + title, 1000);
     const statusDiv = document.getElementById("wikiStatusDiv");
     statusDiv.innerText = "Loading " + title + "...";
+    
+    if(flag && flag===true)  {
+        wikiSearchSuggestionsDiv.style.display='none';
+        statusDiv.style.display='block';
+    } else {
+        wikiSearchSuggestionsDiv.style.display='block';
+        statusDiv.style.display='none';
+    }
+
     try {
         let extractUrl = url + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json&redirects=1";
         let response = await fetch(extractUrl);
@@ -2846,7 +2890,7 @@ async function loadWikiArticle(title, url){
 
         if(rawText.length<100 || rawText.indexOf("Wikipedia todavía no tiene una página llamada")>-1) {
             if(ES_API===url) {
-                return loadWikiArticle(title, EN_API);
+                return loadWikiArticle(title, EN_API, true);
             } else {
                 const msg = "This article does not have sufficient information. Try a different article or search query.";
                 statusDiv.innerText = msg;
@@ -3054,6 +3098,8 @@ async function generateClozures() {
     }
     document.getElementById(`clz-progress-bar`).style='display: block';
     document.getElementById('clz-loading').style.display='none';
+
+    loadWikiSuggestions();
 }
 
     // Grab all tab buttons and all content panels
@@ -3895,7 +3941,56 @@ function handleSwipe() {
     showDynamicPopup('Clozures','Generating another clozures-style quiz.', 2000);
   };
 
-  generateClozures();
+    function generateWikiArticleSuggestionsList(dataArray) {
+      const ul = document.createElement('ul');
+      
+      ul.style.listStyleType = 'none';
+      ul.style.padding = '0';
+      ul.style.margin = '0';
+      dataArray = dataArray.sort((a, b) => a.label.localeCompare(b.label, 'en', { sensitivity: 'base' }));
+      dataArray.forEach(function(item) {
+
+        if (item.length < 1000) {
+          return; 
+        }
+
+        const cleanLine = item.label ? item.label.trim().replaceAll('*','') : '';
+       
+        if (cleanLine) {
+          const li = document.createElement('li');
+          
+          // Add some spacing between list rows
+          li.style.marginBottom = '25px'; 
+          
+          // 2. Create the button
+          const a = document.createElement('a');
+          a.textContent = cleanLine;
+          a.href = '#';
+          a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;cursor: pointer;';
+          a.addEventListener('click', function() {
+            loadWikiArticle(item.label, ES_API, false);
+          });
+          
+          li.appendChild(a);
+
+          // 3. Create and append the description text
+          if (item.description) {
+            const textSpan = document.createElement('span');
+            textSpan.style = 'color:black;font-size:18px;font-family: "Lucida Console", "Courier New", monospace;';
+            textSpan.textContent = `: ${item.description.trim()}`;
+            li.appendChild(textSpan);
+          }
+          
+          ul.appendChild(li);
+        }
+      });
+
+      const container = document.getElementById('wiki-suggestions-list');
+      container.innerHTML = ''; // Clear previous contents if needed
+      container.appendChild(ul);
+    }
+
+    generateClozures();
 
   document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
     // Check if the pressed key is "Enter"
