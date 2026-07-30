@@ -360,6 +360,8 @@
 
     let deepDiveWarningAlreadyShown;
 
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
     function getLemma(word) {
         if (word && word.trim().length > 0) {
             const doc = esCompromise(word);
@@ -1428,6 +1430,7 @@
     });
 
   async function loadWikiSuggestions() {
+      sleep(1000);
       const text = await loadLocaTextFile(WIKIPEDIA_SUGGESTIONS_FILENAME);
       if (!text) return;
       const list = document.getElementById('wiki-suggestions-list');
@@ -1435,7 +1438,6 @@
       const json = await decrypt(text);
       const jsonArr = JSON.parse(json);
       generateWikiArticleSuggestionsList(jsonArr);
-
       const statusDiv = document.getElementById("wikiArticleSuggestiosStatusDiv");
       statusDiv.innerText = "150+ Interesting Article";
   }
@@ -3098,8 +3100,6 @@ async function generateClozures() {
     }
     document.getElementById(`clz-progress-bar`).style='display: block';
     document.getElementById('clz-loading').style.display='none';
-
-    loadWikiSuggestions();
 }
 
     // Grab all tab buttons and all content panels
@@ -3991,6 +3991,7 @@ function handleSwipe() {
     }
 
     generateClozures();
+    loadWikiSuggestions();
 
   document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
     // Check if the pressed key is "Enter"
