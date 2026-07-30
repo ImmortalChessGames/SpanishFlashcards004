@@ -1445,7 +1445,6 @@
     // 8. Initial Load
     document.addEventListener('DOMContentLoaded', function() {
         updateDisplayData();
-        toggleWikiBookmark(true);
     });
 
     let dataset = [];
@@ -1504,8 +1503,8 @@
          if(savedWikiPage) {
             if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                  gotoWikiBtn.disabled=false;
-                 if(clickTheButton && clickTheButton===true) {
-                    gotoWikiBtn.click();
+                 if(clickTheButton && clickTheButton===true) {                    
+                    goToWikiBookmarkedArticle();
                  }                 
                  return;
             }   
@@ -3401,6 +3400,7 @@ async function loadVocabData(loadDefaults) {
           }
       }
     } 
+    toggleWikiBookmark(true);
 }
 
 function smLoadDefaultVocabulary() {
