@@ -3968,7 +3968,7 @@ function handleSwipe() {
           a.href = '#';
           a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;cursor: pointer;';
           a.addEventListener('click', function() {
-            loadWikiArticle(item.label, ES_API, false);
+            loadWikiArticle(cleanLine, ES_API, false);
           });
           
           li.appendChild(a);
