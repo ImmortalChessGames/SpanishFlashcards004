@@ -3950,7 +3950,7 @@ function handleSwipe() {
       dataArray = dataArray.sort((a, b) => a.label.localeCompare(b.label, 'en', { sensitivity: 'base' }));
       dataArray.forEach(function(item) {
 
-        if (item.length < 1000) {
+        if (item.length < 100000) {
           return; 
         }
 
