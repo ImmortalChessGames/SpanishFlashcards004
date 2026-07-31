@@ -120,7 +120,19 @@
 
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" role="tabpanel">
-                BOOKS
+                <div id="books" class="scroll-wrapper">
+                    <div id="booksStatusDiv" style="padding:5px;"><h3>The Adventures of Sherlock Holmes, Book 1, by Sir Arthur Conan Doyle</h3></div>
+                    <div id="books-list">
+                        <ul style="list-style-type: none; margin: 0px;">
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(1, this);" class="article-link">A Scandal in Bohemia</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(2, this);" class="article-link">A Case of Identity</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(3, this);" class="article-link">The Boscombe Valley Mystery</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(4, this);" class="article-link">The Five Orange Pips</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(5, this);" class="article-link">The Man with the Twisted Lip</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(6, this);" class="article-link">The Adventure of the Blue Carbuncle</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <!-- PANEL 4 -->
@@ -363,7 +375,8 @@
     let lastWordHelped;
 
     const WIKI_BOOKMARK_KEY = '___wiki_bookmark___';
-    
+    const BOOK_BOOKMARK_KEY = '___book_bookmark___';
+
     // Scoped variable declarations using the updated IDs
     const appModalElement = document.getElementById("appModalWrapper");
     const appModalCloseTrigger = document.getElementById("appModalClose");
@@ -1647,6 +1660,8 @@
             if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
                topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
                    localStorage.setItem(WIKI_BOOKMARK_KEY, historyIndex);
+            } else if(topRightTextElt.textContent.indexOf('Book:')>-1) {
+                localStorage.setItem(BOOK_BOOKMARK_KEY, historyIndex);
             }             
         }
     }
@@ -2878,6 +2893,18 @@ Strict Constraints:
     }
 }
 
+async function loadBook(id,o) {
+    const text = await loadLocaTextFile(id+'.enc.txt');
+    if (!text) return;
+    const json = await decrypt(text);
+    const jsonArr = JSON.parse(json);
+    localStorage.setItem(BOOK_BOOKMARK_KEY, 0);
+    loadArticle(jsonArr);
+    document.getElementsByClassName("tab-btn")[0].click();
+    const topRightTextElt = document.getElementById('top-right-text');
+    topRightTextElt.textContent='Book: '+o.textContent.replaceAll('_',' ');
+}
+
 async function loadWikiArticle(title, url, flag){
     showDynamicPopup('Wikipedia Article', 'Attempting to load article: ' + title, 1000);
     const statusDiv = document.getElementById("wikiStatusDiv");
@@ -3972,7 +3999,7 @@ function handleSwipe() {
           
           // Add some spacing between list rows
           li.style.marginBottom = '25px'; 
-          
+          li.style.pointer='cursor: pointer;'
           // 2. Create the button
           const a = document.createElement('a');
           a.textContent = cleanLine;

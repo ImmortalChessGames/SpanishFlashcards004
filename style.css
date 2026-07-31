@@ -1636,6 +1636,14 @@ h2 {
   animation: pulse-green 0.4s ease-out;
 }
 
+.article-link {
+    color: red; 
+    font-weight: bold; 
+    font-size: 18px; 
+    text-transform: uppercase; 
+    cursor: pointer;
+}
+
 .word-help-link {
     display: inline-block;
     margin-top: 25px;
