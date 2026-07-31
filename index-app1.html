@@ -3992,7 +3992,15 @@ function handleSwipe() {
           return; 
         }
 
-        const cleanLine = item.label ? item.label.trim().replaceAll('*','') : '';
+        const url = item.absoluteUrl;
+        const lastIndexOf = url.lastIndexOf('/');
+        let title = item.label;
+        if(lastIndexOf && lastIndexOf>=0) {
+            title = url.substring(lastIndexOf+1);            
+        } else {
+            title = title.trim().replaceAll('*','');
+        }
+        const cleanLine = title;
        
         if (cleanLine) {
           const li = document.createElement('li');
