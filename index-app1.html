@@ -39,7 +39,11 @@
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">&#x1F4BB;</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">😽</button>
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">
+                    <object data="https://www.wikipedia.org/static/apple-touch/wikipedia.png" type="image/png" style="position:relative;top:1px;max-height:32px;">
+                      <span style="font-size:17px;font-weigth:bold;color:darkGray;">W</span>
+                    </object>    
+                </button>
                 <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F4DD;</button>
                 <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x1F9E0;</button>
                 <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x1F524;</button>
@@ -1569,6 +1573,7 @@
                          if(i==savedWikiPage) {
                              showNext();
                          } else { 
+                             localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
                              showNext_doNotPaintSlide(); 
                          }
                      } 
@@ -2942,6 +2947,7 @@ async function loadWikiArticle(title, url, flag){
                 spanish: cleanSentence
             };
         }).filter(obj => obj.spanish.length > 10);
+        localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
         loadArticle(jsonArray);
         statusDiv.innerText = 'Article loaded successfully.';
         const storiesMapJson = localStorage.getItem(DEFAULT_LOCAL_STORAGE_STORIES_KEY);
@@ -2968,7 +2974,6 @@ async function loadWikiArticle(title, url, flag){
             selectElt.add(new Option(newOptionKey, articlejson), 1);
         }
         selectElt.value = articlejson;
-        localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
         document.getElementsByClassName("tab-btn")[0].click();
         showDynamicPopup('Wikipedia Article', 'Article loaded successfully.', 500);
         const topRightTextElt = document.getElementById('top-right-text');
@@ -3968,7 +3973,7 @@ function handleSwipe() {
           a.href = '#';
           a.style = 'color:red;font-weight:bold;font-size:18px;text-transform: uppercase;cursor: pointer;';
           a.addEventListener('click', function() {
-            loadWikiArticle(item.label, ES_API, false);
+            loadWikiArticle(cleanLine, ES_API, false);
           });
           
           li.appendChild(a);
