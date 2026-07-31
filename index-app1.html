@@ -39,17 +39,18 @@
             <!-- Tab Navigation Headers -->
             <div class="tab-buttons" role="tablist">
                 <button class="tab-btn active" data-target="#panel-1" role="tab" aria-selected="true">&#x1F4BB;</button>
-                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false">
-                    <object data="https://www.wikipedia.org/static/apple-touch/wikipedia.png" type="image/png" style="position:relative;top:1px;max-height:32px;">
-                      <span style="font-size:17px;font-weigth:bold;color:darkGray;">W</span>
-                    </object>    
+                <button class="tab-btn" data-target="#panel-2" role="tab" aria-selected="false" style="display: inline-flex; align-items: center; justify-content: center;"> 
+                  <object data="https://www.wikipedia.org/static/apple-touch/wikipedia.png" type="image/png" style="max-height:32px;"> 
+                    <span style="font-size:17px;font-weight:bold;color:darkgray;">W</span> 
+                  </object> 
                 </button>
-                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F4DD;</button>
-                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x1F9E0;</button>
-                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x1F524;</button>
-                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">&#x2705;</button>
-                <button class="tab-btn" data-target="#panel-7" role="tab" aria-selected="false">&#x274C;</button>
-                <button class="tab-btn" data-target="#panel-8" role="tab" aria-selected="false">&#128295;</button>
+                <button class="tab-btn" data-target="#panel-3" role="tab" aria-selected="false">&#x1F4D6;</button>
+                <button class="tab-btn" data-target="#panel-4" role="tab" aria-selected="false">&#x1F4DD;</button>
+                <button class="tab-btn" data-target="#panel-5" role="tab" aria-selected="false">&#x1F9E0;</button>
+                <button class="tab-btn" data-target="#panel-6" role="tab" aria-selected="false">&#x1F524;</button>
+                <button class="tab-btn" data-target="#panel-7" role="tab" aria-selected="false">&#x2705;</button>
+                <button class="tab-btn" data-target="#panel-8" role="tab" aria-selected="false">&#x274C;</button>
+                <button class="tab-btn" data-target="#panel-9" role="tab" aria-selected="false">&#128295;</button>
             </div>
             <!-- Tab Content Panes -->
             <!-- PANEL 1 -->
@@ -119,6 +120,11 @@
 
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" role="tabpanel">
+                BOOKS
+            </div>
+
+            <!-- PANEL 4 -->
+            <div id="panel-4" class="tab-panel" role="tabpanel">
                 <div id="quiz-container" class="quiz-container">
                     <div id="quiz-box">
                         <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; height: 36px; line-height: 1;"> 
@@ -150,8 +156,8 @@
                 </div>
             </div>
 
-            <!-- PANEL 4 -->
-            <div id="panel-4" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
+            <!-- PANEL 5 -->
+            <div id="panel-5" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
               <div class="clz-quiz-wrapper">
                 <h2 id="clz-loading" style="display: none;" class="is-loading">Loading clozures...</h2>
                 <progress id="clz-progress-bar" style="min-width:100%;max-width:100%" class="narrow-progress"></progress>
@@ -160,8 +166,8 @@
               </div>
             </div>
 
-            <!-- PANEL 5 -->
-            <div id="panel-5" class="tab-panel" role="tabpanel">
+            <!-- PANEL 6 -->
+            <div id="panel-6" class="tab-panel" role="tabpanel">
                 <div>
                     <form id="wordForm">
                         <label for="spanishWord">Spanish Word:</label>
@@ -185,20 +191,20 @@
                 </div>
             </div>
 
-            <!-- PANEL 6 -->
-            <div id="panel-6" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
+            <!-- PANEL 7 -->
+            <div id="panel-7" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
                 <div id="results-positive-paginated"></div>
             </div>
 
-            <!-- PANEL 7 -->
-            <div id="panel-7" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
+            <!-- PANEL 8 -->
+            <div id="panel-8" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
                 <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
                 <div id="results-negative-paginated"></div>
             </div>
 
-            <!-- PANEL 8 -->
-            <div id="panel-8" class="tab-panel" role="tabpanel">
+            <!-- PANEL 9 -->
+            <div id="panel-9" class="tab-panel" role="tabpanel">
                 <div class="sm-wrapper">
                     <div class="sm-container scrollable-content">
                         <div class="gsv-config-panel">
@@ -396,7 +402,7 @@
     // Close modal via click on 'x'
     appModalCloseTrigger.addEventListener("click", () => {
       appModalElement.classList.remove("is-visible");
-      document.getElementsByClassName("tab-btn")[7].click();
+      document.getElementsByClassName("tab-btn")[8].click();
       setTimeout(() => {
         document.getElementById('sm-secret').scrollIntoView({ behavior: 'smooth' });
       }, 50); 
@@ -1541,7 +1547,7 @@
                     setTimeout(() => {
                       gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
                     }, 50); 
-                    document.getElementsByClassName("tab-btn")[7].click();
+                    document.getElementsByClassName("tab-btn")[8].click();
                     document.getElementById('gsv-submit-btn').click();                    
                 });
                 addlTopicLinks.appendChild(dynamicLink);
