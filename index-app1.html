@@ -132,6 +132,14 @@
                             <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(6, this);" class="article-link">The Adventure of the Blue Carbuncle</a></li>
                         </ul>
                     </div>
+                    <div id="booksStatusDiv" style="padding:5px;"><h3>Metamorphisis, by Franz Kafka</h3></div>
+                    <div id="books-list">
+                        <ul style="list-style-type: none; margin: 0px;">
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(7, this);" class="article-link">Metamorphisis, Part 1</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(8, this);" class="article-link">Metamorphisis, Part 2</a></li>
+                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(9, this);" class="article-link">Metamorphisis, Part 3</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -2571,94 +2579,6 @@ function cleanArticle(text){
 
 function cleanForCompare(str) {
     return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-// Intelligently breaks text into sentences without splitting on initials or common abbreviations
-function splitIntoSentences(text) {
-  if (!text) return [];
-
-  // 1. Protect single-letter initials (like W. or F.) followed by a space or another initial
-  text = text.replace(/(\b[A-Za-z])\.(?=\s|\b)/g, "$1___DOT___");
-
-  // 2. Protect common Spanish abbreviations
-  const abbreviations = [
-    "adm", "art", "cap", "cia", "cm", "col", "cta", "doc", "ee.uu", "ee", "uu", 
-    "ej", "etc", "fra", "gral", "ib", "ibid", "id", "irreg", "kg", "km", "lic", 
-    "ltd", "max", "min", "mr", "mrs", "ms", "num", "n.o", "op", "pág", "pag", 
-    "pp", "prof", "reg", "rep", "sig", "sr", "sra", "srta", "st", "univ", "vol", 
-    "vto", "vs"
-  ];
-  
-  abbreviations.forEach(function(abb) {
-    const regex = new RegExp("\\b(" + abb + ")\\.", "gi");
-    text = text.replace(regex, "$1___DOT___");
-  });
-
-  // 3. Initial split by punctuation marks
-  const rawMatches = text.split(/(?<=[.!?;¿¡])\s*/g);
-  
-  // Clean up whitespace and drop empty strings
-  const initialSentences = rawMatches
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
-
-  // Helper function to count words
-  const getWordCount = (str) => {
-    const cleanStr = str.replace(/___DOT___/g, "");
-    const words = cleanStr.match(/\b\w+\b/g);
-    return words ? words.length : 0;
-  };
-
-  // 4. Process groupings and apply ellipsis splits on sentences > 20 words
-  const finalSentences = [];
-  let currentBuffer = "";
-
-  initialSentences.forEach((sentence) => {
-    const currentWordCount = getWordCount(sentence);
-
-    // FIX: If a single sentence is strictly over 20 words, split it into roughly equal halves
-    if (currentWordCount > 20) {
-      if (currentBuffer) {
-        finalSentences.push(currentBuffer);
-        currentBuffer = "";
-      }
-
-      // Break sentence down by individual words to calculate a clean physical midpoint
-      const words = sentence.split(/\s+/);
-      const midPoint = Math.ceil(words.length / 2);
-      
-      let part1 = words.slice(0, midPoint).join(" ");
-      let part2 = words.slice(midPoint).join(" ");
-
-      // Strip trailing punctuation (like commas or semicolons) from part 1 before attaching ellipses
-      part1 = part1.replace(/[,;]+$/, "");
-      
-      finalSentences.push(part1 + "...");
-      finalSentences.push("..." + part2);
-      return;
-    }
-
-    // Standard short sentence grouping logic (< 10 words)
-    if (!currentBuffer) {
-      currentBuffer = sentence;
-    } else {
-      if (getWordCount(currentBuffer) < 10) {
-        currentBuffer += " " + sentence;
-      } else {
-        finalSentences.push(currentBuffer);
-        currentBuffer = sentence;
-      }
-    }
-  });
-
-  if (currentBuffer) {
-    finalSentences.push(currentBuffer);
-  }
-
-  // 5. Restore original periods
-  return finalSentences.map(function(sentence) { 
-    return sentence.replace(/___DOT___/g, "."); 
-  });
 }
 
 function splitIntoSentences(text) {
