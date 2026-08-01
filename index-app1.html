@@ -2961,7 +2961,7 @@ Strict Constraints:
 }
 
 async function loadBook(id,o) {
-    const text = await loadLocaTextFile('/book/'+id+'.enc.txt');
+    const text = await loadLocaTextFile(id+'.enc.txt');
     if (!text) return;
     const bookTitle = o.textContent;
     const bookHeading = 'Book: '+ bookTitle.replaceAll('_',' ');
