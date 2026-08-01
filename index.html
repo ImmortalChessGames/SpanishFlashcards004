@@ -120,27 +120,7 @@
 
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" role="tabpanel">
-                <div id="books" class="scroll-wrapper">
-                    <div id="booksStatusDiv" style="padding:5px;"><h3>The Adventures of Sherlock Holmes, Book 1, by Sir Arthur Conan Doyle</h3></div>
-                    <div id="books-list">
-                        <ul style="list-style-type: none; margin: 0px;">
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(1, this);" class="article-link">A Scandal in Bohemia</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(2, this);" class="article-link">A Case of Identity</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(3, this);" class="article-link">The Boscombe Valley Mystery</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(4, this);" class="article-link">The Five Orange Pips</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(5, this);" class="article-link">The Man with the Twisted Lip</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(6, this);" class="article-link">The Adventure of the Blue Carbuncle</a></li>
-                        </ul>
-                    </div>
-                    <div id="booksStatusDiv" style="padding:5px;"><h3>Metamorphisis, by Franz Kafka</h3></div>
-                    <div id="books-list">
-                        <ul style="list-style-type: none; margin: 0px;">
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(7, this);" class="article-link">Metamorphisis, Part 1</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(8, this);" class="article-link">Metamorphisis, Part 2</a></li>
-                            <li style="margin-bottom: 25px;"><a href="#" onclick="loadBook(9, this);" class="article-link">Metamorphisis, Part 3</a></li>
-                        </ul>
-                    </div>
-                </div>
+                <div id="library" class="scroll-wrapper"/>
             </div>
 
             <!-- PANEL 4 -->
@@ -346,6 +326,8 @@
     const nextPageBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
     const googleTranslateAPIUrl = `https://www.googleapis.com/language/translate/v2`;
+
+    const LIB_TOC_FILENAME = 'lib.enc.txt';
 
     const wikiSearchSuggestionsDiv = document.getElementById('wikiSearchSuggestions');
     const wikiSearchResultsDiv = document.getElementById('wikiSearchResults');
@@ -1459,6 +1441,42 @@
             updateDisplayData();
         }
     });
+
+
+    async function buildLibraryCatalog() {
+      sleep(1000);
+      const text = await loadLocaTextFile(LIB_TOC_FILENAME);
+      if (!text) return;
+      const list = document.getElementById('library');
+      list.innerHTML = '';
+      const json = await decrypt(text);
+      const data = JSON.parse(json);
+      data.books.forEach((book) => {
+        const bookDiv = document.createElement('div');
+        const titleDiv = document.createElement('h3');
+        titleDiv.style.padding='5px';
+        titleDiv.innerText=book.title + ' by ' + book.author;
+        bookDiv.appendChild(titleDiv);
+        const ulElt = document.createElement('ul');
+        ulElt.style='list-style-type: none; margin: 0px;';
+        bookDiv.appendChild(ulElt);
+        list.appendChild(bookDiv);
+        book.chapters.forEach((chapter) => {
+          const liElt = document.createElement('li');
+          liElt.style='margin-bottom: 25px;';
+          const link = document.createElement('a');
+          link.href='#';
+          link.classList.add('article-link');
+          link.style='cursor: pointer;';
+          link.addEventListener('click', function(event) {
+             loadBook(chapter.id, this);                 
+          });
+          link.textContent=chapter.title;
+          liElt.appendChild(link);
+          ulElt.appendChild(liElt);
+        });
+      });
+    }
 
   async function loadWikiSuggestions() {
       sleep(1000);
@@ -4030,6 +4048,7 @@ function handleSwipe() {
 
     generateClozures();
     loadWikiSuggestions();
+    buildLibraryCatalog();
 
   document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
     // Check if the pressed key is "Enter"
