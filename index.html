@@ -375,7 +375,7 @@
     let lastWordHelped;
 
     const WIKI_BOOKMARK_KEY = '___wiki_bookmark___';
-    const BOOK_BOOKMARK_KEY = '___book_bookmark___';
+    const BOOK_BOOKMARK_KEY = '___bookmark___';
 
     // Scoped variable declarations using the updated IDs
     const appModalElement = document.getElementById("appModalWrapper");
@@ -1610,6 +1610,73 @@
         toggleWikiBookmark(false);               
     }
 
+    function loadBookArticle(d) {
+        wordhelp = null;
+        let articleDataset = [];
+        let relatedTopicDataset = [];
+        for(i=0;i<d.length;i++) {
+            if(d[i].spanish.startsWith('RELATED_')) {
+                relatedTopicDataset.push(d[i].english);
+            } else {
+                articleDataset.push(d[i]);
+            }
+        }
+        const addlTopicLinks = document.getElementById('additional-topics-links');
+        addlTopicLinks.innerHTML="";
+        document.getElementById('topicSuggestionsLabel').classList.add('hidden');
+        if(relatedTopicDataset && relatedTopicDataset.length>0) {
+            for(i=0; i<relatedTopicDataset.length; i++) {
+                const dynamicLink = document.createElement('a');
+                dynamicLink.textContent = relatedTopicDataset[i];
+                dynamicLink.href='#';
+                dynamicLink.addEventListener('click', function(event) {
+                    const gsvTopicInput = document.getElementById('gsv-topic-input');
+                    gsvTopicInput.value=event.target.textContent;
+                    setTimeout(() => {
+                      gsvTopicInput.scrollIntoView({ behavior: 'smooth' });
+                    }, 50); 
+                    document.getElementsByClassName("tab-btn")[8].click();
+                    document.getElementById('gsv-submit-btn').click();                    
+                });
+                addlTopicLinks.appendChild(dynamicLink);
+                addlTopicLinks.appendChild(document.createElement('br'));                
+            }
+            document.getElementById('topicSuggestionsLabel').classList.remove('hidden');
+        }
+        if(articleDataset && articleDataset.length>0) {
+            dataset = articleDataset;
+            document.getElementById('article-progress').max=100;
+            history = [];
+            historyIndex = -1;
+        }
+        const topRightTextElt = document.getElementById('top-right-text');
+        if(topRightTextElt.textContent.indexOf('Book:')>-1) {
+             const bookmark = BOOK_BOOKMARK_KEY + ' - ' + topRightTextElt.textContent;
+             const savedPage = localStorage.getItem(bookmark);
+             if(savedPage) {
+                if(savedPage>=0 && savedPage<dataset.length) {    
+                     for(let i=0; i<=savedPage; i++) {
+                         if(i==savedPage) {
+                             showNext();
+                         } else { 
+                             localStorage.setItem(bookmark, 0);
+                             showNext_doNotPaintSlide(); 
+                         }
+                     } 
+                }  else {
+                    localStorage.setItem(bookmark, 0);
+                    showNext();
+                }  
+            }  else {
+                localStorage.setItem(bookmark, 0);
+                showNext();
+            }                
+        } else {
+            showNext();
+        }     
+        toggleWikiBookmark(false);               
+    }
+
     // Parse the embedded raw string automatically on load
     function initFlashcards() {
         if(flashcardsDataset && flashcardsDataset.length>0) {
@@ -1654,14 +1721,14 @@
         document.getElementById('nextBtn').click();
     }
 
-    function saveLastWikiPage(historyIndex) {
+    function saveLastPage(historyIndex) {
         const topRightTextElt = document.getElementById('top-right-text');
         if(historyIndex && (historyIndex>=0 && historyIndex <= dataset.length-1)) {
             if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
                topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
                    localStorage.setItem(WIKI_BOOKMARK_KEY, historyIndex);
             } else if(topRightTextElt.textContent.indexOf('Book:')>-1) {
-                localStorage.setItem(BOOK_BOOKMARK_KEY, historyIndex);
+                localStorage.setItem(BOOK_BOOKMARK_KEY+' - '+topRightTextElt.textContent, historyIndex);
             }             
         }
     }
@@ -1691,7 +1758,7 @@
                 textToSpeak = null;
             }
             
-            saveLastWikiPage(historyIndex);
+            saveLastPage(historyIndex);
         }
     }
 
@@ -1712,7 +1779,7 @@
             nextBtn.disabled = (historyIndex >= dataset.length-1);
             nextBtn2.disabled = (historyIndex >= dataset.length-1);
 
-            saveLastWikiPage(item.spanish);
+            saveLastPage(item.spanish);
         }
     }
 
@@ -1777,7 +1844,7 @@ progressBar.addEventListener('mousedown', (e) => {
 
     function showNext() {
         document.getElementById('menu-toggle').checked=false;
-        let randomize = dataset.length >= 5000;
+        let randomize = dataset.length >= 50000;
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard(history[historyIndex]);
@@ -1817,7 +1884,7 @@ progressBar.addEventListener('mousedown', (e) => {
 
     function showNext_doNotPaintSlide() {
         document.getElementById('menu-toggle').checked=false;
-        let randomize = dataset.length >= 5000;
+        let randomize = dataset.length >= 50000;
         if (historyIndex < history.length - 1) {
             historyIndex++;
             displayCard_doNotPaintSlide(history[historyIndex]);
@@ -2896,13 +2963,18 @@ Strict Constraints:
 async function loadBook(id,o) {
     const text = await loadLocaTextFile(id+'.enc.txt');
     if (!text) return;
+    const bookTitle = o.textContent;
+    const bookHeading = 'Book: '+ bookTitle.replaceAll('_',' ');
+    const bookMark = BOOK_BOOKMARK_KEY + ' - ' + bookHeading;
     const json = await decrypt(text);
     const jsonArr = JSON.parse(json);
-    localStorage.setItem(BOOK_BOOKMARK_KEY, 0);
-    loadArticle(jsonArr);
+    if(!localStorage.getItem(bookMark)) {
+        localStorage.setItem(bookMark, 0);
+    } 
     document.getElementsByClassName("tab-btn")[0].click();
     const topRightTextElt = document.getElementById('top-right-text');
-    topRightTextElt.textContent='Book: '+o.textContent.replaceAll('_',' ');
+    topRightTextElt.textContent=bookHeading;
+    loadBookArticle(jsonArr);            
 }
 
 async function loadWikiArticle(title, url, flag){
