@@ -16810,7 +16810,7 @@ const dict_ca = new Map([
   ['caspa', 'dandruff'],
   ['carga', 'load; burden; cargo; charge; blitz'],
   ['cantidad', 'amount; quantity; figure; plenty; shedload'],
-  ['cargar', 'to load); to load with munition); to load; to annoy, pester; to blitz; to break, destroy, ruin; to take down, kill'],
+  ['cargar', 'to load'],
   ['campar', 'to stand out; to camp'],
   ['carpeta', 'folder; folder, directory; lace doily; people skills; hotel reception desk; carpet'],
   ['campeon', 'champion, champ'],

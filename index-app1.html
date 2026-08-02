@@ -375,6 +375,7 @@
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/*
     function getLemma(word) {
         if (word && word.trim().length > 0) {
             const doc = esCompromise(word);
@@ -389,6 +390,76 @@
         }
         return null;
     }
+*/
+
+    function getLemma(word) {
+        if (!word || word.trim().length === 0) return null;
+        
+        let targetWord = word.trim().toLowerCase();
+
+        // STAGE 1: Enclitic Pronoun Stripper (e.g., "decirle" -> "decir", "comérselo" -> "comer")
+        const pronouns = ['me', 'te', 'se', 'nos', 'le', 'les', 'lo', 'la', 'los', 'las'];
+        for (const pronoun of pronouns) {
+            if (targetWord.endsWith(pronoun)) {
+                const potentialVerb = targetWord.slice(0, -pronoun.length);
+                // Verify it leaves behind a standard infinitive ending before slicing
+                if (potentialVerb.endsWith('ar') || potentialVerb.endsWith('er') || potentialVerb.endsWith('ir')) {
+                    targetWord = potentialVerb;
+                    break;
+                }
+            }
+        }
+
+        // STAGE 2: Plural Adjective & Noun Suffix Rules
+        if (targetWord.endsWith('tes')) {
+            targetWord = targetWord.slice(0, -1); // e.g., fuertes -> fuerte
+        } else if (targetWord.endsWith('les')) {
+            targetWord = targetWord.slice(0, -2); // e.g., fáciles -> fácil
+        } else if (targetWord.endsWith('ces')) {
+            targetWord = targetWord.slice(0, -3) + 'z'; // e.g., felices -> feliz
+        } else if (targetWord.endsWith('as')) {
+            targetWord = targetWord.slice(0, -1); // e.g., hermosas -> hermosa
+        } else if (targetWord.endsWith('os') && targetWord.length > 3) {
+            targetWord = targetWord.slice(0, -1); // e.g., gatos -> gato
+        }
+
+        // STAGE 3: Regular Verb Conjugation Backtracking
+        if (targetWord.endsWith('amos') || targetWord.endsWith('ando')) {
+            targetWord = targetWord.slice(0, -4) + 'ar'; // e.g., hablamos / hablando -> hablar
+        } else if (targetWord.endsWith('emos') || targetWord.endsWith('iendo')) {
+            targetWord = targetWord.slice(0, -4) + 'er'; // e.g., comemos / comiendo -> comer
+        } else if (targetWord.endsWith('imos')) {
+            targetWord = targetWord.slice(0, -4) + 'ir'; // e.g., vivimos -> vivir
+        } else if (targetWord.endsWith('aron')) {
+            targetWord = targetWord.slice(0, -4) + 'ar'; // e.g., hablaron -> hablar
+        } else if (targetWord.endsWith('ieron')) {
+            targetWord = targetWord.slice(0, -5) + 'er'; // e.g., comieron -> comer
+        }
+
+        // STAGE 4: Gender Demotion (Runs *after* plurals are stripped)
+        // If "hermosas" became "hermosa" in Stage 2, this step now correctly catches it.
+        if (targetWord.endsWith('a') && targetWord.length > 3) { 
+            targetWord = targetWord.slice(0, -1) + 'o'; // e.g., hermosa -> hermoso
+        }
+
+        // STAGE 5: Fallback to your esCompromise logic using the cleaned word
+        try {
+            const doc = esCompromise(targetWord);
+            doc.compute('root');
+            const data = doc.json();
+            if (data && data.length > 0) {
+                const results = data[0].terms.map(term => {
+                    return `${term.root || term.text.toLowerCase()}`;
+                });
+                return results[0]; 
+            }
+        } catch (e) {
+            console.error("esCompromise error, returning custom rule result:", e);
+        }
+
+        return targetWord;
+    }
+
 
     function consoleLogOnlyIfLocal(p) {
         if (window.location.protocol === 'file:') {
@@ -2161,7 +2232,9 @@ async function translateText_MW(textToTranslate) {
 }
 
 function sendTranslationRequest_Local(textValue) {
-    console.log('sendTranslationRequest_Local='+textValue);
+    console.log('sendTranslationRequest_Local: input:'+textValue);
+    console.log('sendTranslationRequest_Local: input after lemmatization:'+getLemma(textValue));
+
     const uiDiv = document.getElementById('translationResponse');
     if (!textValue) {
         alert("Please provide input text.");
@@ -2170,7 +2243,7 @@ function sendTranslationRequest_Local(textValue) {
     uiDiv.innerHTML = PROCESSING_TRANSLATION_MSG;
     try {
         const translation = getTranslation(textValue);
-        console.log('sendTranslationRequest_Local (translation)='+translation);
+        console.log('sendTranslationRequest_Local: (translation)='+translation);
         if(translation && translation.length>0) {
             console.log('Found local translation for ' + textValue + ': ' +translation);
             parseAndDisplayUnique_Local(textValue, translation, uiDiv);
@@ -2179,7 +2252,7 @@ function sendTranslationRequest_Local(textValue) {
             }, 50); 
             return translation;
         } else {
-            console.log('Did not find local translation for ' + textValue + ': ' +translation);
+            console.log('sendTranslationRequest_Local:  Did not find local translation for ' + textValue + ': ' +translation);
         }
     } catch(err) {
         console.log(err + ' switching to another provider.');
@@ -2478,7 +2551,7 @@ function processSentence(input) {
                             sendTranslationRequest(lemma.trim());
                         }
                     }
-                    if((sendTranslationRequest_Local(cleanWord))===null) {
+                    else if((sendTranslationRequest_Local(cleanWord))===null) {
                         sendTranslationRequest(cleanWord);
                     }
                 }
