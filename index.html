@@ -19,7 +19,7 @@
 </head>
 <body>
 <script src="https://unpkg.com/es-compromise"></script>
-<script src="EnEsDict.js"></script>
+<script src="EnEsDict2.js"></script>
 <div class="main-container">
     <div id="viewer">
 <!--
@@ -2161,6 +2161,7 @@ async function translateText_MW(textToTranslate) {
 }
 
 function sendTranslationRequest_Local(textValue) {
+    console.log('sendTranslationRequest_Local='+textValue);
     const uiDiv = document.getElementById('translationResponse');
     if (!textValue) {
         alert("Please provide input text.");
@@ -2169,6 +2170,7 @@ function sendTranslationRequest_Local(textValue) {
     uiDiv.innerHTML = PROCESSING_TRANSLATION_MSG;
     try {
         const translation = getTranslation(textValue);
+        console.log('sendTranslationRequest_Local (translation)='+translation);
         if(translation && translation.length>0) {
             console.log('Found local translation for ' + textValue + ': ' +translation);
             parseAndDisplayUnique_Local(textValue, translation, uiDiv);
@@ -2177,10 +2179,10 @@ function sendTranslationRequest_Local(textValue) {
             }, 50); 
             return translation;
         } else {
-            consoleLogOnlyIfLocal('Did not find local translation for ' + textValue + ': ' +translation);
+            console.log('Did not find local translation for ' + textValue + ': ' +translation);
         }
     } catch(err) {
-        consoleLogOnlyIfLocal(err + ' switching to another provider.');
+        console.log(err + ' switching to another provider.');
     }
     return null;
 }
