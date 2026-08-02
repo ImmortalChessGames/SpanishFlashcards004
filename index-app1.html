@@ -4010,8 +4010,7 @@ function handleSwipe() {
         } else {
             title = title.trim().replaceAll('*','');
         }
-        const cleanLine = title;
-       
+        const cleanLine = decodeURIComponent(title);       
         if (cleanLine) {
           const li = document.createElement('li');
           
