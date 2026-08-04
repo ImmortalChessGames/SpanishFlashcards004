@@ -1568,7 +1568,7 @@
                        if(node.type === 'book') {
                            loadBook(node.id, this);                 
                        } else if (node.type === 'lesson') {
-                           loadWikiArticle(node.title, ES_API, true);
+                           loadWikiArticle(node.title, ES_API, false);
                        } else {
                           alert('type ' + node.type + ' not supported');
                        }
