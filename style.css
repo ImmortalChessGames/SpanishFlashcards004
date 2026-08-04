@@ -2431,7 +2431,8 @@ h2 {
     display: list-item;
     user-select: none;
     color: red;
-    font-weight: normal;
+    font-weight: bold;
+    font-size: 1.1rem; 
     transition: background-color 0.15s ease;
 }
 /*
@@ -2465,8 +2466,9 @@ h2 {
     border-radius: 6px;
     text-decoration: none;
     color: darkBlue;
-    font-weight: 400;
+    font-weight: bold;
     width: 100%;
+    font-size: 1.1rem; 
     transition: background-color 0.15s ease;
 }
 
