@@ -121,6 +121,9 @@
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" role="tabpanel">
                 <div id="library" class="scroll-wrapper"></div>
+
+                <div id="dynamic-library" class='outliner-tree-widget'></div>
+
             </div>
 
             <!-- PANEL 4 -->
@@ -328,6 +331,8 @@
     const googleTranslateAPIUrl = `https://www.googleapis.com/language/translate/v2`;
 
     const LIB_TOC_FILENAME = 'lib.enc.txt';
+    const LIB_WW2_COURSE_ES_FILENAME = 'WW2-es.enc.txt';
+    const LIB_WW2_COURSE_EN_FILENAME = 'WW2-en.enc.txt';
 
     const wikiSearchSuggestionsDiv = document.getElementById('wikiSearchSuggestions');
     const wikiSearchResultsDiv = document.getElementById('wikiSearchResults');
@@ -1513,40 +1518,133 @@
         }
     });
 
+    // 2. Recursive DOM Generator Function
+    function renderTreeDOM(nodes) {
 
-    async function buildLibraryCatalog() {
+        const ul = document.createElement('ul');
+        ul.className = 'otw-tree';
+
+        nodes.forEach(node => {
+            const li = document.createElement('li');
+            li.className = 'otw-tree-item';
+
+            const isFolder = node.children && node.children.length > 0;
+
+            if (isFolder) {
+                // Folder items use <details> and <summary> to allow folding
+                const details = document.createElement('details');
+                details.className = 'otw-details';
+                details.open = true; // Set to false if you want it closed by default
+
+                const summary = document.createElement('summary');
+                summary.className = 'otw-summary';
+                
+                if (node.url) {
+                    const link = document.createElement('a');
+                    link.href = node.url;
+                    link.className = 'otw-file-node otw-has-link';
+                    link.target = '_blank';
+                    link.textContent = '📁 ' + node.name;
+                    summary.appendChild(link);
+                } else {
+                    summary.textContent = '📁 ' + node.name;
+                }
+
+                details.appendChild(summary);
+                
+                // Recursively render deep nested children
+                const childUl = renderTreeDOM(node.children);
+                details.appendChild(childUl);
+                
+                li.appendChild(details);
+            } else {
+                // Leaf/File Node
+                let element;
+                if (node.url) {
+                    element = document.createElement('a');
+                    element.href = '#';
+                    element.className = 'otw-file-node otw-has-link';
+                    element.addEventListener('click', function(event) {
+                       if(node.type === 'book') {
+                           loadBook(node.id, this);                 
+                       } else if (node.type === 'lesson') {
+                           loadWikiArticle(node.title, ES_API, true);
+                       } else {
+                          alert('type ' + node.type + ' not supported');
+                       }
+                    });
+                } else {
+                    element = document.createElement('span');
+                    element.className = 'otw-file-node';
+                }
+                const icon = (node.name === "WWII") ? '📁 ' : '📄 ';
+                element.textContent = icon + node.name;
+                li.appendChild(element);
+            }
+
+            ul.appendChild(li);
+        });
+
+        return ul;
+    }
+
+    async function buildDynamicLibraryCatalog() {
       sleep(1000);
+      let treeData = [];
+      const list = document.getElementById('dynamic-library');
+      list.innerHTML = '';
       const text = await loadLocaTextFile(LIB_TOC_FILENAME);
       if (!text) return;
-      const list = document.getElementById('library');
-      list.innerHTML = '';
       const json = await decrypt(text);
       const data = JSON.parse(json);
-      data.books.forEach((book) => {
-        const bookDiv = document.createElement('div');
-        const titleDiv = document.createElement('h3');
-        titleDiv.style.padding='5px';
-        titleDiv.innerText=book.title + ' by ' + book.author;
-        bookDiv.appendChild(titleDiv);
-        const ulElt = document.createElement('ul');
-        ulElt.style='list-style-type: none; margin: 0px;';
-        bookDiv.appendChild(ulElt);
-        list.appendChild(bookDiv);
-        book.chapters.forEach((chapter) => {
-          const liElt = document.createElement('li');
-          liElt.style='margin-bottom: 25px;';
-          const link = document.createElement('a');
-          link.href='#';
-          link.classList.add('article-link');
-          link.style='cursor: pointer;';
-          link.addEventListener('click', function(event) {
-             loadBook(chapter.id, this);                 
-          });
-          link.textContent=chapter.title;
-          liElt.appendChild(link);
-          ulElt.appendChild(liElt);
-        });
-      });
+      const books = data.books; 
+      if(books && books.length>0) {
+        const bookChildren = books.map(book => ({
+          name: `${book.title} by ${book.author}`,
+          children: book.chapters.map(chapter => ({
+            id: chapter.id,
+            type: "book",
+            name: chapter.title,
+            url: "#"
+          }))
+        }));
+        treeData.push(...
+            [
+              {
+                name: "Books",
+                children: bookChildren
+              }
+            ]
+        );
+      }
+      const text2 = await loadLocaTextFile(LIB_WW2_COURSE_ES_FILENAME);
+      if (!text2) return;
+      const json2 = await decrypt(text2);
+      const ww2CourseArr = JSON.parse(json2);
+      if(ww2CourseArr && ww2CourseArr.length>0) {
+
+        const text3 = await loadLocaTextFile(LIB_WW2_COURSE_EN_FILENAME);
+        if (!text3) return;
+        const json3 = await decrypt(text3);
+        const ww2CourseEnglishArr = JSON.parse(json3);
+
+        const ww2CourseChildren = ww2CourseArr.map(lesson => ({
+          name: `${ww2CourseEnglishArr[lesson.id-1].label} ${lesson.years}`,
+          id: lesson.id,
+          type: "lesson",
+          title: lesson.label,
+          url: `${lesson.absoluteUrl}`
+        }));
+        treeData.push(...
+            [
+              {
+                name: "Course: WWII History",
+                children: ww2CourseChildren
+              }
+            ]
+        );
+      }        
+      list.appendChild(renderTreeDOM(treeData));
     }
 
   async function loadWikiSuggestions() {
@@ -4122,7 +4220,8 @@ function handleSwipe() {
 
     generateClozures();
     loadWikiSuggestions();
-    buildLibraryCatalog();
+    //buildLibraryCatalog();
+    buildDynamicLibraryCatalog();
 
   document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
     // Check if the pressed key is "Enter"

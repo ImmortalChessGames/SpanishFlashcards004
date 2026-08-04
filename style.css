@@ -513,73 +513,6 @@
         color: #1a202c;
     }
 
-/* Individual Accordion Panel */
-details {
-  border-bottom: 1px solid #e2e8f0;
-  background-color: #ffffff;
-}
-
-details:last-child {
-  border-bottom: none;
-}
-
-/* The Clickable Header */
-summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem;
-  font-weight: 600;
-  color: #1a202c;
-  cursor: pointer;
-  list-style: none; /* Removes default native arrow in Chrome/Firefox */
-}
-
-/* Removes default native arrow in Safari */
-summary::-webkit-details-marker {
-  display: none;
-}
-
-/* Custom Interactive Indicator Icon */
-summary::after {
-  content: "+";
-  font-size: 1.5rem;
-  line-weight: 1;
-  transition: transform 0.2s ease;
-  color: #4a5568;
-}
-
-/* Change Indicator and Colors on Open State */
-details[open] summary {
-  background-color: #f7fafc;
-  color: #3182ce;
-}
-
-details[open] summary::after {
-  content: "−";
-  transform: rotate(180deg);
-}
-
-/* Smooth Height Animation Hack via CSS Grid */
-details .accordion-content {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s ease-out;
-}
-
-details[open] .accordion-content {
-  grid-template-rows: 1fr;
-}
-
-/* Content Panel Wrapper */
-.accordion-content p {
-  overflow: hidden;
-  padding: 0 1.25rem 1.25rem 1.25rem;
-  margin: 0;
-  color: #4a5568;
-  line-height: 1.6;
-}
-
 
 body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; color: #333; }
 .container { max-width: 375px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -2435,4 +2368,127 @@ h2 {
   z-index: 9998;
 }
 
+
+
+/* Unique container namespace to prevent global CSS pollution */
+.outliner-tree-widget {
+    --otw-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --otw-bg-card: #ffffff;
+    --otw-border: #e0e0e0;
+    --otw-text: #333333;
+    --otw-link-text: #1a73e8;
+    --otw-link-bg: #f1f3f4;
+    --otw-link-hover: #e8f0fe;
+    --otw-hover: #f5f5f5;
+    
+    font-family: var(--otw-font);
+    color: var(--otw-text);
+    padding: 10px;
+    max-width: 100%;
+}
+
+/* Card framing layout for the generated content output window */
+.outliner-tree-widget .otw-tree-container {
+    background: var(--otw-bg-card);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--otw-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Clear default list margins, paddings, and bullet parameters */
+.outliner-tree-widget ul.otw-tree {
+    list-style-type: none;
+    padding-left: 24px;
+    margin: 0;
+}
+
+/* Ensure topmost parent list starts cleanly flush left */
+.outliner-tree-widget ul.otw-tree:first-child {
+    padding-left: 0;
+}
+
+/* Row-level vertical margin adjustments for spacing individual items */
+.outliner-tree-widget li.otw-tree-item {
+    margin: 4px 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Clean native default blue element highlighting border on summary interaction */
+.outliner-tree-widget details.otw-details {
+    outline: none;
+    width: 100%;
+}
+
+/* Clickable directory node headers */
+.outliner-tree-widget summary.otw-summary {
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    list-style-position: inside;
+    display: list-item;
+    user-select: none;
+    color: red;
+    font-weight: normal;
+    transition: background-color 0.15s ease;
+}
+/*
+.outliner-tree-widget summary.otw-summary::before {
+  content: "✨";
+  margin-right: 10px; 
+}
+*/
+.outliner-tree-widget summary.otw-summary::marker {
+  font-weight: normal;
+  color: black;      /* Optional: changes bullet color */
+  font-size: 0.7rem;   /* Optional: changes bullet size */
+}
+
+/* Target the marker when a parent container is selected */
+.outliner-tree-widget .active-node summary.otw-summary::marker,
+.outliner-tree-widget .selected-tree-node summary.otw-summary::marker { 
+  font-weight: bold; 
+}
+
+/* Responsive background coloring triggers for cursor hover states */
+.outliner-tree-widget summary.otw-summary:hover {
+    background-color: var(--otw-hover);
+}
+
+/* Base style rules for plain file items (No Links) */
+.outliner-tree-widget .otw-file-node {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: darkBlue;
+    font-weight: 400;
+    width: 100%;
+    transition: background-color 0.15s ease;
+}
+
+/* Plain files get a clean, flat app-style background row shade on hover */
+.outliner-tree-widget span.otw-file-node:hover {
+    background-color: var(--otw-hover);
+}
+
+/* Specialized badge/pill treatment for nodes that are active links */
+.outliner-tree-widget a.otw-file-node.otw-has-link {
+    background-color: var(--otw-link-bg);
+    font-weight: 500;
+    cursor: pointer;
+    color: darkBlue;
+    text-decoration: none !important; /* Forces underline removal */
+    width: auto; /* Shrinks the background wrapper tight to the text width */
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+/* Smooth background transition when hovering an actual clickable resource link */
+.outliner-tree-widget a.otw-file-node.otw-has-link:hover {
+    background-color: var(--otw-link-hover);
+    text-decoration: none !important; /* Guarantees no underline on hover */
+}
 
