@@ -318,6 +318,7 @@
     const PROCESSING_TRANSLATION_MSG = "<em>Processing translation and parsing metadata...</em>";
     const ES_API = "https://es.wikipedia.org/w/api.php?origin=*";
     const EN_API = "https://en.wikipedia.org/w/api.php?origin=*";
+    const WIKI_THUMB_SIZE_PX = 300;
 
     let currentPage = 1;
     let filteredList = []; // Holds items after search filter is applied
@@ -331,8 +332,7 @@
     const googleTranslateAPIUrl = `https://www.googleapis.com/language/translate/v2`;
 
     const LIB_TOC_FILENAME = 'lib.enc.txt';
-    const LIB_WW2_COURSE_ES_FILENAME = 'WW2-es.enc.txt';
-    const LIB_WW2_COURSE_EN_FILENAME = 'WW2-en.enc.txt';
+    const LIB_WW2_COURSE_FILENAME = 'WW2.enc.txt';
 
     const wikiSearchSuggestionsDiv = document.getElementById('wikiSearchSuggestions');
     const wikiSearchResultsDiv = document.getElementById('wikiSearchResults');
@@ -468,7 +468,7 @@
 
     function consoleLogOnlyIfLocal(p) {
         if (window.location.protocol === 'file:') {
-            console.log(p);
+            consoleLogOnlyIfLocal(p);
         }
     }
 
@@ -1617,19 +1617,13 @@
             ]
         );
       }
-      const text2 = await loadLocaTextFile(LIB_WW2_COURSE_ES_FILENAME);
+      const text2 = await loadLocaTextFile(LIB_WW2_COURSE_FILENAME);
       if (!text2) return;
       const json2 = await decrypt(text2);
       const ww2CourseArr = JSON.parse(json2);
       if(ww2CourseArr && ww2CourseArr.length>0) {
-
-        const text3 = await loadLocaTextFile(LIB_WW2_COURSE_EN_FILENAME);
-        if (!text3) return;
-        const json3 = await decrypt(text3);
-        const ww2CourseEnglishArr = JSON.parse(json3);
-
         const ww2CourseChildren = ww2CourseArr.map(lesson => ({
-          name: `${ww2CourseEnglishArr[lesson.id-1].label} ${lesson.years}`,
+          name: `${lesson.english} ${lesson.years}`,
           id: lesson.id,
           type: "lesson",
           title: lesson.label,
@@ -2297,7 +2291,7 @@ async function translateText_MW(textToTranslate) {
     .then(data => {
       // Handle the fallback if MW still returns string suggestions
       if (data.length === 0 || typeof data[0] === 'string') {
-        console.log("Word not found. Suggestions:", data);
+        consoleLogOnlyIfLocal("Word not found. Suggestions:", data);
         throw new Error("MW - Word not found: " + cleanLookupWord);
       }
       const cleanTranslations = new Set();
@@ -2315,7 +2309,7 @@ async function translateText_MW(textToTranslate) {
 
       // Convert Set to a semicolon-separated string
       const translatedText = Array.from(cleanTranslations).join('; ');
-      console.log(`Translations for "${textToTranslate}":`, translatedText);
+      consoleLogOnlyIfLocal(`Translations for "${textToTranslate}":`, translatedText);
       const uiDiv = document.getElementById('translationResponse');
       parseAndDisplayUnique_MW(textToTranslate, translatedText, uiDiv);
         setTimeout(() => {
@@ -2324,14 +2318,14 @@ async function translateText_MW(textToTranslate) {
       return translatedText;
     })
     .catch(error => { 
-        console.log("MW API failed due to:", error); 
+        consoleLogOnlyIfLocal("MW API failed due to:", error); 
         translateText_Google(textToTranslate); 
     });
 }
 
 function sendTranslationRequest_Local(textValue) {
-    console.log('sendTranslationRequest_Local: input:'+textValue);
-    console.log('sendTranslationRequest_Local: input after lemmatization:'+getLemma(textValue));
+    consoleLogOnlyIfLocal('sendTranslationRequest_Local: input:'+textValue);
+    consoleLogOnlyIfLocal('sendTranslationRequest_Local: input after lemmatization:'+getLemma(textValue));
 
     const uiDiv = document.getElementById('translationResponse');
     if (!textValue) {
@@ -2341,19 +2335,19 @@ function sendTranslationRequest_Local(textValue) {
     uiDiv.innerHTML = PROCESSING_TRANSLATION_MSG;
     try {
         const translation = getTranslation(textValue);
-        console.log('sendTranslationRequest_Local: (translation)='+translation);
+        consoleLogOnlyIfLocal('sendTranslationRequest_Local: (translation)='+translation);
         if(translation && translation.length>0) {
-            console.log('Found local translation for ' + textValue + ': ' +translation);
+            consoleLogOnlyIfLocal('Found local translation for ' + textValue + ': ' +translation);
             parseAndDisplayUnique_Local(textValue, translation, uiDiv);
             setTimeout(() => {
               document.getElementById('wordBox').scrollIntoView({ behavior: 'smooth' });
             }, 50); 
             return translation;
         } else {
-            console.log('sendTranslationRequest_Local:  Did not find local translation for ' + textValue + ': ' +translation);
+            consoleLogOnlyIfLocal('sendTranslationRequest_Local:  Did not find local translation for ' + textValue + ': ' +translation);
         }
     } catch(err) {
-        console.log(err + ' switching to another provider.');
+        consoleLogOnlyIfLocal(err + ' switching to another provider.');
     }
     return null;
 }
@@ -2637,7 +2631,7 @@ function processSentence(input) {
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
                 const lemma = getLemma(cleanWord);
-                console.log('word='+cleanWord+', lemma='+lemma);
+                consoleLogOnlyIfLocal('word='+cleanWord+', lemma='+lemma);
 
                 if(!lemma || lemma===cleanWord) {
                     if((sendTranslationRequest_Local(cleanWord))===null) {
@@ -3102,7 +3096,7 @@ async function loadWikiArticle(title, url, flag){
     }
 
     try {
-        let extractUrl = url + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json&redirects=1";
+        let extractUrl = url + "&action=query&prop=extracts&explaintext&titles=" + encodeURIComponent(title) + "&format=json&redirects=1&pithumbsize=" + WIKI_THUMB_SIZE_PX;
         let response = await fetch(extractUrl);
         let data = await response.json();
 
@@ -3147,7 +3141,7 @@ async function loadWikiArticle(title, url, flag){
             if (words.length >= 25 && textSentences.length >= 1) {
               validParagraphs.push(trimmedLine);
             } else {
-                console.log("Skipping (words length='"+words.length+"'), (textSentences.length='"+textSentences.length+"')..." + trimmedLine);
+                consoleLogOnlyIfLocal("Skipping (words length='"+words.length+"'), (textSentences.length='"+textSentences.length+"')..." + trimmedLine);
             }
           }
         }
@@ -3194,6 +3188,8 @@ async function loadWikiArticle(title, url, flag){
         showDynamicPopup('Wikipedia Article', 'Article loaded successfully.', 500);
         const topRightTextElt = document.getElementById('top-right-text');
         topRightTextElt.textContent='Wiki: '+title.replaceAll('_',' ');
+
+
 
     } catch (error) {
         statusDiv.innerText = "'" + title + "': Error occurred.";
