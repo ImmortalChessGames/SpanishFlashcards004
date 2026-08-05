@@ -468,7 +468,7 @@
 
     function consoleLogOnlyIfLocal(p) {
         if (window.location.protocol === 'file:') {
-            consoleLogOnlyIfLocal(p);
+            console.log(p);
         }
     }
 
