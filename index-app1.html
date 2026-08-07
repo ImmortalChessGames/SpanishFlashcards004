@@ -361,6 +361,7 @@
 
     const speakBtn = document.getElementById('speak-btn');
 
+    let phrasesData = [];
     let quizData = [];
     let currentQuestionIndex = -1;
     let score = 0;
@@ -2334,7 +2335,8 @@ function sendTranslationRequest_Local(textValue) {
     }
     uiDiv.innerHTML = PROCESSING_TRANSLATION_MSG;
     try {
-        const translation = getTranslation(textValue);
+        const phraseTranslation = phrasesData.find(item => removeAccents(item.spanish.toLowerCase()) === removeAccents(textValue.toLowerCase()));
+        const translation = phraseTranslation&&phraseTranslation.english&&phraseTranslation.english.length>0 ? phraseTranslation.english : getTranslation(textValue);
         consoleLogOnlyIfLocal('sendTranslationRequest_Local: (translation)='+translation);
         if(translation && translation.length>0) {
             consoleLogOnlyIfLocal('Found local translation for ' + textValue + ': ' +translation);
@@ -2351,8 +2353,6 @@ function sendTranslationRequest_Local(textValue) {
     }
     return null;
 }
-
-
 
 /**
  * Queries the dictionary module across optimized prefix maps using NLP Lemmatization.
@@ -2599,6 +2599,51 @@ function parseAndDisplayUnique_GoogleTranslate(textValue, translatedText, visual
     visualContainer.innerHTML += listHtml;
 }
 
+function mergePhrases(words, phrasesArray) {
+  if(!phrasesArray || phrasesArray.length<=0) {
+    return words;
+  }
+  const safePhrases = Array.isArray(phrasesArray) ? phrasesArray : [];
+  const cleanPhrasesSet = new Set(
+    safePhrases.map(p => {
+      const textValue = (p && typeof p === 'object') ? p.spanish : p; 
+      return removeAccents(textValue);
+    })
+  );
+  
+  const result = [];
+  let i = 0;
+  const safeWords = Array.isArray(words) ? words : [];
+
+  while (i < safeWords.length) {
+    let matched = false;
+
+    // Check 4 words down to 2 words
+    for (let len = 4; len >= 2; len--) {
+      if (i + len <= safeWords.length) {
+        const slice = safeWords.slice(i, i + len);
+        const originalJoined = slice.join(" ");
+        const cleanCandidate = removeAccents(originalJoined);
+        if (cleanPhrasesSet.has(cleanCandidate)) {
+          result.push(originalJoined); // Keeps original text "se desempeñó como"
+          i += len;
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    if (!matched) {
+      if (safeWords[i] !== undefined) {
+        result.push(safeWords[i]);
+      }
+      i++;
+    }
+  }
+
+  return result;
+}
+
 function processSentence(input) {
 
     const wordBox = document.getElementById('wordBox');
@@ -2612,27 +2657,34 @@ function processSentence(input) {
     }
 
     // Split by spaces to find raw components
-    const rawWords = input.split(/\s+/);
-
+    let rawWords = input.split(/\s+/);
+    rawWords = mergePhrases(rawWords, phrasesData);
     rawWords.forEach(rawWord => {
         // Extract punctuation from the clean word using a Spanish-friendly regex
         // This preserves accents (á, é, í, ó, ú), umlauts (ü), and the ñ
         const cleanWordMatch = rawWord.match(/[0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         
         if (cleanWordMatch) {
-            const cleanWord = cleanWordMatch[0];
+            let cleanWord = cleanWordMatch[0];
             // Create a span element for the clickable word
             const span = document.createElement('span');
             span.className = 'clickable-word';
+            if(rawWord&&rawWord.split(/\s+/).length>=2) {
+                span.className = 'clickable-word underlined';
+            }
+
             span.textContent = rawWord; // Displays the word with its surrounding punctuation
             if(wordHelp && wordHelp.toUpperCase()===cleanWord.toUpperCase()) {
                 span.style='background-color:#D9E1FC;';
             }
             // Add click event that alerts only the cleaned word
             span.addEventListener('click', () => {
-                const lemma = getLemma(cleanWord);
+                const fullPhraseText = span.textContent ? span.textContent.trim() : '';
+                const words = fullPhraseText.split(/\s+/);
+                const isOneWordOnly = words&&words.length==1;
+                cleanWord = isOneWordOnly ? words[0] : fullPhraseText;
+                const lemma = isOneWordOnly ? getLemma(cleanWord) : cleanWord;
                 consoleLogOnlyIfLocal('word='+cleanWord+', lemma='+lemma);
-
                 if(!lemma || lemma===cleanWord) {
                     if((sendTranslationRequest_Local(cleanWord))===null) {
                         sendTranslationRequest(cleanWord);
@@ -2741,10 +2793,13 @@ async function processWordHelp(word) {
     }
 }
 
-function removeAccents(text){
-    return text
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"");
+// Helper function to remove accents and lowercase the text
+function removeAccents(text) {
+  const safeString = text ? String(text) : "";
+  return safeString
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // Removes accent mar
 }
 
 function cleanArticle(text){
@@ -3560,6 +3615,9 @@ async function loadVocabData(loadDefaults) {
             existingData = [];
         }
     }
+    consoleLogOnlyIfLocal("Loading default phrases.");
+    const phrasesResponse = await fetch('./defaults_phrases.json');
+    phrasesData = await phrasesResponse.json(); 
     consoleLogOnlyIfLocal("Loading default vocabulary words.");
     const response = await fetch('./defaults_big4.json');
     let data = await response.json(); 
@@ -3580,9 +3638,10 @@ async function loadVocabData(loadDefaults) {
         data = [];
     } 
     // Merge the two arrays together (if there's no existing data)
-    const combinedData = (existingData && existingData.length>0) ? existingData :
+    let combinedData = (existingData && existingData.length>0) ? existingData :
         [...existingData, ...data];
     // Remove exact duplicates by filtering with a Set of stringified items
+    combinedData = [...combinedData, ...phrasesData];
     const seenItems = new Set();
     const uniqueData = combinedData.filter(item => {
         // Stringify ensures accurate identification regardless of object depth or primitive types

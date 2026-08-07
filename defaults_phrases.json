@@ -1,0 +1,2679 @@
+[
+  {
+    "spanish": "de repente",
+    "english": "suddenly"
+  },
+  {
+    "spanish": "por supuesto",
+    "english": "of course"
+  },
+  {
+    "spanish": "de veras",
+    "english": "really; truly"
+  },
+  {
+    "spanish": "tal vez",
+    "english": "maybe; perhaps"
+  },
+  {
+    "spanish": "a lo mejor",
+    "english": "maybe; most likely"
+  },
+  {
+    "spanish": "por lo menos",
+    "english": "at least"
+  },
+  {
+    "spanish": "de nuevo",
+    "english": "again"
+  },
+  {
+    "spanish": "en serio",
+    "english": "seriously"
+  },
+  {
+    "spanish": "por fin",
+    "english": "finally"
+  },
+  {
+    "spanish": "de hecho",
+    "english": "in fact; actually"
+  },
+  {
+    "spanish": "de prisa",
+    "english": "in a hurry"
+  },
+  {
+    "spanish": "a menudo",
+    "english": "often"
+  },
+  {
+    "spanish": "poco a poco",
+    "english": "little by little"
+  },
+  {
+    "spanish": "al final",
+    "english": "in the end"
+  },
+  {
+    "spanish": "de inmediato",
+    "english": "immediately"
+  },
+  {
+    "spanish": "al principio",
+    "english": "at the beginning"
+  },
+  {
+    "spanish": "por lo visto",
+    "english": "apparently"
+  },
+  {
+    "spanish": "por lo general",
+    "english": "generally"
+  },
+  {
+    "spanish": "por todas partes",
+    "english": "everywhere"
+  },
+  {
+    "spanish": "sin embargo",
+    "english": "however"
+  },
+  {
+    "spanish": "de todos modos",
+    "english": "in any case; anyway"
+  },
+  {
+    "spanish": "de ninguna manera",
+    "english": "no way; by no means"
+  },
+  {
+    "spanish": "a lo largo",
+    "english": "along; throughout"
+  },
+  {
+    "spanish": "enseguida",
+    "english": "right away"
+  },
+  {
+    "spanish": "raras veces",
+    "english": "rarely"
+  },
+  {
+    "spanish": "por casualidad",
+    "english": "by chance"
+  },
+  {
+    "spanish": "de vez en cuando",
+    "english": "from time to time"
+  },
+  {
+    "spanish": "por desgracia",
+    "english": "unfortunately"
+  },
+  {
+    "spanish": "a propósito",
+    "english": "on purpose; by the way"
+  },
+  {
+    "spanish": "de golpe",
+    "english": "all at once"
+  },
+  {
+    "spanish": "al revés",
+    "english": "upside down; inside out"
+  },
+  {
+    "spanish": "por completo",
+    "english": "completely"
+  },
+  {
+    "spanish": "sin duda",
+    "english": "without a doubt"
+  },
+  {
+    "spanish": "a solas",
+    "english": "alone"
+  },
+  {
+    "spanish": "de buena gana",
+    "english": "willingly"
+  },
+  {
+    "spanish": "de mala gana",
+    "english": "unwillingly"
+  },
+  {
+    "spanish": "por adelantado",
+    "english": "in advance"
+  },
+  {
+    "spanish": "a la vez",
+    "english": "at the same time"
+  },
+  {
+    "spanish": "por lo tanto",
+    "english": "therefore"
+  },
+  {
+    "spanish": "en realidad",
+    "english": "in reality; actually"
+  },
+  {
+    "spanish": "a partir de",
+    "english": "starting from; as of"
+  },
+  {
+    "spanish": "a través de",
+    "english": "through; across"
+  },
+  {
+    "spanish": "en vez de",
+    "english": "instead of"
+  },
+  {
+    "spanish": "en lugar de",
+    "english": "instead of"
+  },
+  {
+    "spanish": "acerca de",
+    "english": "about; concerning"
+  },
+  {
+    "spanish": "antes de",
+    "english": "before"
+  },
+  {
+    "spanish": "después de",
+    "english": "after"
+  },
+  {
+    "spanish": "debido a",
+    "english": "due to"
+  },
+  {
+    "spanish": "gracias a",
+    "english": "thanks to"
+  },
+  {
+    "spanish": "a causa de",
+    "english": "because of"
+  },
+  {
+    "spanish": "frente a",
+    "english": "in front of; facing"
+  },
+  {
+    "spanish": "delante de",
+    "english": "in front of"
+  },
+  {
+    "spanish": "detrás de",
+    "english": "behind"
+  },
+  {
+    "spanish": "cerca de",
+    "english": "near to; close to"
+  },
+  {
+    "spanish": "lejos de",
+    "english": "far from"
+  },
+  {
+    "spanish": "al lado de",
+    "english": "next to"
+  },
+  {
+    "spanish": "alrededor de",
+    "english": "around"
+  },
+  {
+    "spanish": "en contra de",
+    "english": "against"
+  },
+  {
+    "spanish": "a favor de",
+    "english": "in favor of"
+  },
+  {
+    "spanish": "además de",
+    "english": "in addition to"
+  },
+  {
+    "spanish": "fuera de",
+    "english": "outside of"
+  },
+  {
+    "spanish": "dentro de",
+    "english": "inside of"
+  },
+  {
+    "spanish": "de acuerdo con",
+    "english": "in accordance with; according to"
+  },
+  {
+    "spanish": "con respecto a",
+    "english": "with respect to; regarding"
+  },
+  {
+    "spanish": "en cuanto a",
+    "english": "as for; regarding"
+  },
+  {
+    "spanish": "a pesar de",
+    "english": "despite; in spite of"
+  },
+  {
+    "spanish": "a fines de",
+    "english": "at the end of"
+  },
+  {
+    "spanish": "a principios de",
+    "english": "at the beginning of"
+  },
+  {
+    "spanish": "en medio de",
+    "english": "in the middle of"
+  },
+  {
+    "spanish": "junto a",
+    "english": "next to; alongside"
+  },
+  {
+    "spanish": "había habido",
+    "english": "there had been"
+  },
+  {
+    "spanish": "ha habido",
+    "english": "there has been"
+  },
+  {
+    "spanish": "va a haber",
+    "english": "there is going to be"
+  },
+  {
+    "spanish": "tener que",
+    "english": "to have to"
+  },
+  {
+    "spanish": "tener ganas de",
+    "english": "to feel like"
+  },
+  {
+    "spanish": "tener lugar",
+    "english": "to take place"
+  },
+  {
+    "spanish": "darse cuenta de",
+    "english": "to realize"
+  },
+  {
+    "spanish": "llevar a cabo",
+    "english": "to carry out"
+  },
+  {
+    "spanish": "echar de menos",
+    "english": "to miss"
+  },
+  {
+    "spanish": "ponerse a",
+    "english": "to start"
+  },
+  {
+    "spanish": "volver a",
+    "english": "to do again"
+  },
+  {
+    "spanish": "acabar de",
+    "english": "to have just"
+  },
+  {
+    "spanish": "dejar de",
+    "english": "to stop"
+  },
+  {
+    "spanish": "tratar de",
+    "english": "to try to"
+  },
+  {
+    "spanish": "estar a punto de",
+    "english": "to be about to"
+  },
+  {
+    "spanish": "hacer caso",
+    "english": "to pay attention; to obey"
+  },
+  {
+    "spanish": "tener cuidado",
+    "english": "to be careful"
+  },
+  {
+    "spanish": "tener en cuenta",
+    "english": "to take into account"
+  },
+  {
+    "spanish": "valer la pena",
+    "english": "to be worth it"
+  },
+  {
+    "spanish": "dar lo mismo",
+    "english": "to make no difference"
+  },
+  {
+    "spanish": "ya que",
+    "english": "since; given that"
+  },
+  {
+    "spanish": "dado que",
+    "english": "given that"
+  },
+  {
+    "spanish": "puesto que",
+    "english": "since; as"
+  },
+  {
+    "spanish": "a fin de que",
+    "english": "so that; in order that"
+  },
+  {
+    "spanish": "para que",
+    "english": "so that"
+  },
+  {
+    "spanish": "a menos que",
+    "english": "unless"
+  },
+  {
+    "spanish": "tan pronto como",
+    "english": "as soon as"
+  },
+  {
+    "spanish": "siempre que",
+    "english": "whenever; provided that"
+  },
+  {
+    "spanish": "con tal de que",
+    "english": "provided that"
+  },
+  {
+    "spanish": "así que",
+    "english": "so; therefore"
+  },
+  {
+    "spanish": "a escondidas",
+    "english": "secretly; on the sly"
+  },
+  {
+    "spanish": "a tontas y a locas",
+    "english": "recklessly; thoughtlessly"
+  },
+  {
+    "spanish": "en resumidas cuentas",
+    "english": "in short; long story short"
+  },
+  {
+    "spanish": "por si acaso",
+    "english": "just in case"
+  },
+  {
+    "spanish": "sin ton ni son",
+    "english": "without rhyme or reason"
+  },
+  {
+    "spanish": "de cabo a rabo",
+    "english": "from head to toe; completely"
+  },
+  {
+    "spanish": "a duras penas",
+    "english": "with great difficulty; barely"
+  },
+  {
+    "spanish": "a regañadientes",
+    "english": "reluctantly; grudgingly"
+  },
+  {
+    "spanish": "en un abrir y cerrar de ojos",
+    "english": "in the blink of an eye"
+  },
+  {
+    "spanish": "por doquier",
+    "english": "everywhere; all over"
+  },
+  {
+    "spanish": "de mal en peor",
+    "english": "from bad to worse"
+  },
+  {
+    "spanish": "en primer lugar",
+    "english": "first of all; in the first place"
+  },
+  {
+    "spanish": "por el contrario",
+    "english": "on the contrary"
+  },
+  {
+    "spanish": "por otra parte",
+    "english": "on the other hand"
+  },
+  {
+    "spanish": "hoy en día",
+    "english": "nowadays; these days"
+  },
+  {
+    "spanish": "a la larga",
+    "english": "in the long run; long-term"
+  },
+  {
+    "spanish": "a la corta o a la larga",
+    "english": "sooner or later"
+  },
+  {
+    "spanish": "a gatas",
+    "english": "on all fours; crawling"
+  },
+  {
+    "spanish": "a oscuras",
+    "english": "in the dark"
+  },
+  {
+    "spanish": "a ciegas",
+    "english": "blindly; in the dark"
+  },
+  {
+    "spanish": "a las vivas",
+    "english": "alert; on one's toes"
+  },
+  {
+    "spanish": "a grandes rasgos",
+    "english": "broadly speaking; in general terms"
+  },
+  {
+    "spanish": "a regañadientes",
+    "english": "reluctantly; grudgingly"
+  },
+  {
+    "spanish": "a toda prisa",
+    "english": "at full speed; in a great hurry"
+  },
+  {
+    "spanish": "a diestra y siniestra",
+    "english": "left and right; indiscriminately"
+  },
+  {
+    "spanish": "a estas alturas",
+    "english": "at this stage; by now"
+  },
+  {
+    "spanish": "a estas horas",
+    "english": "at this time of day; by now"
+  },
+  {
+    "spanish": "a fondo",
+    "english": "thoroughly; in depth"
+  },
+  {
+    "spanish": "a medias",
+    "english": "halfway; half-done"
+  },
+  {
+    "spanish": "a sabiendas de que",
+    "english": "knowing full well that"
+  },
+  {
+    "spanish": "a la deriva",
+    "english": "adrift"
+  },
+  {
+    "spanish": "a fin de cuentas",
+    "english": "after all; when all is said and done"
+  },
+  {
+    "spanish": "a fin de cuentas",
+    "english": "ultimately; in the end"
+  },
+  {
+    "spanish": "a petición de",
+    "english": "at the request of"
+  },
+  {
+    "spanish": "al fin y al cabo",
+    "english": "after all; at the end of the day"
+  },
+  {
+    "spanish": "al parecer",
+    "english": "seemingly; apparently"
+  },
+  {
+    "spanish": "al azar",
+    "english": "at random; randomly"
+  },
+  {
+    "spanish": "al revés",
+    "english": "backwards; the other way around"
+  },
+  {
+    "spanish": "al pie de la letra",
+    "english": "literally; to the letter"
+  },
+  {
+    "spanish": "al menos que",
+    "english": "unless"
+  },
+  {
+    "spanish": "al por mayor",
+    "english": "wholesale"
+  },
+  {
+    "spanish": "al por menor",
+    "english": "retail"
+  },
+  {
+    "spanish": "al instante",
+    "english": "instantly; in a flash"
+  },
+  {
+    "spanish": "ante todo",
+    "english": "above all; first of all"
+  },
+  {
+    "spanish": "bajo control",
+    "english": "under control"
+  },
+  {
+    "spanish": "bajo ningún concepto",
+    "english": "under no circumstances"
+  },
+  {
+    "spanish": "con creces",
+    "english": "by far; amply"
+  },
+  {
+    "spanish": "con frecuencia",
+    "english": "frequently; often"
+  },
+  {
+    "spanish": "con el fin de",
+    "english": "with the aim of; in order to"
+  },
+  {
+    "spanish": "con el objeto de",
+    "english": "with the purpose of"
+  },
+  {
+    "spanish": "con la condición de que",
+    "english": "on the condition that"
+  },
+  {
+    "spanish": "con vistas a",
+    "english": "with a view to; looking out on"
+  },
+  {
+    "spanish": "con anticipación",
+    "english": "beforehand; in advance"
+  },
+  {
+    "spanish": "con calma",
+    "english": "calmly; taking one's time"
+  },
+  {
+    "spanish": "cuanto antes",
+    "english": "as soon as possible"
+  },
+  {
+    "spanish": "de mala muerte",
+    "english": "shabby; godforsaken"
+  },
+  {
+    "spanish": "de rodillas",
+    "english": "on one's knees"
+  },
+  {
+    "spanish": "de por sí",
+    "english": "in itself; inherently"
+  },
+  {
+    "spanish": "de buena fuente",
+    "english": "from a reliable source"
+  },
+  {
+    "spanish": "de reojo",
+    "english": "out of the corner of one's eye; sideways"
+  },
+  {
+    "spanish": "de un tirón",
+    "english": "in one go; in one sitting"
+  },
+  {
+    "spanish": "de paso",
+    "english": "by the way; on the way"
+  },
+  {
+    "spanish": "de hito en hito",
+    "english": "intently; staring fixedly"
+  },
+  {
+    "spanish": "de veras",
+    "english": "truly; really"
+  },
+  {
+    "spanish": "de todos modos",
+    "english": "anyway; regardless"
+  },
+  {
+    "spanish": "de mal agüero",
+    "english": "bad omen; ill-fated"
+  },
+  {
+    "spanish": "en breve",
+    "english": "shortly; soon"
+  },
+  {
+    "spanish": "en demasía",
+    "english": "in excess; too much"
+  },
+  {
+    "spanish": "en efecto",
+    "english": "indeed; in fact"
+  },
+  {
+    "spanish": "en vista de",
+    "english": "in view of; considering"
+  },
+  {
+    "spanish": "en absoluto",
+    "english": "not at all; absolutely not"
+  },
+  {
+    "spanish": "en detalle",
+    "english": "in detail"
+  },
+  {
+    "spanish": "en marcha",
+    "english": "underway; on the move"
+  },
+  {
+    "spanish": "en principio",
+    "english": "in theory; in principle"
+  },
+  {
+    "spanish": "en vano",
+    "english": "in vain"
+  },
+  {
+    "spanish": "en vigor",
+    "english": "in force; valid"
+  },
+  {
+    "spanish": "en bloque",
+    "english": "as a whole; en masse"
+  },
+  {
+    "spanish": "en carne y hueso",
+    "english": "in the flesh"
+  },
+  {
+    "spanish": "en fila",
+    "english": "in a row; lined up"
+  },
+  {
+    "spanish": "lo antes posible",
+    "english": "as soon as possible"
+  },
+  {
+    "spanish": "lo más pronto posible",
+    "english": "as soon as possible"
+  },
+  {
+    "spanish": "más bien",
+    "english": "rather; instead"
+  },
+  {
+    "spanish": "más allá de",
+    "english": "beyond"
+  },
+  {
+    "spanish": "mientras tanto",
+    "english": "meanwhile; in the meantime"
+  },
+  {
+    "spanish": "ni mucho menos",
+    "english": "far from it; not by a long shot"
+  },
+  {
+    "spanish": "ni siquiera",
+    "english": "not even"
+  },
+  {
+    "spanish": "no obstante",
+    "english": "nevertheless; nonetheless"
+  },
+  {
+    "spanish": "para colmo",
+    "english": "to top it all off"
+  },
+  {
+    "spanish": "para siempre",
+    "english": "forever"
+  },
+  {
+    "spanish": "por lo pronto",
+    "english": "for now; for the time being"
+  },
+  {
+    "spanish": "por ende",
+    "english": "therefore; consequently"
+  },
+  {
+    "spanish": "por lo tanto",
+    "english": "hence; therefore"
+  },
+  {
+    "spanish": "por lo menos",
+    "english": "at least"
+  },
+  {
+    "spanish": "por mi cuenta",
+    "english": "on my own"
+  },
+  {
+    "spanish": "por su cuenta",
+    "english": "on their own"
+  },
+  {
+    "spanish": "por si las moscas",
+    "english": "just in case"
+  },
+  {
+    "spanish": "por ningún motivo",
+    "english": "for no reason whatsoever"
+  },
+  {
+    "spanish": "que yo sepa",
+    "english": "as far as i know"
+  },
+  {
+    "spanish": "salvo que",
+    "english": "unless; except that"
+  },
+  {
+    "spanish": "sea como sea",
+    "english": "be that as it may; whatever the case"
+  },
+  {
+    "spanish": "sin más ni más",
+    "english": "just like that; without further ado"
+  },
+  {
+    "spanish": "sin querer",
+    "english": "unintentionally; by accident"
+  },
+  {
+    "spanish": "sin cesar",
+    "english": "ceaselessly; without stopping"
+  },
+  {
+    "spanish": "sin previo aviso",
+    "english": "without prior notice"
+  },
+  {
+    "spanish": "tarde o temprano",
+    "english": "sooner or later"
+  },
+  {
+    "spanish": "todo el mundo",
+    "english": "everyone; everybody"
+  },
+  {
+    "spanish": "una y otra vez",
+    "english": "over and over again; repeatedly"
+  },
+  {
+    "spanish": "valga la redundancia",
+    "english": "forgive the repetition; if you'll excuse the redundancy"
+  },
+  {
+    "spanish": "visto que",
+    "english": "seeing that; since"
+  },
+  {
+    "spanish": "ya mismo",
+    "english": "right now; immediately"
+  },
+  {
+    "spanish": "a cuerpo de rey",
+    "english": "like a king; luxuriously"
+  },
+  {
+    "spanish": "a pan y agua",
+    "english": "on bread and water"
+  },
+  {
+    "spanish": "de punta en blanco",
+    "english": "dressed to the nines; immaculately dressed"
+  },
+  {
+    "spanish": "en un santiamén",
+    "english": "in a jiffy; in a flash"
+  },
+  {
+    "spanish": "por antonomasia",
+    "english": "par excellence"
+  },
+  {
+    "spanish": "viento en popa",
+    "english": "swimmingly; smoothly"
+  },
+  {
+    "spanish": "por las buenas o por las malas",
+    "english": "whether you like it or not; by hook or by crook"
+  },
+  {
+    "spanish": "a contracorriente",
+    "english": "against the current; against the grain"
+  },
+  {
+    "spanish": "a regañadientes",
+    "english": "unwillingly; reluctantly"
+  },
+  {
+    "spanish": "ha habido",
+    "english": "there has been; there have been"
+  },
+  {
+    "spanish": "habrá habido",
+    "english": "there will have been"
+  },
+  {
+    "spanish": "habría habido",
+    "english": "there would have been"
+  },
+  {
+    "spanish": "haya habido",
+    "english": "there has been; there have been"
+  },
+  {
+    "spanish": "hubiera habido",
+    "english": "there had been"
+  },
+  {
+    "spanish": "hubiese habido",
+    "english": "there had been"
+  },
+  {
+    "spanish": "tiene que haber",
+    "english": "there has to be; there have to be"
+  },
+  {
+    "spanish": "puede haber",
+    "english": "there can be; there might be"
+  },
+  {
+    "spanish": "suele haber",
+    "english": "there usually is; there usually are"
+  },
+  {
+    "spanish": "debe de haber",
+    "english": "there must be"
+  },
+  {
+    "spanish": "debe haber",
+    "english": "there should be; there must be"
+  },
+  {
+    "spanish": "va a haber",
+    "english": "there is going to be; there are going to be"
+  },
+  {
+    "spanish": "vuelve a haber",
+    "english": "there is again; there are again"
+  },
+  {
+    "spanish": "empieza a haber",
+    "english": "there is starting to be"
+  },
+  {
+    "spanish": "comienza a haber",
+    "english": "there is beginning to be"
+  },
+  {
+    "spanish": "deja de haber",
+    "english": "there ceases to be; there stops being"
+  },
+  {
+    "spanish": "parece haber",
+    "english": "there seems to be"
+  },
+  {
+    "spanish": "podría haber",
+    "english": "there could be; there might be"
+  },
+  {
+    "spanish": "debería haber",
+    "english": "there should be"
+  },
+  {
+    "spanish": "quiere haber",
+    "english": "there wants to be"
+  },
+  {
+    "spanish": "trata de haber",
+    "english": "there tries to be"
+  },
+  {
+    "spanish": "intenta haber",
+    "english": "there attempts to be"
+  },
+  {
+    "spanish": "acaba de haber",
+    "english": "there has just been"
+  },
+  {
+    "spanish": "espera haber",
+    "english": "there hopes to be"
+  },
+  {
+    "spanish": "necesita haber",
+    "english": "there needs to be"
+  },
+  {
+    "spanish": "acostumbra haber",
+    "english": "there is usually; there tends to be"
+  },
+  {
+    "spanish": "amanece habiendo",
+    "english": "at dawn there is"
+  },
+  {
+    "spanish": "sigue habiendo",
+    "english": "there continues to be; there is still"
+  },
+  {
+    "spanish": "continúa habiendo",
+    "english": "there continues to be"
+  },
+  {
+    "spanish": "viene habiendo",
+    "english": "there has been developing; there has been coming to be"
+  },
+  {
+    "spanish": "va habiendo",
+    "english": "there is gradually being; there is getting to be"
+  },
+  {
+    "spanish": "termina habiendo",
+    "english": "there ends up being"
+  },
+  {
+    "spanish": "acaba habiendo",
+    "english": "there ends up being"
+  },
+  {
+    "spanish": "empieza habiendo",
+    "english": "it starts by there being"
+  },
+  {
+    "spanish": "comienza habiendo",
+    "english": "it begins by there being"
+  },
+  {
+    "spanish": "anda habiendo",
+    "english": "there is going around being"
+  },
+  {
+    "spanish": "está habiendo",
+    "english": "there is being; there is currently happening"
+  },
+  {
+    "spanish": "vaya a haber",
+    "english": "there is going to be"
+  },
+  {
+    "spanish": "debería haber habido",
+    "english": "there should have been"
+  },
+  {
+    "spanish": "podría haber habido",
+    "english": "there could have been"
+  },
+  {
+    "spanish": "tendría que haber",
+    "english": "there would have to be"
+  },
+  {
+    "spanish": "pueda haber",
+    "english": "there can be; there might be"
+  },
+  {
+    "spanish": "solía haber",
+    "english": "there used to be"
+  },
+  {
+    "spanish": "acostumbraba haber",
+    "english": "there used to be"
+  },
+  {
+    "spanish": "parecía haber",
+    "english": "there seemed to be"
+  },
+  {
+    "spanish": "pareció haber",
+    "english": "there seemed to be"
+  },
+  {
+    "spanish": "iba a haber",
+    "english": "there was going to be"
+  },
+  {
+    "spanish": "llegó a haber",
+    "english": "there came to be"
+  },
+  {
+    "spanish": "llega a haber",
+    "english": "there comes to be"
+  },
+  {
+    "spanish": "llegaba a haber",
+    "english": "there used to come to be"
+  },
+  {
+    "spanish": "pasó a haber",
+    "english": "there passed to be; there became"
+  },
+  {
+    "spanish": "pasa a haber",
+    "english": "there passes to be; there becomes"
+  },
+  {
+    "spanish": "volvió a haber",
+    "english": "there was again"
+  },
+  {
+    "spanish": "volvía a haber",
+    "english": "there used to be again"
+  },
+  {
+    "spanish": "empezó a haber",
+    "english": "there started to be"
+  },
+  {
+    "spanish": "comenzó a haber",
+    "english": "there began to be"
+  },
+  {
+    "spanish": "dejó de haber",
+    "english": "there stopped being"
+  },
+  {
+    "spanish": "dejaba de haber",
+    "english": "there used to stop being"
+  },
+  {
+    "spanish": "amenaza con haber",
+    "english": "there threatens to be"
+  },
+  {
+    "spanish": "parece haber habido",
+    "english": "there seems to have been"
+  },
+  {
+    "spanish": "parecía haber habido",
+    "english": "there seemed to have been"
+  },
+  {
+    "spanish": "sigue sin haber",
+    "english": "there continues to be none; there is still no"
+  },
+  {
+    "spanish": "continúa sin haber",
+    "english": "there continues to be none"
+  },
+  {
+    "spanish": "siguió habiendo",
+    "english": "there continued to be"
+  },
+  {
+    "spanish": "continuó habiendo",
+    "english": "there continued to be"
+  },
+  {
+    "spanish": "quedó habiendo",
+    "english": "there remained being; there was left being"
+  },
+  {
+    "spanish": "terminó habiendo",
+    "english": "there ended up being"
+  },
+  {
+    "spanish": "acabó habiendo",
+    "english": "there ended up being"
+  },
+  {
+    "spanish": "basta con haber",
+    "english": "it is enough for there to have been"
+  },
+  {
+    "spanish": "basta que haya",
+    "english": "it is enough that there is"
+  },
+  {
+    "spanish": "debió haber",
+    "english": "there must have been; there should have been"
+  },
+  {
+    "spanish": "debió de haber",
+    "english": "there must have been"
+  },
+  {
+    "spanish": "debía haber",
+    "english": "there was supposed to be; there should have been"
+  },
+  {
+    "spanish": "debía de haber",
+    "english": "there must have been"
+  },
+  {
+    "spanish": "pudo haber",
+    "english": "there could have been; there might have been"
+  },
+  {
+    "spanish": "podía haber",
+    "english": "there could be; there was able to be"
+  },
+  {
+    "spanish": "tiene que haber habido",
+    "english": "there has to have been"
+  },
+  {
+    "spanish": "tenía que haber",
+    "english": "there had to be"
+  },
+  {
+    "spanish": "tuvo que haber",
+    "english": "there had to be"
+  },
+  {
+    "spanish": "también se",
+    "english": "it is also; they are also; also oneself"
+  },
+  {
+    "spanish": "más tarde",
+    "english": "later; later on"
+  },
+  {
+    "spanish": "más bien",
+    "english": "rather; quite"
+  },
+  {
+    "spanish": "más adelante",
+    "english": "later on; further ahead"
+  },
+  {
+    "spanish": "más acá",
+    "english": "closer; this way"
+  },
+  {
+    "spanish": "más allá",
+    "english": "beyond; further away"
+  },
+  {
+    "spanish": "más que",
+    "english": "more than; rather than"
+  },
+  {
+    "spanish": "más o menos",
+    "english": "more or less; so-so"
+  },
+  {
+    "spanish": "más vale",
+    "english": "it is better; you better"
+  },
+  {
+    "spanish": "más de",
+    "english": "more than"
+  },
+  {
+    "spanish": "más temprano",
+    "english": "earlier"
+  },
+  {
+    "spanish": "más que nunca",
+    "english": "more than ever"
+  },
+  {
+    "spanish": "más que suficiente",
+    "english": "more than enough"
+  },
+  {
+    "spanish": "más vale tarde",
+    "english": "better late"
+  },
+  {
+    "spanish": "más a menudo",
+    "english": "more often"
+  },
+  {
+    "spanish": "más de la cuenta",
+    "english": "too much; more than necessary"
+  },
+  {
+    "spanish": "más por menos",
+    "english": "more for less"
+  },
+  {
+    "spanish": "más de lo mismo",
+    "english": "more of the same"
+  },
+  {
+    "spanish": "más de una vez",
+    "english": "more than once"
+  },
+  {
+    "spanish": "más rápido",
+    "english": "faster"
+  },
+  {
+    "spanish": "más despacio",
+    "english": "slower"
+  },
+  {
+    "spanish": "menos mal",
+    "english": "thank goodness; it is just as well"
+  },
+  {
+    "spanish": "menos de",
+    "english": "less than"
+  },
+  {
+    "spanish": "menos que",
+    "english": "less than"
+  },
+  {
+    "spanish": "menos aún",
+    "english": "even less; let alone"
+  },
+  {
+    "spanish": "menos todavía",
+    "english": "even less; still less"
+  },
+  {
+    "spanish": "menos que nunca",
+    "english": "less than ever"
+  },
+  {
+    "spanish": "menos de la cuenta",
+    "english": "less than necessary; fewer than expected"
+  },
+  {
+    "spanish": "menos a menudo",
+    "english": "less often"
+  },
+  {
+    "spanish": "al menos",
+    "english": "at least"
+  },
+  {
+    "spanish": "por lo menos",
+    "english": "at least"
+  },
+  {
+    "spanish": "mucho menos",
+    "english": "much less"
+  },
+  {
+    "spanish": "ni mucho menos",
+    "english": "far from it; not by a long shot"
+  },
+  {
+    "spanish": "cada vez menos",
+    "english": "less and less; fewer and fewer"
+  },
+  {
+    "spanish": "nada menos que",
+    "english": "nothing less than; no other than"
+  },
+  {
+    "spanish": "más o menos",
+    "english": "more or less; so-so"
+  },
+  {
+    "spanish": "se trata de",
+    "english": "it is about; it deals with"
+  },
+  {
+    "spanish": "se sabe que",
+    "english": "it is known that"
+  },
+  {
+    "spanish": "se dice que",
+    "english": "it is said that; rumor has it"
+  },
+  {
+    "spanish": "se puede",
+    "english": "one can; it is possible; you can"
+  },
+  {
+    "spanish": "se debe",
+    "english": "one must; it should be"
+  },
+  {
+    "spanish": "se refiere a",
+    "english": "it refers to"
+  },
+  {
+    "spanish": "se encuentra",
+    "english": "it is located; it finds itself"
+  },
+  {
+    "spanish": "se considera",
+    "english": "it is considered"
+  },
+  {
+    "spanish": "se cree que",
+    "english": "it is believed that"
+  },
+  {
+    "spanish": "se espera que",
+    "english": "it is expected that; hopefully"
+  },
+  {
+    "spanish": "se necesita",
+    "english": "it is needed; one needs"
+  },
+  {
+    "spanish": "se requiere",
+    "english": "it is required"
+  },
+  {
+    "spanish": "se busca",
+    "english": "wanted; looking for"
+  },
+  {
+    "spanish": "se vende",
+    "english": "for sale"
+  },
+  {
+    "spanish": "se alquila",
+    "english": "for rent"
+  },
+  {
+    "spanish": "se prohíbe",
+    "english": "it is prohibited; forbidden"
+  },
+  {
+    "spanish": "se permite",
+    "english": "it is permitted; allowed"
+  },
+  {
+    "spanish": "se hace",
+    "english": "it is made; it is done"
+  },
+  {
+    "spanish": "se produce",
+    "english": "it occurs; it takes place"
+  },
+  {
+    "spanish": "se da cuenta",
+    "english": "he realizes; she realizes"
+  },
+  {
+    "spanish": "se lleva a",
+    "english": "it takes to; it leads to"
+  },
+  {
+    "spanish": "se pone a",
+    "english": "he starts to; she starts to"
+  },
+  {
+    "spanish": "se convierte en",
+    "english": "it turns into; it becomes"
+  },
+  {
+    "spanish": "se vuelve",
+    "english": "it becomes"
+  },
+  {
+    "spanish": "se asemeja a",
+    "english": "it resembles"
+  },
+  {
+    "spanish": "se opone a",
+    "english": "it opposes; it is against"
+  },
+  {
+    "spanish": "se queja de",
+    "english": "he complains about; she complains about"
+  },
+  {
+    "spanish": "se burla de",
+    "english": "he makes fun of; she makes fun of"
+  },
+  {
+    "spanish": "se entera de",
+    "english": "he finds out about; she finds out about"
+  },
+  {
+    "spanish": "se parece a",
+    "english": "it looks like; it resembles"
+  },
+  {
+    "spanish": "se habría",
+    "english": "it would have; he would have; one would have"
+  },
+  {
+    "spanish": "se habría dicho",
+    "english": "it would have been said; rumor would have had it"
+  },
+  {
+    "spanish": "se habría hecho",
+    "english": "it would have been done; it would have been made"
+  },
+  {
+    "spanish": "se habría podido",
+    "english": "it would have been possible; one would have been able to"
+  },
+  {
+    "spanish": "se habría tratado de",
+    "english": "it would have been about; it would have dealt with"
+  },
+  {
+    "spanish": "se habría esperado",
+    "english": "it would have been expected"
+  },
+  {
+    "spanish": "se habría dado",
+    "english": "it would have occurred; it would have been given"
+  },
+  {
+    "spanish": "se habría visto",
+    "english": "it would have been seen"
+  },
+  {
+    "spanish": "se habría producido",
+    "english": "it would have taken place; it would have been produced"
+  },
+  {
+    "spanish": "se habría pensado",
+    "english": "it would have been thought"
+  },
+  {
+    "spanish": "se habría creído",
+    "english": "it would have been believed"
+  },
+  {
+    "spanish": "se habría convertido en",
+    "english": "it would have turned into; it would have become"
+  },
+  {
+    "spanish": "se habría vuelto",
+    "english": "it would have become"
+  },
+  {
+    "spanish": "se habría quedado",
+    "english": "he would have stayed; it would have remained"
+  },
+  {
+    "spanish": "se habría puesto",
+    "english": "he would have put on; it would have become"
+  },
+  {
+    "spanish": "se habría enterado",
+    "english": "he would have found out; she would have learned"
+  },
+  {
+    "spanish": "se habría dado cuenta",
+    "english": "he would have realized; she would have noticed"
+  },
+  {
+    "spanish": "se habría olvidado",
+    "english": "it would have been forgotten; he would have forgotten"
+  },
+  {
+    "spanish": "se habría perdido",
+    "english": "it would have been lost; he would have gotten lost"
+  },
+  {
+    "spanish": "se habría ganado",
+    "english": "it would have been won"
+  },
+  {
+    "spanish": "ha habido",
+    "english": "there has been; there have been"
+  },
+  {
+    "spanish": "había habido",
+    "english": "there had been"
+  },
+  {
+    "spanish": "es necesario",
+    "english": "it is necessary"
+  },
+  {
+    "spanish": "es importante",
+    "english": "it is important"
+  },
+  {
+    "spanish": "es posible",
+    "english": "it is possible"
+  },
+  {
+    "spanish": "es probable",
+    "english": "it is likely"
+  },
+  {
+    "spanish": "es evidente",
+    "english": "it is evident"
+  },
+  {
+    "spanish": "vale la pena",
+    "english": "it is worth it"
+  },
+ {
+    "spanish": "se dice que",
+    "english": "it is said that; rumor has it"
+  },
+  {
+    "spanish": "se cree que",
+    "english": "it is believed that"
+  },
+  {
+    "spanish": "se sabe que",
+    "english": "it is known that"
+  },
+  {
+    "spanish": "se considera",
+    "english": "it is considered"
+  },
+  {
+    "spanish": "se encuentra",
+    "english": "is found; is located"
+  },
+  {
+    "spanish": "se utiliza",
+    "english": "is used"
+  },
+  {
+    "spanish": "se llama",
+    "english": "is called"
+  },
+  {
+    "spanish": "se puede",
+    "english": "one can; it is possible to"
+  },
+  {
+    "spanish": "se debe",
+    "english": "one should; must"
+  },
+  {
+    "spanish": "se produjo",
+    "english": "occurred"
+  },
+ {
+    "spanish": "afirmó que",
+    "english": "stated that"
+  },
+  {
+    "spanish": "indicó que",
+    "english": "indicated that"
+  },
+  {
+    "spanish": "explicó que",
+    "english": "explained that"
+  },
+  {
+    "spanish": "señaló que",
+    "english": "pointed out that"
+  },
+  {
+    "spanish": "informó que",
+    "english": "reported that"
+  },
+  {
+    "spanish": "anunció que",
+    "english": "announced that"
+  },
+  {
+    "spanish": "confirmó que",
+    "english": "confirmed that"
+  },
+ {
+    "spanish": "hace años",
+    "english": "years ago"
+  },
+  {
+    "spanish": "desde entonces",
+    "english": "since then"
+  },
+  {
+    "spanish": "hasta ahora",
+    "english": "until now"
+  },
+  {
+    "spanish": "a partir de entonces",
+    "english": "from then on"
+  },
+  {
+    "spanish": "con el tiempo",
+    "english": "over time"
+  },
+  {
+    "spanish": "al principio",
+    "english": "at first"
+  },
+  {
+    "spanish": "al final",
+    "english": "in the end"
+  },
+  {
+    "spanish": "por primera vez",
+    "english": "for the first time"
+  },
+  {
+    "spanish": "una vez",
+    "english": "once"
+  },
+  {
+    "spanish": "en ese momento",
+    "english": "at that moment"
+  },
+{
+    "spanish": "debido a",
+    "english": "due to"
+  },
+  {
+    "spanish": "a causa de",
+    "english": "because of"
+  },
+  {
+    "spanish": "gracias a",
+    "english": "thanks to"
+  },
+  {
+    "spanish": "como resultado",
+    "english": "as a result"
+  },
+  {
+    "spanish": "por esta razón",
+    "english": "for this reason"
+  },
+  {
+    "spanish": "por ello",
+    "english": "therefore"
+  },
+  {
+    "spanish": "por lo que",
+    "english": "which is why"
+  },
+  {
+    "spanish": "de modo que",
+    "english": "so that"
+  },
+{
+    "spanish": "más que",
+    "english": "more than"
+  },
+  {
+    "spanish": "menos que",
+    "english": "less than"
+  },
+  {
+    "spanish": "igual que",
+    "english": "just like"
+  },
+  {
+    "spanish": "a diferencia de",
+    "english": "unlike"
+  },
+  {
+    "spanish": "en comparación con",
+    "english": "compared with"
+  },
+  {
+    "spanish": "puede que",
+    "english": "it may be that"
+  },
+  {
+    "spanish": "es posible que",
+    "english": "it is possible that"
+  },
+  {
+    "spanish": "es probable que",
+    "english": "it is likely that"
+  },
+  {
+    "spanish": "al parecer",
+    "english": "apparently"
+  },
+  {
+    "spanish": "parece que",
+    "english": "it seems that"
+  },
+  {
+    "spanish": "sin duda",
+    "english": "without a doubt"
+  },
+  {
+    "spanish": "a menudo",
+    "english": "often"
+  },
+  {
+    "spanish": "con frecuencia",
+    "english": "frequently"
+  },
+  {
+    "spanish": "por lo general",
+    "english": "generally"
+  },
+  {
+    "spanish": "en general",
+    "english": "in general"
+  },
+  {
+    "spanish": "la mayoría de",
+    "english": "most of"
+  },
+  {
+    "spanish": "cada vez más",
+    "english": "more and more"
+  },
+  {
+    "spanish": "cada vez menos",
+    "english": "less and less"
+  },
+{
+    "spanish": "tener que",
+    "english": "to have to"
+  },
+  {
+    "spanish": "hay que",
+    "english": "one must"
+  },
+  {
+    "spanish": "ir a",
+    "english": "to be going to"
+  },
+  {
+    "spanish": "acabar de",
+    "english": "to have just"
+  },
+  {
+    "spanish": "volver a",
+    "english": "to do again"
+  },
+  {
+    "spanish": "dejar de",
+    "english": "to stop"
+  },
+  {
+    "spanish": "empezar a",
+    "english": "to begin"
+  },
+  {
+    "spanish": "seguir",
+    "english": "to continue"
+  },
+  {
+    "spanish": "tratar de",
+    "english": "to try"
+  },
+  {
+    "spanish": "poder",
+    "english": "to be able to"
+  },
+  {
+    "spanish": "el cual",
+    "english": "which"
+  },
+  {
+    "spanish": "la cual",
+    "english": "which"
+  },
+  {
+    "spanish": "lo que",
+    "english": "what; which"
+  },
+  {
+    "spanish": "por lo que",
+    "english": "therefore; which is why"
+  },
+  {
+    "spanish": "ya que",
+    "english": "since"
+  },
+  {
+    "spanish": "puesto que",
+    "english": "since"
+  },
+  {
+    "spanish": "mientras que",
+    "english": "whereas"
+  },
+  {
+    "spanish": "aunque",
+    "english": "although"
+  },
+ {
+    "spanish": "ha sido",
+    "english": "it has been; he has been; she has been"
+  },
+  {
+    "spanish": "ha habido",
+    "english": "there has been; there have been"
+  },
+  {
+    "spanish": "hay que",
+    "english": "one must; it is necessary to"
+  },
+  {
+    "spanish": "tener que",
+    "english": "to have to"
+  },
+  {
+    "spanish": "acabar de",
+    "english": "to have just"
+  },
+  {
+    "spanish": "volver a",
+    "english": "to do again"
+  },
+  {
+    "spanish": "a pesar de",
+    "english": "despite; in spite of"
+  },
+  {
+    "spanish": "a partir de",
+    "english": "starting from; as of"
+  },
+  {
+    "spanish": "debido a",
+    "english": "due to"
+  },
+  {
+    "spanish": "de acuerdo con",
+    "english": "in accordance with; according to"
+  },
+  {
+    "spanish": "por lo tanto",
+    "english": "therefore"
+  },
+  {
+    "spanish": "es decir",
+    "english": "that is to say; in other words"
+  },
+  {
+    "spanish": "de hecho",
+    "english": "in fact; actually"
+  },
+  {
+    "spanish": "sin embargo",
+    "english": "however; nevertheless"
+  },
+  {
+    "spanish": "ya que",
+    "english": "since; given that"
+  },
+  {
+    "spanish": "puesto que",
+    "english": "since; as"
+  },
+  {
+    "spanish": "puede que",
+    "english": "it may be that; perhaps"
+  },
+  {
+    "spanish": "se trata de",
+    "english": "it's about; it concerns"
+  },
+  {
+    "spanish": "se lleva a cabo",
+    "english": "is carried out; takes place"
+  },
+  {
+    "spanish": "con el fin de",
+    "english": "in order to; with the purpose of"
+  },
+{
+    "spanish": "he",
+    "english": "i have"
+  },
+  {
+    "spanish": "has",
+    "english": "you have"
+  },
+  {
+    "spanish": "ha",
+    "english": "he has; she has; it has"
+  },
+  {
+    "spanish": "hemos",
+    "english": "we have"
+  },
+  {
+    "spanish": "han",
+    "english": "they have"
+  },
+  {
+    "spanish": "había",
+    "english": "had; i had; he had; she had"
+  },
+  {
+    "spanish": "habían",
+    "english": "had"
+  },
+  {
+    "spanish": "hubo",
+    "english": "there was; there were"
+  },
+  {
+    "spanish": "hubiera",
+    "english": "had; i had; he had; she had"
+  },
+  {
+    "spanish": "hubiese",
+    "english": "had; i had; he had; she had"
+  },
+  {
+    "spanish": "habrá",
+    "english": "will have; there will be; he will have; she will have"
+  },
+  {
+    "spanish": "habría",
+    "english": "would have; i would have; he would have; she would have"
+  },
+  {
+    "spanish": "haya",
+    "english": "has; have; i have; he has; she has"
+  },
+  {
+    "spanish": "hayan",
+    "english": "have"
+  },
+{
+    "spanish": "ha sido",
+    "english": "has been"
+  },
+  {
+    "spanish": "han sido",
+    "english": "have been"
+  },
+  {
+    "spanish": "había sido",
+    "english": "had been"
+  },
+  {
+    "spanish": "habían sido",
+    "english": "had been"
+  },
+  {
+    "spanish": "habrá sido",
+    "english": "will have been"
+  },
+  {
+    "spanish": "habría sido",
+    "english": "would have been"
+  },
+  {
+    "spanish": "haya sido",
+    "english": "has been; have been"
+  },
+  {
+    "spanish": "hubiera sido",
+    "english": "had been"
+  },
+  {
+    "spanish": "hubiese sido",
+    "english": "had been"
+  },
+ {
+    "spanish": "es considerado",
+    "english": "is considered"
+  },
+  {
+    "spanish": "fue considerado",
+    "english": "was considered"
+  },
+  {
+    "spanish": "ha sido considerado",
+    "english": "has been considered"
+  },
+  {
+    "spanish": "había sido considerado",
+    "english": "had been considered"
+  },
+  {
+    "spanish": "será considerado",
+    "english": "will be considered"
+  },
+  {
+    "spanish": "habría sido considerado",
+    "english": "would have been considered"
+  },
+{
+    "spanish": "está haciendo",
+    "english": "is doing"
+  },
+  {
+    "spanish": "estaba haciendo",
+    "english": "was doing"
+  },
+  {
+    "spanish": "ha estado haciendo",
+    "english": "has been doing"
+  },
+  {
+    "spanish": "había estado haciendo",
+    "english": "had been doing"
+  },
+  {
+    "spanish": "estuvo haciendo",
+    "english": "spent time doing; was doing"
+  },
+  {
+    "spanish": "estará haciendo",
+    "english": "will be doing"
+  },
+ {
+    "spanish": "puede ser",
+    "english": "can be; may be"
+  },
+  {
+    "spanish": "podría ser",
+    "english": "could be; might be"
+  },
+  {
+    "spanish": "debe ser",
+    "english": "must be; should be"
+  },
+  {
+    "spanish": "debía ser",
+    "english": "was supposed to be; used to be"
+  },
+  {
+    "spanish": "va a ser",
+    "english": "is going to be"
+  },
+  {
+    "spanish": "llegó a ser",
+    "english": "came to be; became"
+  },
+  {
+    "spanish": "solía ser",
+    "english": "used to be"
+  },
+ {
+    "spanish": "haber sido",
+    "english": "to have been"
+  },
+  {
+    "spanish": "haber hecho",
+    "english": "to have done; to have made"
+  },
+  {
+    "spanish": "haber visto",
+    "english": "to have seen"
+  },
+  {
+    "spanish": "haber encontrado",
+    "english": "to have found"
+  },
+  {
+    "spanish": "haber tenido",
+    "english": "to have had"
+  },
+  {
+    "spanish": "habiendo sido",
+    "english": "having been"
+  },
+  {
+    "spanish": "habiendo hecho",
+    "english": "having done; having made"
+  },
+  {
+    "spanish": "habiendo visto",
+    "english": "having seen"
+  },
+ {
+    "spanish": "ha sido",
+    "english": "has been"
+  },
+  {
+    "spanish": "había sido",
+    "english": "had been"
+  },
+  {
+    "spanish": "haber sido",
+    "english": "to have been"
+  },
+  {
+    "spanish": "habiendo sido",
+    "english": "having been"
+  },
+  {
+    "spanish": "fue",
+    "english": "was"
+  },
+  {
+    "spanish": "había",
+    "english": "had; there was; there were"
+  },
+  {
+    "spanish": "hubo",
+    "english": "there was; there were"
+  },
+  {
+    "spanish": "ha habido",
+    "english": "there has been; there have been"
+  },
+  {
+    "spanish": "había habido",
+    "english": "there had been"
+  },
+  {
+    "spanish": "habrá habido",
+    "english": "there will have been"
+  },
+  {
+    "spanish": "a partir de",
+    "english": "starting from; as of"
+  },
+  {
+    "spanish": "en lugar de",
+    "english": "instead of"
+  },
+  {
+    "spanish": "a pesar de",
+    "english": "despite"
+  },
+  {
+    "spanish": "gracias a",
+    "english": "thanks to"
+  },
+  {
+    "spanish": "debido a",
+    "english": "due to"
+  },
+  {
+    "spanish": "por culpa de",
+    "english": "because of"
+  },
+  {
+    "spanish": "con respecto a",
+    "english": "regarding"
+  },
+  {
+    "spanish": "en cuanto a",
+    "english": "as for; regarding"
+  },
+  {
+    "spanish": "de acuerdo con",
+    "english": "according to"
+  },
+  {
+    "spanish": "de hecho",
+    "english": "in fact"
+  },
+  {
+    "spanish": "es decir",
+    "english": "that is; i.e."
+  },
+  {
+    "spanish": "o sea",
+    "english": "that is; i mean"
+  },
+  {
+    "spanish": "por ejemplo",
+    "english": "for example"
+  },
+  {
+    "spanish": "sin embargo",
+    "english": "however"
+  },
+  {
+    "spanish": "por lo tanto",
+    "english": "therefore"
+  },
+  {
+    "spanish": "por otro lado",
+    "english": "on the other hand"
+  },
+  {
+    "spanish": "al mismo tiempo",
+    "english": "at the same time"
+  },
+  {
+    "spanish": "de vez en cuando",
+    "english": "from time to time"
+  },
+  {
+    "spanish": "de repente",
+    "english": "suddenly"
+  },
+  {
+    "spanish": "en realidad",
+    "english": "actually"
+  },
+  {
+    "spanish": "al menos",
+    "english": "at least"
+  },
+  {
+    "spanish": "por supuesto",
+    "english": "of course"
+  },
+  {
+    "spanish": "tal vez",
+    "english": "perhaps"
+  },
+  {
+    "spanish": "a menudo",
+    "english": "often"
+  },
+  {
+    "spanish": "cada vez más",
+    "english": "more and more"
+  },
+  {
+    "spanish": "de nuevo",
+    "english": "again"
+  },
+  {
+    "spanish": "una vez más",
+    "english": "once again"
+  },
+  {
+    "spanish": "de una vez",
+    "english": "once and for all; right now"
+  },
+  {
+    "spanish": "por fin",
+    "english": "finally"
+  },
+  {
+    "spanish": "en vez de",
+    "english": "instead of"
+  },
+{
+    "spanish": "a lo largo de",
+    "english": "throughout"
+  },
+  {
+    "spanish": "con el fin de",
+    "english": "in order to"
+  },
+  {
+    "spanish": "a causa de",
+    "english": "because of"
+  },
+  {
+    "spanish": "como resultado de",
+    "english": "as a result of"
+  },
+  {
+    "spanish": "por medio de",
+    "english": "by means of"
+  },
+  {
+    "spanish": "a través de",
+    "english": "through"
+  },
+  {
+    "spanish": "en comparación con",
+    "english": "compared with"
+  },
+  {
+    "spanish": "en relación con",
+    "english": "in relation to"
+  },
+  {
+    "spanish": "antes de",
+    "english": "before"
+  },
+  {
+    "spanish": "después de",
+    "english": "after"
+  },
+  {
+    "spanish": "además de",
+    "english": "besides; in addition to"
+  },
+  {
+    "spanish": "junto con",
+    "english": "together with"
+  },
+  {
+    "spanish": "a diferencia de",
+    "english": "unlike"
+  },
+  {
+    "spanish": "en función de",
+    "english": "depending on; based on"
+  },
+  {
+    "spanish": "a medida que",
+    "english": "as"
+  },
+  {
+    "spanish": "conforme",
+    "english": "as; as soon as"
+  },
+  {
+    "spanish": "si bien",
+    "english": "although"
+  },
+  {
+    "spanish": "ya que",
+    "english": "since; because"
+  },
+  {
+    "spanish": "puesto que",
+    "english": "since; because"
+  },
+  {
+    "spanish": "siempre que",
+    "english": "provided that"
+  },
+  {
+    "spanish": "ha sido",
+    "english": "has been"
+  },
+  {
+    "spanish": "ha habido",
+    "english": "there has been; there have been"
+  },
+  {
+    "spanish": "había sido",
+    "english": "had been"
+  },
+  {
+    "spanish": "había habido",
+    "english": "there had been"
+  },
+  {
+    "spanish": "haber sido",
+    "english": "to have been"
+  },
+  {
+    "spanish": "habiendo sido",
+    "english": "having been"
+  },
+  {
+    "spanish": "tener que",
+    "english": "to have to"
+  },
+  {
+    "spanish": "tenía que",
+    "english": "had to; i had to; he had to"
+  },
+  {
+    "spanish": "tuve que",
+    "english": "had to"
+  },
+  {
+    "spanish": "tendrá que",
+    "english": "will have to"
+  },
+  {
+    "spanish": "va a",
+    "english": "is going to; he is going to; she is going to"
+  },
+  {
+    "spanish": "iba a",
+    "english": "was going to; i was going to; he was going to"
+  },
+  {
+    "spanish": "fue a",
+    "english": "went to; he went to; she went to"
+  },
+  {
+    "spanish": "voy a",
+    "english": "i am going to"
+  },
+  {
+    "spanish": "debido a",
+    "english": "due to"
+  },
+  {
+    "spanish": "a causa de",
+    "english": "because of"
+  },
+  {
+    "spanish": "por culpa de",
+    "english": "because of"
+  },
+  {
+    "spanish": "gracias a",
+    "english": "thanks to"
+  },
+  {
+    "spanish": "sin embargo",
+    "english": "however"
+  },
+  {
+    "spanish": "aunque",
+    "english": "although"
+  },
+  {
+    "spanish": "a pesar de",
+    "english": "despite"
+  },
+  {
+    "spanish": "en cambio",
+    "english": "on the other hand; instead"
+  },
+  {
+    "spanish": "a partir de",
+    "english": "starting from; as of"
+  },
+  {
+    "spanish": "desde",
+    "english": "since; from"
+  },
+  {
+    "spanish": "hasta",
+    "english": "until; up to"
+  },
+  {
+    "spanish": "mientras",
+    "english": "while"
+  },
+  {
+    "spanish": "ha visto",
+    "english": "has seen; he has seen; she has seen"
+  },
+  {
+    "spanish": "ha hecho",
+    "english": "has done; has made"
+  },
+  {
+    "spanish": "ha dicho",
+    "english": "has said; he has said; she has said"
+  },
+  {
+    "spanish": "ha encontrado",
+    "english": "has found"
+  },
+  {
+    "spanish": "hay que",
+    "english": "one must; it is necessary to"
+  },
+  {
+    "spanish": "tiene que",
+    "english": "has to"
+  },
+  {
+    "spanish": "puede ser",
+    "english": "can be"
+  },
+  {
+    "spanish": "es decir",
+    "english": "that is to say; in other words"
+  },
+  {
+    "spanish": "de hecho",
+    "english": "in fact"
+  },
+  {
+    "spanish": "por lo tanto",
+    "english": "therefore"
+  },
+  {
+    "spanish": "se trata de",
+    "english": "it is about; it concerns"
+  },
+  {
+    "spanish": "se puede",
+    "english": "one can; it is possible to"
+  },
+{
+    "spanish": "hacer falta",
+    "english": "to be necessary; to be needed"
+  },
+  {
+    "spanish": "hizo falta",
+    "english": "it was necessary; it was needed"
+  },
+  {
+    "spanish": "hacer caso",
+    "english": "to pay attention; to obey"
+  },
+  {
+    "spanish": "hizo caso",
+    "english": "paid attention; obeyed"
+  },
+  {
+    "spanish": "hacer daño",
+    "english": "to hurt; to cause harm"
+  },
+  {
+    "spanish": "hizo daño",
+    "english": "hurt; caused harm"
+  },
+  {
+    "spanish": "hacer saber",
+    "english": "to let someone know; to inform"
+  },
+  {
+    "spanish": "hizo saber",
+    "english": "let someone know; informed"
+  },
+  {
+    "spanish": "hacer clic",
+    "english": "to click; to select"
+  },
+  {
+    "spanish": "hizo clic",
+    "english": "clicked"
+  },
+  {
+    "spanish": "hacer hincapié",
+    "english": "to emphasize; to stress"
+  },
+  {
+    "spanish": "hizo hincapié",
+    "english": "emphasized; stressed"
+  },
+  {
+    "spanish": "hacer frente a",
+    "english": "to face; to cope with; to confront"
+  },
+  {
+    "spanish": "hizo frente a",
+    "english": "faced; coped with; confronted"
+  },
+  {
+    "spanish": "hacer puente",
+    "english": "to take a long weekend"
+  },
+  {
+    "spanish": "hizo puente",
+    "english": "took a long weekend"
+  },
+  {
+    "spanish": "hacer gracia",
+    "english": "to find funny; to amuse"
+  },
+  {
+    "spanish": "hizo gracia",
+    "english": "amused; was found funny"
+  },
+  {
+    "spanish": "hacer cola",
+    "english": "to stand in line; to queue"
+  },
+  {
+    "spanish": "hizo cola",
+    "english": "stood in line; queued"
+  },
+  {
+    "spanish": "hacer el papel de",
+    "english": "to play the role of"
+  },
+  {
+    "spanish": "hizo el papel de",
+    "english": "played the role of"
+  },
+  {
+    "spanish": "hacer las paces",
+    "english": "to make peace; to make up"
+  },
+  {
+    "spanish": "hizo las paces",
+    "english": "made peace; made up"
+  },
+  {
+    "spanish": "hacer la maleta",
+    "english": "to pack the suitcase"
+  },
+  {
+    "spanish": "hizo la maleta",
+    "english": "packed the suitcase"
+  },
+  {
+    "spanish": "hacer un esfuerzo",
+    "english": "to make an effort"
+  },
+  {
+    "spanish": "hizo un esfuerzo",
+    "english": "made an effort"
+  },
+  {
+    "spanish": "hacer un viaje",
+    "english": "to take a trip"
+  },
+  {
+    "spanish": "hizo un viaje",
+    "english": "took a trip"
+  },
+  {
+    "spanish": "hacer una pregunta",
+    "english": "to ask a question"
+  },
+  {
+    "spanish": "hizo una pregunta",
+    "english": "asked a question"
+  },
+  {
+    "spanish": "hacer trampa",
+    "english": "to cheat"
+  },
+  {
+    "spanish": "hizo trampa",
+    "english": "cheated"
+  },
+  {
+    "spanish": "hacer de menos",
+    "english": "to look down on; to underestimate"
+  },
+  {
+    "spanish": "hizo de menos",
+    "english": "looked down on; underestimated"
+  },
+  {
+    "spanish": "hacer de las suyas",
+    "english": "to be up to one's old tricks"
+  },
+  {
+    "spanish": "hizo de las suyas",
+    "english": "was up to their old tricks"
+  }
+]
+

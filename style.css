@@ -318,6 +318,11 @@
         transition: all 0.2s;
     }
 
+    .clickable-word.underlined {
+        border-bottom: 1px dashed darkGreen;
+        padding: 3px 3px 0px 3px; 
+    }
+
     .clickable-word:hover {
         background-color: blue;
         color: white;
