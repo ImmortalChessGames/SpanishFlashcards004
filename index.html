@@ -398,7 +398,57 @@
     }
 */
 
-    function getLemma(word) {
+
+function getLemma(word) {
+    if (!word || word.trim().length === 0) return null;
+    
+    const targetWord = word.trim().toLowerCase();
+    
+    // Call your existing function to parse the word
+    const doc = esCompromise(targetWord);
+    const terms = doc.terms().json(); 
+
+    // Safety check if no terms are parsed
+    if (!terms || terms.length === 0) return targetWord;
+    
+    const tags = terms[0].tags || [];
+
+    // STAGE 1: Handle Verbs
+    if (tags.includes('Verb')) {
+        if (typeof doc.verbs === 'function' && doc.verbs().toInfinitive) {
+            return doc.verbs().toInfinitive().text().trim().toLowerCase();
+        }
+        return cleanVerbFallback(targetWord);
+    }
+
+    // STAGE 2: Handle Nouns and Adjectives
+    if (tags.includes('Noun') || tags.includes('Adjective') || tags.includes('Plural')) {
+        if (typeof doc.nouns === 'function' && doc.nouns().toSingular) {
+            return doc.nouns().toSingular().text().trim().toLowerCase();
+        }
+        return cleanNounFallback(targetWord);
+    }
+
+    // STAGE 3: Enclitic Pronoun Fallbacks
+    if (targetWord.length > 5) {
+        const pronouns = ['me', 'te', 'se', 'nos', 'le', 'les', 'lo', 'la', 'los', 'las'];
+        for (const pronoun of pronouns) {
+            if (targetWord.endsWith(pronoun)) {
+                const base = targetWord.slice(0, -pronoun.length);
+                if (base.endsWith('ar') || base.endsWith('er') || base.endsWith('ir')) {
+                    return base;
+                }
+            }
+        }
+    }
+
+    return targetWord;
+}
+
+// Keep the helper functions (cleanNounFallback and cleanVerbFallback) from the previous response below this.
+
+
+    function getLemma_old(word) {
         if (!word || word.trim().length === 0) return null;
         
         let targetWord = word.trim().toLowerCase();
@@ -3647,7 +3697,7 @@ async function loadVocabData(loadDefaults) {
     let combinedData = (existingData && existingData.length>0) ? existingData :
         [...existingData, ...data];
     // Remove exact duplicates by filtering with a Set of stringified items
-    combinedData = [...combinedData, ...phrasesData];
+    // combinedData = [...combinedData, ...phrasesData];
     const seenItems = new Set();
     const uniqueData = combinedData.filter(item => {
         // Stringify ensures accurate identification regardless of object depth or primitive types

@@ -319,14 +319,18 @@
     }
 
     .clickable-word.underlined {
-        border-bottom: 1px dashed darkGreen;
-        padding: 3px 3px 0px 3px; 
+        color: #055770;
+        text-decoration: underline dotted;
+        text-decoration-color: gray;
+        text-decoration-line: underline;
+        text-decoration-thickness: 1px; 
+        text-underline-offset: 3px;
     }
 
     .clickable-word:hover {
         background-color: blue;
         color: white;
-    .sm-wrapper {
+        .sm-wrapper {
         --sm-bg-color: #f8f9fa;
         --sm-card-bg: #ffffff;
         --sm-border-color: #ddd;
