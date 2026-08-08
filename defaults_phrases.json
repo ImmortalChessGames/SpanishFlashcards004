@@ -12703,13 +12703,49 @@
     "spanish": "ya para",
     "english": "now for"
   },
- {
+  {
+    "spanish": "a pesar de que la",
+    "english": "despite the fact that"
+  },
+  {
+    "spanish": "a pesar de que ya",
+    "english": "even though it already"
+  },
+  {
     "spanish": "de que esta es la",
     "english": "that this is the"
   },
   {
+    "spanish": "que a pesar de la",
+    "english": "that despite the"
+  },
+  {
+    "spanish": "que es una de las",
+    "english": "which is one of the"
+  },
+  {
     "spanish": "que habia estado en la",
     "english": "who had been in the"
+  },
+  {
+    "spanish": "y a pesar de que",
+    "english": "and despite the fact that"
+  },
+  {
+    "spanish": "a los que habia",
+    "english": "to those who had"
+  },
+  {
+    "spanish": "a los que no",
+    "english": "to those who do not"
+  },
+  {
+    "spanish": "a pesar de la",
+    "english": "despite the"
+  },
+  {
+    "spanish": "a pesar de lo",
+    "english": "despite what"
   },
   {
     "spanish": "a pesar de que",
@@ -12718,6 +12754,22 @@
   {
     "spanish": "a una de las",
     "english": "to one of the"
+  },
+  {
+    "spanish": "como consecuencia de la",
+    "english": "as a consequence of the"
+  },
+  {
+    "spanish": "como la de un",
+    "english": "like that of a"
+  },
+  {
+    "spanish": "como los de un",
+    "english": "like those of a"
+  },
+  {
+    "spanish": "con respecto a la",
+    "english": "with respect to the"
   },
   {
     "spanish": "de lo que ha",
@@ -12732,16 +12784,88 @@
     "english": "that what"
   },
   {
+    "spanish": "de que tenia que",
+    "english": "that I had to"
+  },
+  {
+    "spanish": "de una de las",
+    "english": "from one of the"
+  },
+  {
+    "spanish": "en el que habia",
+    "english": "in which there was"
+  },
+  {
+    "spanish": "en un estado de",
+    "english": "in a state of"
+  },
+  {
+    "spanish": "es una de las",
+    "english": "is one of the"
+  },
+  {
+    "spanish": "estaba convencido de que",
+    "english": "I was convinced that"
+  },
+  {
     "spanish": "habia estado en la",
     "english": "had been in the"
+  },
+  {
+    "spanish": "habia llegado a la",
+    "english": "had arrived at"
+  },
+  {
+    "spanish": "lo que tenia que",
+    "english": "what I had to"
+  },
+  {
+    "spanish": "pesar de que la",
+    "english": "despite the fact that"
+  },
+  {
+    "spanish": "pesar de que ya",
+    "english": "despite the fact that already"
+  },
+  {
+    "spanish": "por el estado de",
+    "english": "due to the state of"
   },
   {
     "spanish": "por lo que he",
     "english": "so I have"
   },
   {
+    "spanish": "por que no lo",
+    "english": "Why not?"
+  },
+  {
+    "spanish": "que a pesar de",
+    "english": "that despite"
+  },
+  {
+    "spanish": "que como consecuencia de",
+    "english": "that as a consequence of"
+  },
+  {
+    "spanish": "que es lo que",
+    "english": "which is what"
+  },
+  {
+    "spanish": "que es una de",
+    "english": "which is one of"
+  },
+  {
     "spanish": "que esta es la",
     "english": "that this is the"
+  },
+  {
+    "spanish": "que estaba a la",
+    "english": "that was"
+  },
+  {
+    "spanish": "que estaba en la",
+    "english": "that was in the"
   },
   {
     "spanish": "que estaban en la",
@@ -12760,28 +12884,104 @@
     "english": "what the"
   },
   {
+    "spanish": "que tenia en la",
+    "english": "that I had in the"
+  },
+  {
+    "spanish": "se fijaron en un",
+    "english": "They noticed a"
+  },
+  {
+    "spanish": "se habia dado la",
+    "english": "had been given"
+  },
+  {
+    "spanish": "se ocupara de que",
+    "english": "would make sure that"
+  },
+  {
     "spanish": "se refiere a las",
     "english": "It refers to the"
+  },
+  {
+    "spanish": "se sabia que habia",
+    "english": "It was known that there was"
+  },
+  {
+    "spanish": "se sentaban a la",
+    "english": "They sat down at the"
   },
   {
     "spanish": "se trata de un",
     "english": "It is a"
   },
   {
+    "spanish": "se trata de una",
+    "english": "It is a"
+  },
+  {
+    "spanish": "se trataba de un",
+    "english": "It was a"
+  },
+  {
+    "spanish": "se trataba de una",
+    "english": "It was a"
+  },
+  {
+    "spanish": "tanto el como el",
+    "english": "both he and the"
+  },
+  {
+    "spanish": "y a pesar de",
+    "english": "and despite"
+  },
+  {
     "spanish": "y asi fue como",
     "english": "And that's how"
+  },
+  {
+    "spanish": "y en el la",
+    "english": "and in the"
   },
   {
     "spanish": "y lo de la",
     "english": "and about the"
   },
   {
+    "spanish": "y lo que es",
+    "english": "and what is"
+  },
+  {
+    "spanish": "y por que no",
+    "english": "And why not"
+  },
+  {
+    "spanish": "y que no era",
+    "english": "and that it wasn't"
+  },
+  {
+    "spanish": "y sin embargo no",
+    "english": "and yet not"
+  },
+  {
+    "spanish": "a el con",
+    "english": "to him with"
+  },
+  {
     "spanish": "a la de",
     "english": "to the one of"
   },
   {
+    "spanish": "a la que",
+    "english": "to which"
+  },
+  {
     "spanish": "a lo que",
     "english": "to what"
+  },
+  {
+    "spanish": "a los que",
+    "english": "to those who"
   },
   {
     "spanish": "a pesar de",
@@ -12796,8 +12996,24 @@
     "english": "so to a"
   },
   {
+    "spanish": "asi es que",
+    "english": "That's right"
+  },
+  {
     "spanish": "asi fue como",
     "english": "That's how"
+  },
+  {
+    "spanish": "asi que ya",
+    "english": "So now"
+  },
+  {
+    "spanish": "como a la",
+    "english": "like the"
+  },
+  {
+    "spanish": "como consecuencia de",
+    "english": "as a consequence of"
   },
   {
     "spanish": "como el lo",
@@ -12808,16 +13024,76 @@
     "english": "like the one that"
   },
   {
+    "spanish": "como en el",
+    "english": "as in the"
+  },
+  {
+    "spanish": "como la de",
+    "english": "like the one from"
+  },
+  {
+    "spanish": "como las que",
+    "english": "like those that"
+  },
+  {
+    "spanish": "como lo habia",
+    "english": "as it had"
+  },
+  {
     "spanish": "como los de",
     "english": "like those of"
+  },
+  {
+    "spanish": "como los que",
+    "english": "like those who"
+  },
+  {
+    "spanish": "con el a",
+    "english": "with the a"
+  },
+  {
+    "spanish": "con el de",
+    "english": "with the one of"
+  },
+  {
+    "spanish": "con el en",
+    "english": "with the in"
   },
   {
     "spanish": "con el no",
     "english": "with the no"
   },
   {
+    "spanish": "con el pero",
+    "english": "with the but"
+  },
+  {
+    "spanish": "con el que",
+    "english": "with which"
+  },
+  {
     "spanish": "con el y",
     "english": "with the and"
+  },
+  {
+    "spanish": "con el ya",
+    "english": "with the already"
+  },
+  {
+    "spanish": "con la que",
+    "english": "with which"
+  },
+  {
+    "spanish": "con las que",
+    "english": "with which"
+  },
+  {
+    "spanish": "con lo que",
+    "english": "with which"
+  },
+  {
+    "spanish": "con los que",
+    "english": "with which"
   },
   {
     "spanish": "con que habia",
@@ -12828,8 +13104,32 @@
     "english": "with respect to"
   },
   {
+    "spanish": "consecuencia de la",
+    "english": "consequence of the"
+  },
+  {
+    "spanish": "consecuencia de que",
+    "english": "as a consequence of"
+  },
+  {
+    "spanish": "consecuencia de una",
+    "english": "consequence of a"
+  },
+  {
+    "spanish": "de el como",
+    "english": "of him as"
+  },
+  {
+    "spanish": "de el que",
+    "english": "of the one who"
+  },
+  {
     "spanish": "de el y",
     "english": "of him and"
+  },
+  {
+    "spanish": "de las que",
+    "english": "of which"
   },
   {
     "spanish": "de lo que",
@@ -12840,12 +13140,28 @@
     "english": "of those who"
   },
   {
+    "spanish": "de que a",
+    "english": "that to"
+  },
+  {
+    "spanish": "de que de",
+    "english": "that of"
+  },
+  {
     "spanish": "de que el",
     "english": "that the"
   },
   {
     "spanish": "de que en",
     "english": "that in"
+  },
+  {
+    "spanish": "de que era",
+    "english": "what was it"
+  },
+  {
+    "spanish": "de que es",
+    "english": "What is it?"
   },
   {
     "spanish": "de que esta",
@@ -12858,6 +13174,14 @@
   {
     "spanish": "de que ha",
     "english": "that has"
+  },
+  {
+    "spanish": "de que habia",
+    "english": "that there was"
+  },
+  {
+    "spanish": "de que habian",
+    "english": "that there were"
   },
   {
     "spanish": "de que la",
@@ -12876,15 +13200,87 @@
     "english": "that no"
   },
   {
+    "spanish": "de que sin",
+    "english": "that without"
+  },
+  {
+    "spanish": "de que tenia",
+    "english": "that he had"
+  },
+  {
+    "spanish": "de que ya",
+    "english": "that already"
+  },
+  {
+    "spanish": "de tanto que",
+    "english": "so much that"
+  },
+  {
+    "spanish": "de una de",
+    "english": "of one of"
+  },
+  {
+    "spanish": "el como el",
+    "english": "the as the"
+  },
+  {
+    "spanish": "el estado de",
+    "english": "the state of"
+  },
+  {
+    "spanish": "el lo ha",
+    "english": "He has"
+  },
+  {
+    "spanish": "el que el",
+    "english": "the one the"
+  },
+  {
+    "spanish": "el que estaba",
+    "english": "the one who was"
+  },
+  {
+    "spanish": "el que ha",
+    "english": "the one who has"
+  },
+  {
     "spanish": "el que habia",
     "english": "the one who had"
+  },
+  {
+    "spanish": "el que la",
+    "english": "the one who"
   },
   {
     "spanish": "el que las",
     "english": "the one who the"
   },
   {
+    "spanish": "el que no",
+    "english": "the one who doesn't"
+  },
+  {
+    "spanish": "el y el",
+    "english": "he and the"
+  },
+  {
+    "spanish": "en el la",
+    "english": "in the"
+  },
+  {
+    "spanish": "en el que",
+    "english": "in which"
+  },
+  {
+    "spanish": "en la de",
+    "english": "in the one of"
+  },
+  {
     "spanish": "en la que",
+    "english": "in which"
+  },
+  {
+    "spanish": "en las que",
     "english": "in which"
   },
   {
@@ -12900,6 +13296,10 @@
     "english": "where was I"
   },
   {
+    "spanish": "en que habia",
+    "english": "in which there was"
+  },
+  {
     "spanish": "en que la",
     "english": "in which the"
   },
@@ -12908,24 +13308,56 @@
     "english": "in which it"
   },
   {
+    "spanish": "en que no",
+    "english": "in which not"
+  },
+  {
     "spanish": "en que un",
     "english": "in which a"
+  },
+  {
+    "spanish": "en un estado",
+    "english": "in a state"
   },
   {
     "spanish": "en una de",
     "english": "in one of"
   },
   {
+    "spanish": "era como para",
+    "english": "It was like for"
+  },
+  {
+    "spanish": "era la que",
+    "english": "was the one"
+  },
+  {
     "spanish": "era lo que",
     "english": "was what"
+  },
+  {
+    "spanish": "era para la",
+    "english": "It was for the"
+  },
+  {
+    "spanish": "era que habia",
+    "english": "it was that there was"
   },
   {
     "spanish": "eran de la",
     "english": "were from the"
   },
   {
+    "spanish": "es de la",
+    "english": "It's from the"
+  },
+  {
     "spanish": "es el que",
     "english": "is the one that"
+  },
+  {
+    "spanish": "es esta la",
+    "english": "Is this the"
   },
   {
     "spanish": "es lo que",
@@ -12938,6 +13370,26 @@
   {
     "spanish": "es que en",
     "english": "is that in"
+  },
+  {
+    "spanish": "es que era",
+    "english": "It was"
+  },
+  {
+    "spanish": "es que la",
+    "english": "is that the"
+  },
+  {
+    "spanish": "es que no",
+    "english": "no"
+  },
+  {
+    "spanish": "es que por",
+    "english": "because"
+  },
+  {
+    "spanish": "es una de",
+    "english": "is one of"
   },
   {
     "spanish": "esta a la",
@@ -12956,12 +13408,48 @@
     "english": "This is the"
   },
   {
+    "spanish": "estaba a la",
+    "english": "was at"
+  },
+  {
+    "spanish": "estaba acostumbrado a",
+    "english": "I was used to"
+  },
+  {
+    "spanish": "estaba cargado de",
+    "english": "It was loaded with"
+  },
+  {
+    "spanish": "estaba convencido de",
+    "english": "I was convinced"
+  },
+  {
     "spanish": "estaba en el",
     "english": "I was in the"
   },
   {
+    "spanish": "estaba en la",
+    "english": "I was in the"
+  },
+  {
+    "spanish": "estaba formado por",
+    "english": "It was made up of"
+  },
+  {
+    "spanish": "estaba sentado en",
+    "english": "I was sitting in"
+  },
+  {
+    "spanish": "estaba ya en",
+    "english": "was already in"
+  },
+  {
     "spanish": "estaban en la",
     "english": "were in the"
+  },
+  {
+    "spanish": "estado de la",
+    "english": "state of the"
   },
   {
     "spanish": "estado en la",
@@ -12972,12 +13460,76 @@
     "english": "It was in the"
   },
   {
+    "spanish": "fue lo que",
+    "english": "was what"
+  },
+  {
+    "spanish": "ha estado en",
+    "english": "has been in"
+  },
+  {
+    "spanish": "ha habido un",
+    "english": "there has been a"
+  },
+  {
+    "spanish": "ha llegado a",
+    "english": "has arrived"
+  },
+  {
+    "spanish": "ha salido de",
+    "english": "has left"
+  },
+  {
     "spanish": "ha sido de",
     "english": "has been of"
   },
   {
+    "spanish": "ha tenido que",
+    "english": "has had to"
+  },
+  {
+    "spanish": "habia apoderado de",
+    "english": "had taken possession of"
+  },
+  {
+    "spanish": "habia apresurado a",
+    "english": "had hurried to"
+  },
+  {
+    "spanish": "habia colocado el",
+    "english": "had placed the"
+  },
+  {
+    "spanish": "habia colocado en",
+    "english": "had placed in"
+  },
+  {
+    "spanish": "habia cometido el",
+    "english": "had committed the"
+  },
+  {
+    "spanish": "habia convertido en",
+    "english": "had become"
+  },
+  {
     "spanish": "habia corrido a",
     "english": "had run to"
+  },
+  {
+    "spanish": "habia dado la",
+    "english": "had given the"
+  },
+  {
+    "spanish": "habia dejado a",
+    "english": "had left"
+  },
+  {
+    "spanish": "habia dejado el",
+    "english": "had left the"
+  },
+  {
+    "spanish": "habia empezado a",
+    "english": "had begun"
   },
   {
     "spanish": "habia en el",
@@ -13000,12 +13552,44 @@
     "english": "had arrived"
   },
   {
+    "spanish": "habia olvidado que",
+    "english": "I had forgotten that"
+  },
+  {
     "spanish": "habia parado y",
     "english": "had stopped and"
   },
   {
+    "spanish": "habia pasado por",
+    "english": "had gone through"
+  },
+  {
+    "spanish": "habia pensado en",
+    "english": "I had thought about"
+  },
+  {
+    "spanish": "habia quedado en",
+    "english": "had been left in"
+  },
+  {
+    "spanish": "habia salido la",
+    "english": "had left"
+  },
+  {
     "spanish": "habia sido de",
     "english": "It had been"
+  },
+  {
+    "spanish": "habia terminado de",
+    "english": "had finished"
+  },
+  {
+    "spanish": "habian acostumbrado a",
+    "english": "had become accustomed to"
+  },
+  {
+    "spanish": "he acudido a",
+    "english": "I have gone to"
   },
   {
     "spanish": "he llegado a",
@@ -13032,12 +13616,40 @@
     "english": "that of a"
   },
   {
+    "spanish": "la que tenia",
+    "english": "the one I had"
+  },
+  {
+    "spanish": "la que tiene",
+    "english": "the one that has"
+  },
+  {
+    "spanish": "las que ha",
+    "english": "those that have"
+  },
+  {
     "spanish": "lo de la",
     "english": "about the"
   },
   {
+    "spanish": "lo de que",
+    "english": "the fact that"
+  },
+  {
+    "spanish": "lo que a",
+    "english": "what to"
+  },
+  {
+    "spanish": "lo que de",
+    "english": "what"
+  },
+  {
     "spanish": "lo que el",
     "english": "what the"
+  },
+  {
+    "spanish": "lo que en",
+    "english": "what in"
   },
   {
     "spanish": "lo que era",
@@ -13060,20 +13672,72 @@
     "english": "what I have"
   },
   {
+    "spanish": "lo que la",
+    "english": "what the"
+  },
+  {
+    "spanish": "lo que los",
+    "english": "what the"
+  },
+  {
     "spanish": "lo que no",
     "english": "what not"
+  },
+  {
+    "spanish": "lo que tenia",
+    "english": "what I had"
+  },
+  {
+    "spanish": "lo que tiene",
+    "english": "what it has"
+  },
+  {
+    "spanish": "lo tenia en",
+    "english": "I had it in"
+  },
+  {
+    "spanish": "los de un",
+    "english": "those of a"
+  },
+  {
+    "spanish": "los que habia",
+    "english": "those that there were"
   },
   {
     "spanish": "los que lo",
     "english": "those who"
   },
   {
+    "spanish": "los que no",
+    "english": "those who don't"
+  },
+  {
     "spanish": "no era de",
     "english": "It wasn't from"
   },
   {
+    "spanish": "no era para",
+    "english": "It wasn't for"
+  },
+  {
+    "spanish": "no era un",
+    "english": "It wasn't a"
+  },
+  {
+    "spanish": "no era una",
+    "english": "It wasn't a"
+  },
+  {
+    "spanish": "no es de",
+    "english": "It's not from"
+  },
+  {
     "spanish": "no es esta",
     "english": "This is not it"
+  },
+  {
+    "spanish": "no es la",
+    "english": "It is not the"
   },
   {
     "spanish": "no es un",
@@ -13084,6 +13748,10 @@
     "english": "It is not a"
   },
   {
+    "spanish": "no estaba en",
+    "english": "I wasn't in"
+  },
+  {
     "spanish": "no habia de",
     "english": "There was none"
   },
@@ -13092,8 +13760,20 @@
     "english": "There was none in"
   },
   {
+    "spanish": "no habia estado",
+    "english": "I hadn't been"
+  },
+  {
     "spanish": "no habia para",
     "english": "There wasn't enough"
+  },
+  {
+    "spanish": "no no es",
+    "english": "no, it's not"
+  },
+  {
+    "spanish": "no obstante la",
+    "english": "However,"
   },
   {
     "spanish": "no tenia el",
@@ -13108,28 +13788,96 @@
     "english": "for the one"
   },
   {
+    "spanish": "para la que",
+    "english": "for which"
+  },
+  {
+    "spanish": "para lo que",
+    "english": "for what"
+  },
+  {
+    "spanish": "para que el",
+    "english": "so that the"
+  },
+  {
     "spanish": "para que la",
     "english": "so that the"
+  },
+  {
+    "spanish": "pero como es",
+    "english": "But how is it?"
+  },
+  {
+    "spanish": "pero con la",
+    "english": "but with the"
+  },
+  {
+    "spanish": "pero de que",
+    "english": "but what"
   },
   {
     "spanish": "pero en el",
     "english": "but in the"
   },
   {
+    "spanish": "pero en la",
+    "english": "but in the"
+  },
+  {
+    "spanish": "pero es una",
+    "english": "but it's a"
+  },
+  {
     "spanish": "pero lo que",
     "english": "but what"
+  },
+  {
+    "spanish": "pero no es",
+    "english": "but it is not"
+  },
+  {
+    "spanish": "pero no fue",
+    "english": "but it wasn't"
+  },
+  {
+    "spanish": "pero no habia",
+    "english": "but there was none"
+  },
+  {
+    "spanish": "pero no lo",
+    "english": "but not"
   },
   {
     "spanish": "pero que es",
     "english": "But what is it?"
   },
   {
+    "spanish": "pero tuvo que",
+    "english": "but he had to"
+  },
+  {
     "spanish": "pero y el",
     "english": "But what about the"
   },
   {
+    "spanish": "pero ya no",
+    "english": "but not anymore"
+  },
+  {
+    "spanish": "pesar de la",
+    "english": "despite the"
+  },
+  {
+    "spanish": "pesar de lo",
+    "english": "despite what"
+  },
+  {
     "spanish": "pesar de que",
     "english": "despite the fact that"
+  },
+  {
+    "spanish": "por el estado",
+    "english": "by the state"
   },
   {
     "spanish": "por lo que",
@@ -13148,8 +13896,28 @@
     "english": "why not"
   },
   {
+    "spanish": "que a el",
+    "english": "that to him"
+  },
+  {
     "spanish": "que a los",
     "english": "that to the"
+  },
+  {
+    "spanish": "que a pesar",
+    "english": "that despite"
+  },
+  {
+    "spanish": "que como consecuencia",
+    "english": "which as a consequence"
+  },
+  {
+    "spanish": "que con el",
+    "english": "that with the"
+  },
+  {
+    "spanish": "que de una",
+    "english": "that of a"
   },
   {
     "spanish": "que el no",
@@ -13160,8 +13928,20 @@
     "english": "that he and"
   },
   {
+    "spanish": "que en el",
+    "english": "that in the"
+  },
+  {
     "spanish": "que en la",
     "english": "that in the"
+  },
+  {
+    "spanish": "que en los",
+    "english": "that in the"
+  },
+  {
+    "spanish": "que era el",
+    "english": "which was the"
   },
   {
     "spanish": "que era la",
@@ -13170,6 +13950,10 @@
   {
     "spanish": "que era para",
     "english": "which was for"
+  },
+  {
+    "spanish": "que era un",
+    "english": "which was a"
   },
   {
     "spanish": "que era una",
@@ -13184,8 +13968,20 @@
     "english": "which is the"
   },
   {
+    "spanish": "que es en",
+    "english": "which is in"
+  },
+  {
     "spanish": "que es la",
     "english": "which is the"
+  },
+  {
+    "spanish": "que es lo",
+    "english": "which is"
+  },
+  {
+    "spanish": "que es un",
+    "english": "which is a"
   },
   {
     "spanish": "que es una",
@@ -13200,8 +13996,12 @@
     "english": "that this is"
   },
   {
+    "spanish": "que estaba a",
+    "english": "that was"
+  },
+  {
     "spanish": "que estaba en",
-    "english": "that was in"
+    "english": "who was in"
   },
   {
     "spanish": "que estaban en",
@@ -13210,6 +14010,10 @@
   {
     "spanish": "que ha estado",
     "english": "that has been"
+  },
+  {
+    "spanish": "que ha tenido",
+    "english": "that has had"
   },
   {
     "spanish": "que habia de",
@@ -13224,20 +14028,64 @@
     "english": "that had been"
   },
   {
+    "spanish": "que habia que",
+    "english": "that had to"
+  },
+  {
+    "spanish": "que habia tenido",
+    "english": "that had"
+  },
+  {
     "spanish": "que he estado",
     "english": "that I have been"
+  },
+  {
+    "spanish": "que hemos tenido",
+    "english": "that we have had"
+  },
+  {
+    "spanish": "que la de",
+    "english": "than the one of"
+  },
+  {
+    "spanish": "que la que",
+    "english": "that the one"
+  },
+  {
+    "spanish": "que lo ha",
+    "english": "that has"
+  },
+  {
+    "spanish": "que lo habia",
+    "english": "that he had"
+  },
+  {
+    "spanish": "que lo habian",
+    "english": "that they had"
   },
   {
     "spanish": "que lo que",
     "english": "that what"
   },
   {
+    "spanish": "que lo tenia",
+    "english": "that he had it"
+  },
+  {
     "spanish": "que los que",
     "english": "that those who"
   },
   {
+    "spanish": "que no era",
+    "english": "which was not"
+  },
+  {
     "spanish": "que no es",
     "english": "which is not"
+  },
+  {
+    "spanish": "que no fue",
+    "english": "that it wasn't"
   },
   {
     "spanish": "que no ha",
@@ -13260,12 +14108,44 @@
     "english": "that does not have"
   },
   {
+    "spanish": "que por el",
+    "english": "that because of the"
+  },
+  {
+    "spanish": "que por la",
+    "english": "that because of the"
+  },
+  {
+    "spanish": "que por lo",
+    "english": "that because of it"
+  },
+  {
+    "spanish": "que son de",
+    "english": "which are from"
+  },
+  {
+    "spanish": "que tenia en",
+    "english": "that I had in"
+  },
+  {
     "spanish": "que tenia que",
     "english": "that I had to"
   },
   {
     "spanish": "que tenia un",
     "english": "that had a"
+  },
+  {
+    "spanish": "que tiene que",
+    "english": "that has to"
+  },
+  {
+    "spanish": "que una y",
+    "english": "that one and"
+  },
+  {
+    "spanish": "que ya habia",
+    "english": "that there was"
   },
   {
     "spanish": "que ya he",
@@ -13276,20 +14156,128 @@
     "english": "that I already did"
   },
   {
+    "spanish": "que ya no",
+    "english": "that no longer"
+  },
+  {
+    "spanish": "respecto a la",
+    "english": "regarding the"
+  },
+  {
+    "spanish": "se abria de",
+    "english": "it opened"
+  },
+  {
+    "spanish": "se acercaba el",
+    "english": "the"
+  },
+  {
+    "spanish": "se acordara de",
+    "english": "he would remember"
+  },
+  {
+    "spanish": "se alzaba en",
+    "english": "it rose in"
+  },
+  {
+    "spanish": "se apresuraba a",
+    "english": "he was hurrying"
+  },
+  {
+    "spanish": "se atreveria a",
+    "english": "would dare"
+  },
+  {
+    "spanish": "se convierte en",
+    "english": "becomes"
+  },
+  {
+    "spanish": "se donde esta",
+    "english": "I know where it is."
+  },
+  {
+    "spanish": "se donde estan",
+    "english": "I know where they are"
+  },
+  {
+    "spanish": "se encontraba a",
+    "english": "was located"
+  },
+  {
+    "spanish": "se encontraba en",
+    "english": "was in"
+  },
+  {
+    "spanish": "se encuentra en",
+    "english": "is located in"
+  },
+  {
+    "spanish": "se entera de",
+    "english": "finds out"
+  },
+  {
+    "spanish": "se estiraba y",
+    "english": "it stretched and"
+  },
+  {
+    "spanish": "se fijaron en",
+    "english": "they noticed"
+  },
+  {
     "spanish": "se ha dado",
     "english": "has been given"
+  },
+  {
+    "spanish": "se habia dado",
+    "english": "it had been given"
   },
   {
     "spanish": "se hallaba en",
     "english": "was in"
   },
   {
+    "spanish": "se la habia",
+    "english": "she had"
+  },
+  {
     "spanish": "se le ha",
     "english": "has"
   },
   {
+    "spanish": "se le habia",
+    "english": "He had"
+  },
+  {
     "spanish": "se me habia",
     "english": "I had"
+  },
+  {
+    "spanish": "se notaba en",
+    "english": "It was noticeable in"
+  },
+  {
+    "spanish": "se notaba que",
+    "english": "It was noticeable that"
+  },
+  {
+    "spanish": "se ocupara de",
+    "english": "will take care of"
+  },
+  {
+    "spanish": "se pasaba con",
+    "english": "he spent time with"
+  },
+  {
+    "spanish": "se pasan por",
+    "english": "they pass through"
+  },
+  {
+    "spanish": "se piensa que",
+    "english": "it is thought that"
+  },
+  {
+    "spanish": "se pone en",
+    "english": "it is put on"
   },
   {
     "spanish": "se refiere a",
@@ -13300,6 +14288,10 @@
     "english": "It was known that"
   },
   {
+    "spanish": "se sentaban a",
+    "english": "they sat down"
+  },
+  {
     "spanish": "se siente en",
     "english": "it is felt in"
   },
@@ -13308,8 +14300,36 @@
     "english": "It is about"
   },
   {
+    "spanish": "se trataba de",
+    "english": "It was about"
+  },
+  {
+    "spanish": "se ve la",
+    "english": "you can see"
+  },
+  {
+    "spanish": "sin embargo a",
+    "english": "However,"
+  },
+  {
+    "spanish": "sin embargo como",
+    "english": "However, as"
+  },
+  {
     "spanish": "sin embargo el",
     "english": "However, the"
+  },
+  {
+    "spanish": "sin embargo en",
+    "english": "However, in"
+  },
+  {
+    "spanish": "sin embargo la",
+    "english": "However, the"
+  },
+  {
+    "spanish": "sin embargo lo",
+    "english": "However, it"
   },
   {
     "spanish": "sin embargo no",
@@ -13328,12 +14348,52 @@
     "english": "However, one"
   },
   {
+    "spanish": "sin que la",
+    "english": "without the"
+  },
+  {
+    "spanish": "tanto el como",
+    "english": "both he and"
+  },
+  {
+    "spanish": "tanto en la",
+    "english": "both in the"
+  },
+  {
     "spanish": "tenia en la",
     "english": "had in the"
   },
   {
+    "spanish": "tenia en las",
+    "english": "had in the"
+  },
+  {
+    "spanish": "tiene por que",
+    "english": "has to"
+  },
+  {
+    "spanish": "un estado de",
+    "english": "a state of"
+  },
+  {
     "spanish": "una de las",
     "english": "one of the"
+  },
+  {
+    "spanish": "una por una",
+    "english": "one by one"
+  },
+  {
+    "spanish": "y a los",
+    "english": "and to the"
+  },
+  {
+    "spanish": "y a pesar",
+    "english": "and despite"
+  },
+  {
+    "spanish": "y ademas la",
+    "english": "and also the"
   },
   {
     "spanish": "y asi fue",
@@ -13344,15 +14404,39 @@
     "english": "and like the"
   },
   {
+    "spanish": "y como la",
+    "english": "and as the"
+  },
+  {
+    "spanish": "y como lo",
+    "english": "and how it"
+  },
+  {
     "spanish": "y como los",
     "english": "and like the"
+  },
+  {
+    "spanish": "y con el",
+    "english": "and with the"
   },
   {
     "spanish": "y con la",
     "english": "and with the"
   },
   {
+    "spanish": "y con las",
+    "english": "and with the"
+  },
+  {
+    "spanish": "y con los",
+    "english": "and with the"
+  },
+  {
     "spanish": "y con un",
+    "english": "and with a"
+  },
+  {
+    "spanish": "y con una",
     "english": "and with a"
   },
   {
@@ -13368,6 +14452,10 @@
     "english": "and of the"
   },
   {
+    "spanish": "y de un",
+    "english": "and of a"
+  },
+  {
     "spanish": "y en el",
     "english": "and in the"
   },
@@ -13376,12 +14464,28 @@
     "english": "and in the"
   },
   {
+    "spanish": "y en las",
+    "english": "and in the"
+  },
+  {
     "spanish": "y en lo",
     "english": "and in the"
   },
   {
+    "spanish": "y en un",
+    "english": "and in a"
+  },
+  {
+    "spanish": "y es que",
+    "english": "And that's because"
+  },
+  {
     "spanish": "y fue a",
     "english": "and went to"
+  },
+  {
+    "spanish": "y habia una",
+    "english": "and there was a"
   },
   {
     "spanish": "y la de",
@@ -13396,12 +14500,28 @@
     "english": "and what"
   },
   {
+    "spanish": "y no habia",
+    "english": "and there was no"
+  },
+  {
     "spanish": "y no obstante",
     "english": "and yet"
   },
   {
+    "spanish": "y no tenia",
+    "english": "and I didn't have"
+  },
+  {
+    "spanish": "y por el",
+    "english": "and by the"
+  },
+  {
     "spanish": "y por la",
     "english": "and by the"
+  },
+  {
+    "spanish": "y por lo",
+    "english": "and therefore"
   },
   {
     "spanish": "y por que",
@@ -13410,6 +14530,10 @@
   {
     "spanish": "y por una",
     "english": "and for a"
+  },
+  {
+    "spanish": "y que a",
+    "english": "and that"
   },
   {
     "spanish": "y que el",
@@ -13422,6 +14546,10 @@
   {
     "spanish": "y que las",
     "english": "and that the"
+  },
+  {
+    "spanish": "y que lo",
+    "english": "and that it"
   },
   {
     "spanish": "y que no",
@@ -13440,8 +14568,36 @@
     "english": "and yet"
   },
   {
+    "spanish": "y sin que",
+    "english": "and without"
+  },
+  {
     "spanish": "y tenia la",
     "english": "and had the"
+  },
+  {
+    "spanish": "y ya no",
+    "english": "and no longer"
+  },
+  {
+    "spanish": "ya en el",
+    "english": "already in the"
+  },
+  {
+    "spanish": "ya en un",
+    "english": "already in a"
+  },
+  {
+    "spanish": "ya no era",
+    "english": "it was no longer"
+  },
+  {
+    "spanish": "ya no estaba",
+    "english": "He was no longer there"
+  },
+  {
+    "spanish": "ya que no",
+    "english": "since not"
   },
   {
     "spanish": "a pesar",
@@ -13452,8 +14608,20 @@
     "english": "in addition to"
   },
   {
+    "spanish": "ademas el",
+    "english": "Furthermore, the"
+  },
+  {
     "spanish": "ademas es",
     "english": "Furthermore, it is"
+  },
+  {
+    "spanish": "ademas la",
+    "english": "Furthermore, the"
+  },
+  {
+    "spanish": "ademas no",
+    "english": "Furthermore, no"
   },
   {
     "spanish": "ademas que",
@@ -13472,8 +14640,28 @@
     "english": "That's how it was"
   },
   {
+    "spanish": "asi habia",
+    "english": "so there was"
+  },
+  {
+    "spanish": "asi para",
+    "english": "so for"
+  },
+  {
     "spanish": "asi por",
     "english": "so"
+  },
+  {
+    "spanish": "asi que",
+    "english": "so"
+  },
+  {
+    "spanish": "como con",
+    "english": "as with"
+  },
+  {
+    "spanish": "como consecuencia",
+    "english": "as a result"
   },
   {
     "spanish": "como de",
@@ -13488,12 +14676,20 @@
     "english": "as in"
   },
   {
+    "spanish": "como era",
+    "english": "what was it like"
+  },
+  {
     "spanish": "como es",
     "english": "how is"
   },
   {
     "spanish": "como esta",
     "english": "how are you"
+  },
+  {
+    "spanish": "como estaba",
+    "english": "how was"
   },
   {
     "spanish": "como fue",
@@ -13506,6 +14702,10 @@
   {
     "spanish": "como habia",
     "english": "as there was"
+  },
+  {
+    "spanish": "como habian",
+    "english": "as they had"
   },
   {
     "spanish": "como he",
@@ -13540,8 +14740,20 @@
     "english": "as for"
   },
   {
+    "spanish": "como que",
+    "english": "like what"
+  },
+  {
+    "spanish": "como sea",
+    "english": "one way or the other"
+  },
+  {
     "spanish": "como son",
     "english": "such as"
+  },
+  {
+    "spanish": "como tenia",
+    "english": "as I had"
   },
   {
     "spanish": "como un",
@@ -13550,6 +14762,14 @@
   {
     "spanish": "como una",
     "english": "like a"
+  },
+  {
+    "spanish": "como ya",
+    "english": "as already"
+  },
+  {
+    "spanish": "con esta",
+    "english": "with this"
   },
   {
     "spanish": "con las",
@@ -13572,11 +14792,23 @@
     "english": "with a"
   },
   {
+    "spanish": "consecuencia de",
+    "english": "as a consequence of"
+  },
+  {
+    "spanish": "dado de",
+    "english": "given"
+  },
+  {
     "spanish": "dado la",
     "english": "given the"
   },
   {
     "spanish": "dado un",
+    "english": "given a"
+  },
+  {
+    "spanish": "dado una",
     "english": "given a"
   },
   {
@@ -13588,16 +14820,56 @@
     "english": "to regret"
   },
   {
+    "spanish": "de tanto",
+    "english": "so much"
+  },
+  {
+    "spanish": "el como",
+    "english": "the how"
+  },
+  {
+    "spanish": "el estaba",
+    "english": "he was"
+  },
+  {
     "spanish": "el estado",
     "english": "the state"
+  },
+  {
+    "spanish": "el habia",
+    "english": "he had"
   },
   {
     "spanish": "el para",
     "english": "the for"
   },
   {
+    "spanish": "el pero",
+    "english": "the but"
+  },
+  {
+    "spanish": "embargo a",
+    "english": "embargo to"
+  },
+  {
+    "spanish": "embargo como",
+    "english": "however as"
+  },
+  {
     "spanish": "embargo el",
     "english": "however the"
+  },
+  {
+    "spanish": "embargo en",
+    "english": "embargo in"
+  },
+  {
+    "spanish": "embargo la",
+    "english": "however the"
+  },
+  {
+    "spanish": "embargo lo",
+    "english": "however"
   },
   {
     "spanish": "embargo no",
@@ -13616,8 +14888,16 @@
     "english": "however one"
   },
   {
+    "spanish": "en como",
+    "english": "in how"
+  },
+  {
     "spanish": "en esta",
     "english": "herein"
+  },
+  {
+    "spanish": "era como",
+    "english": "it was like"
   },
   {
     "spanish": "era demasiado",
@@ -13636,6 +14916,10 @@
     "english": "was that"
   },
   {
+    "spanish": "era sin",
+    "english": "it was without"
+  },
+  {
     "spanish": "era una",
     "english": "It was a"
   },
@@ -13652,8 +14936,16 @@
     "english": "were the"
   },
   {
+    "spanish": "eran ya",
+    "english": "they were already"
+  },
+  {
     "spanish": "es abogado",
     "english": "He is a lawyer"
+  },
+  {
+    "spanish": "es como",
+    "english": "It's like"
   },
   {
     "spanish": "es demasiado",
@@ -13676,12 +14968,20 @@
     "english": "This is too much"
   },
   {
+    "spanish": "esta el",
+    "english": "this"
+  },
+  {
     "spanish": "esta en",
     "english": "this is in"
   },
   {
     "spanish": "esta es",
     "english": "This is"
+  },
+  {
+    "spanish": "esta escondido",
+    "english": "It's hidden."
   },
   {
     "spanish": "esta la",
@@ -13708,8 +15008,28 @@
     "english": "was"
   },
   {
+    "spanish": "estaba acostumbrado",
+    "english": "I was used to it"
+  },
+  {
     "spanish": "estaba agujereado",
     "english": "It was riddled with holes."
+  },
+  {
+    "spanish": "estaba cargado",
+    "english": "It was loaded"
+  },
+  {
+    "spanish": "estaba colgado",
+    "english": "he was hanging"
+  },
+  {
+    "spanish": "estaba como",
+    "english": "I was like"
+  },
+  {
+    "spanish": "estaba convencido",
+    "english": "I was convinced"
   },
   {
     "spanish": "estaba cuando",
@@ -13724,8 +15044,20 @@
     "english": "he was lying down"
   },
   {
+    "spanish": "estaba el",
+    "english": "there was"
+  },
+  {
     "spanish": "estaba en",
     "english": "was in"
+  },
+  {
+    "spanish": "estaba formado",
+    "english": "it was formed"
+  },
+  {
+    "spanish": "estaba la",
+    "english": "there was"
   },
   {
     "spanish": "estaba que",
@@ -13736,12 +15068,20 @@
     "english": "I was sitting"
   },
   {
+    "spanish": "estaba y",
+    "english": "was and"
+  },
+  {
     "spanish": "estaba ya",
     "english": "I was already"
   },
   {
     "spanish": "estaban en",
     "english": "were in"
+  },
+  {
+    "spanish": "estaban sentados",
+    "english": "They were sitting"
   },
   {
     "spanish": "estado con",
@@ -13756,6 +15096,10 @@
     "english": "state in"
   },
   {
+    "spanish": "estado un",
+    "english": "state a"
+  },
+  {
     "spanish": "estan las",
     "english": "there are the"
   },
@@ -13764,16 +15108,52 @@
     "english": "there are the"
   },
   {
+    "spanish": "estuvo a",
+    "english": "was"
+  },
+  {
+    "spanish": "estuvo con",
+    "english": "was with"
+  },
+  {
+    "spanish": "estuvo en",
+    "english": "was in"
+  },
+  {
     "spanish": "fue arrestado",
     "english": "He was arrested"
+  },
+  {
+    "spanish": "fue asi",
+    "english": "That's how it was"
   },
   {
     "spanish": "fue como",
     "english": "it was like"
   },
   {
+    "spanish": "fue que",
+    "english": "was that"
+  },
+  {
+    "spanish": "fue una",
+    "english": "It was a"
+  },
+  {
+    "spanish": "fueron en",
+    "english": "were in"
+  },
+  {
+    "spanish": "ha acertado",
+    "english": "He was right"
+  },
+  {
     "spanish": "ha arrojado",
     "english": "has thrown"
+  },
+  {
+    "spanish": "ha caido",
+    "english": "has fallen"
   },
   {
     "spanish": "ha cometido",
@@ -13782,6 +15162,26 @@
   {
     "spanish": "ha dado",
     "english": "has given"
+  },
+  {
+    "spanish": "ha deducido",
+    "english": "has deduced"
+  },
+  {
+    "spanish": "ha desaparecido",
+    "english": "has disappeared"
+  },
+  {
+    "spanish": "ha dinado",
+    "english": "has died"
+  },
+  {
+    "spanish": "ha dormido",
+    "english": "has slept"
+  },
+  {
+    "spanish": "ha elegido",
+    "english": "has chosen"
   },
   {
     "spanish": "ha empleado",
@@ -13812,6 +15212,14 @@
     "english": "has arrived"
   },
   {
+    "spanish": "ha marchado",
+    "english": "has left"
+  },
+  {
+    "spanish": "ha metido",
+    "english": "has put"
+  },
+  {
     "spanish": "ha ocurrido",
     "english": "has happened"
   },
@@ -13828,6 +15236,10 @@
     "english": "has lost"
   },
   {
+    "spanish": "ha podido",
+    "english": "has been able"
+  },
+  {
     "spanish": "ha prestado",
     "english": "has lent"
   },
@@ -13836,8 +15248,16 @@
     "english": "has produced"
   },
   {
+    "spanish": "ha quedado",
+    "english": "has remained"
+  },
+  {
     "spanish": "ha recibido",
     "english": "has received"
+  },
+  {
+    "spanish": "ha recuperado",
+    "english": "has recovered"
   },
   {
     "spanish": "ha sabido",
@@ -13846,6 +15266,10 @@
   {
     "spanish": "ha salido",
     "english": "has come out"
+  },
+  {
+    "spanish": "ha seguido",
+    "english": "has continued"
   },
   {
     "spanish": "ha sido",
@@ -13868,24 +15292,96 @@
     "english": "It has ended"
   },
   {
+    "spanish": "ha traido",
+    "english": "has brought"
+  },
+  {
     "spanish": "ha venido",
     "english": "has come"
+  },
+  {
+    "spanish": "habia abandonado",
+    "english": "had abandoned"
+  },
+  {
+    "spanish": "habia aclarado",
+    "english": "had clarified"
+  },
+  {
+    "spanish": "habia acostado",
+    "english": "had gone to bed"
+  },
+  {
+    "spanish": "habia acostumbrado",
+    "english": "I had gotten used to it"
+  },
+  {
+    "spanish": "habia adoptado",
+    "english": "had adopted"
   },
   {
     "spanish": "habia advertido",
     "english": "had warned"
   },
   {
+    "spanish": "habia alcanzado",
+    "english": "had reached"
+  },
+  {
+    "spanish": "habia animado",
+    "english": "had cheered"
+  },
+  {
     "spanish": "habia apartado",
     "english": "There was a setback"
+  },
+  {
+    "spanish": "habia apoderado",
+    "english": "had taken charge"
+  },
+  {
+    "spanish": "habia aprendido",
+    "english": "had learned"
+  },
+  {
+    "spanish": "habia apresurado",
+    "english": "had hurried"
+  },
+  {
+    "spanish": "habia atravesado",
+    "english": "had crossed"
   },
   {
     "spanish": "habia caido",
     "english": "had fallen"
   },
   {
+    "spanish": "habia colocado",
+    "english": "had placed"
+  },
+  {
+    "spanish": "habia cometido",
+    "english": "had committed"
+  },
+  {
+    "spanish": "habia comido",
+    "english": "had eaten"
+  },
+  {
+    "spanish": "habia conducido",
+    "english": "had driven"
+  },
+  {
     "spanish": "habia conocido",
     "english": "had met"
+  },
+  {
+    "spanish": "habia conseguido",
+    "english": "had managed"
+  },
+  {
+    "spanish": "habia convertido",
+    "english": "had converted"
   },
   {
     "spanish": "habia corrido",
@@ -13904,12 +15400,28 @@
     "english": "there was"
   },
   {
+    "spanish": "habia decidido",
+    "english": "had decided"
+  },
+  {
     "spanish": "habia dejado",
     "english": "had left"
   },
   {
     "spanish": "habia desaparecido",
     "english": "had disappeared"
+  },
+  {
+    "spanish": "habia deslizado",
+    "english": "had slipped"
+  },
+  {
+    "spanish": "habia dormido",
+    "english": "had slept"
+  },
+  {
+    "spanish": "habia empezado",
+    "english": "had begun"
   },
   {
     "spanish": "habia en",
@@ -13924,8 +15436,24 @@
     "english": "had entered"
   },
   {
+    "spanish": "habia enviado",
+    "english": "had sent"
+  },
+  {
+    "spanish": "habia esperado",
+    "english": "I had expected"
+  },
+  {
     "spanish": "habia estado",
     "english": "had been"
+  },
+  {
+    "spanish": "habia fallado",
+    "english": "had failed"
+  },
+  {
+    "spanish": "habia fallecido",
+    "english": "had died"
   },
   {
     "spanish": "habia habido",
@@ -13940,6 +15468,14 @@
     "english": "had gone"
   },
   {
+    "spanish": "habia jurado",
+    "english": "I had sworn"
+  },
+  {
+    "spanish": "habia levantado",
+    "english": "had lifted"
+  },
+  {
     "spanish": "habia llegado",
     "english": "had arrived"
   },
@@ -13948,8 +15484,16 @@
     "english": "had taken"
   },
   {
+    "spanish": "habia logrado",
+    "english": "had managed"
+  },
+  {
     "spanish": "habia notado",
     "english": "I had noticed"
+  },
+  {
+    "spanish": "habia observado",
+    "english": "had observed"
   },
   {
     "spanish": "habia ocurrido",
@@ -13976,6 +15520,26 @@
     "english": "had happened"
   },
   {
+    "spanish": "habia pedido",
+    "english": "I had asked"
+  },
+  {
+    "spanish": "habia pensado",
+    "english": "I had thought"
+  },
+  {
+    "spanish": "habia perdido",
+    "english": "I had lost"
+  },
+  {
+    "spanish": "habia permanecido",
+    "english": "had remained"
+  },
+  {
+    "spanish": "habia producido",
+    "english": "had produced"
+  },
+  {
     "spanish": "habia que",
     "english": "it was necessary"
   },
@@ -13988,8 +15552,44 @@
     "english": "had received"
   },
   {
+    "spanish": "habia recuperado",
+    "english": "had recovered"
+  },
+  {
+    "spanish": "habia regresado",
+    "english": "had returned"
+  },
+  {
+    "spanish": "habia resultado",
+    "english": "It had turned out"
+  },
+  {
+    "spanish": "habia reunido",
+    "english": "had gathered"
+  },
+  {
+    "spanish": "habia robado",
+    "english": "had stolen"
+  },
+  {
+    "spanish": "habia sacado",
+    "english": "had taken out"
+  },
+  {
     "spanish": "habia salido",
     "english": "had left"
+  },
+  {
+    "spanish": "habia seguido",
+    "english": "had followed"
+  },
+  {
+    "spanish": "habia sentado",
+    "english": "had sat"
+  },
+  {
+    "spanish": "habia sentido",
+    "english": "had felt"
   },
   {
     "spanish": "habia sido",
@@ -14000,12 +15600,20 @@
     "english": "had happened"
   },
   {
+    "spanish": "habia superado",
+    "english": "had overcome"
+  },
+  {
     "spanish": "habia tenido",
     "english": "had had"
   },
   {
     "spanish": "habia terminado",
     "english": "It had ended"
+  },
+  {
+    "spanish": "habia tomado",
+    "english": "had taken"
   },
   {
     "spanish": "habia un",
@@ -14016,6 +15624,18 @@
     "english": "There was a"
   },
   {
+    "spanish": "habia vendido",
+    "english": "had sold"
+  },
+  {
+    "spanish": "habian acostumbrado",
+    "english": "they had become accustomed"
+  },
+  {
+    "spanish": "habian caido",
+    "english": "had fallen"
+  },
+  {
     "spanish": "habian conocido",
     "english": "had met"
   },
@@ -14024,44 +15644,144 @@
     "english": "had given"
   },
   {
+    "spanish": "habian ido",
+    "english": "had gone"
+  },
+  {
     "spanish": "habian llamado",
     "english": "They had called"
+  },
+  {
+    "spanish": "habian llegado",
+    "english": "had arrived"
+  },
+  {
+    "spanish": "habian pasado",
+    "english": "had passed"
+  },
+  {
+    "spanish": "habian salido",
+    "english": "had left"
   },
   {
     "spanish": "habian sido",
     "english": "had been"
   },
   {
+    "spanish": "habian traido",
+    "english": "they had brought"
+  },
+  {
+    "spanish": "habiendo tenido",
+    "english": "having had"
+  },
+  {
+    "spanish": "habra que",
+    "english": "We will have to"
+  },
+  {
     "spanish": "han burlado",
     "english": "have mocked"
+  },
+  {
+    "spanish": "han dado",
+    "english": "have given"
+  },
+  {
+    "spanish": "han desaparecido",
+    "english": "have disappeared"
+  },
+  {
+    "spanish": "han estado",
+    "english": "have been"
+  },
+  {
+    "spanish": "han permitido",
+    "english": "have allowed"
+  },
+  {
+    "spanish": "han robado",
+    "english": "they have stolen"
   },
   {
     "spanish": "han sido",
     "english": "have been"
   },
   {
+    "spanish": "han tenido",
+    "english": "have had"
+  },
+  {
+    "spanish": "he acudido",
+    "english": "I have come"
+  },
+  {
+    "spanish": "he aprovechado",
+    "english": "I have taken advantage"
+  },
+  {
+    "spanish": "he conocido",
+    "english": "I have met"
+  },
+  {
     "spanish": "he consagrado",
     "english": "I have consecrated"
+  },
+  {
+    "spanish": "he conseguido",
+    "english": "I have managed"
+  },
+  {
+    "spanish": "he considerado",
+    "english": "I have considered"
+  },
+  {
+    "spanish": "he contado",
+    "english": "I have counted"
   },
   {
     "spanish": "he dado",
     "english": "I have given"
   },
   {
+    "spanish": "he empleado",
+    "english": "I have used"
+  },
+  {
     "spanish": "he estado",
     "english": "I have been"
+  },
+  {
+    "spanish": "he fijado",
+    "english": "I have fixed"
   },
   {
     "spanish": "he llegado",
     "english": "I have arrived"
   },
   {
+    "spanish": "he llevado",
+    "english": "I have worn"
+  },
+  {
     "spanish": "he oido",
     "english": "I have heard"
   },
   {
+    "spanish": "he pasado",
+    "english": "I have spent"
+  },
+  {
+    "spanish": "he pensado",
+    "english": "I've thought"
+  },
+  {
     "spanish": "he podido",
     "english": "I have been able"
+  },
+  {
+    "spanish": "he recibido",
+    "english": "I have received"
   },
   {
     "spanish": "he sabido",
@@ -14080,12 +15800,24 @@
     "english": "I have been"
   },
   {
+    "spanish": "he tenido",
+    "english": "I have had"
+  },
+  {
     "spanish": "he tomado",
     "english": "I have taken"
   },
   {
+    "spanish": "he traido",
+    "english": "I have brought"
+  },
+  {
     "spanish": "he venido",
     "english": "I have come"
+  },
+  {
+    "spanish": "he vivido",
+    "english": "I have lived"
   },
   {
     "spanish": "hemos de",
@@ -14100,12 +15832,36 @@
     "english": "we have arrived"
   },
   {
+    "spanish": "hemos tenido",
+    "english": "we have had"
+  },
+  {
+    "spanish": "hubo que",
+    "english": "it was necessary to"
+  },
+  {
+    "spanish": "hubo una",
+    "english": "There was a"
+  },
+  {
+    "spanish": "la habia",
+    "english": "there was"
+  },
+  {
+    "spanish": "la habian",
+    "english": "they had"
+  },
+  {
     "spanish": "la tiene",
     "english": "has it"
   },
   {
     "spanish": "las que",
     "english": "those that"
+  },
+  {
+    "spanish": "lo estaba",
+    "english": "I was"
   },
   {
     "spanish": "lo habia",
@@ -14124,12 +15880,20 @@
     "english": "Therefore"
   },
   {
+    "spanish": "lo tenia",
+    "english": "I had it"
+  },
+  {
     "spanish": "lo tiene",
     "english": "He has it"
   },
   {
     "spanish": "los que",
     "english": "those who"
+  },
+  {
+    "spanish": "no eran",
+    "english": "They were not"
   },
   {
     "spanish": "no esta",
@@ -14140,8 +15904,20 @@
     "english": "I wasn't there"
   },
   {
+    "spanish": "no estaban",
+    "english": "They weren't"
+  },
+  {
     "spanish": "no habia",
     "english": "there was no"
+  },
+  {
+    "spanish": "no habian",
+    "english": "there were no"
+  },
+  {
+    "spanish": "no hemos",
+    "english": "we have not"
   },
   {
     "spanish": "no hubo",
@@ -14164,6 +15940,14 @@
     "english": "It does not have"
   },
   {
+    "spanish": "no tienen",
+    "english": "They don't have"
+  },
+  {
+    "spanish": "obstante la",
+    "english": "However the"
+  },
+  {
     "spanish": "para con",
     "english": "for with"
   },
@@ -14172,11 +15956,19 @@
     "english": "for the"
   },
   {
+    "spanish": "para esta",
+    "english": "for this"
+  },
+  {
     "spanish": "para la",
     "english": "for the"
   },
   {
     "spanish": "para las",
+    "english": "for the"
+  },
+  {
+    "spanish": "para lo",
     "english": "for the"
   },
   {
@@ -14192,8 +15984,16 @@
     "english": "so that"
   },
   {
+    "spanish": "para un",
+    "english": "for a"
+  },
+  {
     "spanish": "para una",
     "english": "for a"
+  },
+  {
+    "spanish": "pero asi",
+    "english": "but so"
   },
   {
     "spanish": "pero como",
@@ -14224,6 +16024,18 @@
     "english": "but this"
   },
   {
+    "spanish": "pero estaba",
+    "english": "but it was"
+  },
+  {
+    "spanish": "pero habia",
+    "english": "but there was"
+  },
+  {
+    "spanish": "pero he",
+    "english": "but I have"
+  },
+  {
     "spanish": "pero la",
     "english": "but the"
   },
@@ -14244,6 +16056,10 @@
     "english": "but not"
   },
   {
+    "spanish": "pero para",
+    "english": "but for"
+  },
+  {
     "spanish": "pero por",
     "english": "but because"
   },
@@ -14256,6 +16072,14 @@
     "english": "but without"
   },
   {
+    "spanish": "pero tiene",
+    "english": "but it has"
+  },
+  {
+    "spanish": "pero tuvo",
+    "english": "but it had"
+  },
+  {
     "spanish": "pero un",
     "english": "but a"
   },
@@ -14264,8 +16088,16 @@
     "english": "but one"
   },
   {
+    "spanish": "pero ya",
+    "english": "but already"
+  },
+  {
     "spanish": "pesar de",
     "english": "despite"
+  },
+  {
+    "spanish": "por esta",
+    "english": "for this"
   },
   {
     "spanish": "por las",
@@ -14284,12 +16116,28 @@
     "english": "for one"
   },
   {
+    "spanish": "que ademas",
+    "english": "which also"
+  },
+  {
+    "spanish": "que asi",
+    "english": "that way"
+  },
+  {
+    "spanish": "que como",
+    "english": "that as"
+  },
+  {
     "spanish": "que con",
     "english": "that with"
   },
   {
     "spanish": "que era",
     "english": "which was"
+  },
+  {
+    "spanish": "que eran",
+    "english": "which were"
   },
   {
     "spanish": "que esta",
@@ -14312,12 +16160,20 @@
     "english": "which was"
   },
   {
+    "spanish": "que fueron",
+    "english": "who were"
+  },
+  {
     "spanish": "que habia",
     "english": "that there was"
   },
   {
     "spanish": "que habian",
     "english": "that there were"
+  },
+  {
+    "spanish": "que habra",
+    "english": "that there will be"
   },
   {
     "spanish": "que han",
@@ -14348,6 +16204,10 @@
     "english": "let it be"
   },
   {
+    "spanish": "que sean",
+    "english": "that they be"
+  },
+  {
     "spanish": "que sin",
     "english": "that without"
   },
@@ -14356,8 +16216,16 @@
     "english": "which are"
   },
   {
+    "spanish": "que tanto",
+    "english": "that much"
+  },
+  {
     "spanish": "que tenia",
     "english": "that had"
+  },
+  {
+    "spanish": "que tenian",
+    "english": "that they had"
   },
   {
     "spanish": "que tiene",
@@ -14366,6 +16234,10 @@
   {
     "spanish": "que tienen",
     "english": "that they have"
+  },
+  {
+    "spanish": "que tuvieron",
+    "english": "that they had"
   },
   {
     "spanish": "que tuvo",
@@ -14380,6 +16252,10 @@
     "english": "regarding"
   },
   {
+    "spanish": "se abre",
+    "english": "opens"
+  },
+  {
     "spanish": "se abria",
     "english": "it opened"
   },
@@ -14388,28 +16264,156 @@
     "english": "was approaching"
   },
   {
+    "spanish": "se acercaban",
+    "english": "were approaching"
+  },
+  {
     "spanish": "se acordara",
     "english": "it was agreed"
+  },
+  {
+    "spanish": "se acuerda",
+    "english": "it is agreed"
   },
   {
     "spanish": "se afeita",
     "english": "He shaves"
   },
   {
+    "spanish": "se alzaba",
+    "english": "it rose"
+  },
+  {
+    "spanish": "se apresuraba",
+    "english": "he was hurrying"
+  },
+  {
+    "spanish": "se atreveria",
+    "english": "would dare"
+  },
+  {
+    "spanish": "se cernia",
+    "english": "it hovers"
+  },
+  {
     "spanish": "se chancea",
     "english": "jokes"
+  },
+  {
+    "spanish": "se convierte",
+    "english": "it becomes"
+  },
+  {
+    "spanish": "se daba",
+    "english": "it was given"
+  },
+  {
+    "spanish": "se daban",
+    "english": "were given"
+  },
+  {
+    "spanish": "se debian",
+    "english": "they owed"
+  },
+  {
+    "spanish": "se decia",
+    "english": "it was said"
+  },
+  {
+    "spanish": "se deduce",
+    "english": "it follows"
+  },
+  {
+    "spanish": "se dejaba",
+    "english": "it was left"
+  },
+  {
+    "spanish": "se descubre",
+    "english": "it is discovered"
+  },
+  {
+    "spanish": "se desliza",
+    "english": "slides"
+  },
+  {
+    "spanish": "se detenia",
+    "english": "it stopped"
+  },
+  {
+    "spanish": "se detuvieran",
+    "english": "stop"
+  },
+  {
+    "spanish": "se detuvieron",
+    "english": "They stopped"
+  },
+  {
+    "spanish": "se diera",
+    "english": "it would happen"
   },
   {
     "spanish": "se dirigia",
     "english": "he was heading"
   },
   {
+    "spanish": "se dirigian",
+    "english": "they were heading"
+  },
+  {
     "spanish": "se donde",
     "english": "I know where"
   },
   {
+    "spanish": "se encontraba",
+    "english": "was"
+  },
+  {
+    "spanish": "se encontrara",
+    "english": "would be found"
+  },
+  {
+    "spanish": "se encuentra",
+    "english": "is found"
+  },
+  {
+    "spanish": "se entera",
+    "english": "finds out"
+  },
+  {
+    "spanish": "se enteraba",
+    "english": "he found out"
+  },
+  {
+    "spanish": "se esta",
+    "english": "this is"
+  },
+  {
+    "spanish": "se estaba",
+    "english": "it was"
+  },
+  {
+    "spanish": "se estiraba",
+    "english": "it stretched"
+  },
+  {
+    "spanish": "se extendia",
+    "english": "it extended"
+  },
+  {
+    "spanish": "se extendian",
+    "english": "they extended"
+  },
+  {
     "spanish": "se extiende",
     "english": "extends"
+  },
+  {
+    "spanish": "se fijaron",
+    "english": "they noticed"
+  },
+  {
+    "spanish": "se fueron",
+    "english": "They left"
   },
   {
     "spanish": "se gastan",
@@ -14424,6 +16428,18 @@
     "english": "they had"
   },
   {
+    "spanish": "se hablaba",
+    "english": "it was being said"
+  },
+  {
+    "spanish": "se habria",
+    "english": "it would have"
+  },
+  {
+    "spanish": "se hacia",
+    "english": "it was done"
+  },
+  {
     "spanish": "se halla",
     "english": "is found"
   },
@@ -14432,20 +16448,132 @@
     "english": "was"
   },
   {
+    "spanish": "se haya",
+    "english": "it is found"
+  },
+  {
+    "spanish": "se hiciera",
+    "english": "it was done"
+  },
+  {
     "spanish": "se hubiera",
     "english": "it would have"
+  },
+  {
+    "spanish": "se hubiese",
+    "english": "it would have"
+  },
+  {
+    "spanish": "se iban",
+    "english": "they were leaving"
   },
   {
     "spanish": "se imagina",
     "english": "imagine"
   },
   {
+    "spanish": "se levantaba",
+    "english": "he got up"
+  },
+  {
+    "spanish": "se levantaron",
+    "english": "they got up"
+  },
+  {
     "spanish": "se llama",
     "english": "is called"
   },
   {
+    "spanish": "se llamaba",
+    "english": "It was called"
+  },
+  {
+    "spanish": "se marchaba",
+    "english": "he was leaving"
+  },
+  {
+    "spanish": "se marcharia",
+    "english": "he would leave"
+  },
+  {
+    "spanish": "se marcharon",
+    "english": "They left"
+  },
+  {
+    "spanish": "se movia",
+    "english": "it was moving"
+  },
+  {
+    "spanish": "se movian",
+    "english": "they were moving"
+  },
+  {
+    "spanish": "se moviese",
+    "english": "moved"
+  },
+  {
+    "spanish": "se necesitan",
+    "english": "are needed"
+  },
+  {
+    "spanish": "se negaba",
+    "english": "he refused"
+  },
+  {
+    "spanish": "se notaba",
+    "english": "It was noticeable"
+  },
+  {
+    "spanish": "se ocupara",
+    "english": "would take care of it"
+  },
+  {
+    "spanish": "se oian",
+    "english": "they could be heard"
+  },
+  {
+    "spanish": "se paraba",
+    "english": "it stopped"
+  },
+  {
+    "spanish": "se pasaba",
+    "english": "it was happening"
+  },
+  {
+    "spanish": "se pasan",
+    "english": "They go too far"
+  },
+  {
     "spanish": "se paseaba",
     "english": "he was strolling"
+  },
+  {
+    "spanish": "se piensa",
+    "english": "it is thought"
+  },
+  {
+    "spanish": "se podia",
+    "english": "it was possible"
+  },
+  {
+    "spanish": "se podian",
+    "english": "they could"
+  },
+  {
+    "spanish": "se pone",
+    "english": "it gets"
+  },
+  {
+    "spanish": "se ponga",
+    "english": "put"
+  },
+  {
+    "spanish": "se precipita",
+    "english": "it rushes"
+  },
+  {
+    "spanish": "se preocupe",
+    "english": "worry"
   },
   {
     "spanish": "se preparaba",
@@ -14460,6 +16588,14 @@
     "english": "will be presented"
   },
   {
+    "spanish": "se produciria",
+    "english": "would occur"
+  },
+  {
+    "spanish": "se propone",
+    "english": "it is proposed"
+  },
+  {
     "spanish": "se puede",
     "english": "can"
   },
@@ -14468,24 +16604,80 @@
     "english": "they can"
   },
   {
+    "spanish": "se queda",
+    "english": "stays"
+  },
+  {
+    "spanish": "se quedaba",
+    "english": "he stayed"
+  },
+  {
+    "spanish": "se quede",
+    "english": "stay"
+  },
+  {
     "spanish": "se refiere",
     "english": "refers to"
+  },
+  {
+    "spanish": "se reflejaba",
+    "english": "it was reflected"
+  },
+  {
+    "spanish": "se repetia",
+    "english": "it was repeated"
   },
   {
     "spanish": "se sabia",
     "english": "it was known"
   },
   {
+    "spanish": "se sentaban",
+    "english": "they sat down"
+  },
+  {
+    "spanish": "se sentia",
+    "english": "she felt"
+  },
+  {
     "spanish": "se siente",
     "english": "it feels"
+  },
+  {
+    "spanish": "se tambaleaba",
+    "english": "it was swaying"
   },
   {
     "spanish": "se trata",
     "english": "It is about"
   },
   {
+    "spanish": "se trataba",
+    "english": "It was"
+  },
+  {
     "spanish": "se tratara",
     "english": "it would be"
+  },
+  {
+    "spanish": "se vaya",
+    "english": "leave"
+  },
+  {
+    "spanish": "se veia",
+    "english": "it looked"
+  },
+  {
+    "spanish": "se volvia",
+    "english": "it turned"
+  },
+  {
+    "spanish": "se volvieron",
+    "english": "they turned"
+  },
+  {
+    "spanish": "se vuelve",
+    "english": "it becomes"
   },
   {
     "spanish": "sea como",
@@ -14500,6 +16692,10 @@
     "english": "without"
   },
   {
+    "spanish": "sin una",
+    "english": "without a"
+  },
+  {
     "spanish": "son las",
     "english": "are the"
   },
@@ -14512,6 +16708,18 @@
     "english": "They are because"
   },
   {
+    "spanish": "tanto a",
+    "english": "both to"
+  },
+  {
+    "spanish": "tanto como",
+    "english": "as much as"
+  },
+  {
+    "spanish": "tanto de",
+    "english": "both of"
+  },
+  {
     "spanish": "tanto el",
     "english": "both the"
   },
@@ -14520,12 +16728,28 @@
     "english": "both in"
   },
   {
+    "spanish": "tanto la",
+    "english": "both the"
+  },
+  {
+    "spanish": "tanto lo",
+    "english": "so much so"
+  },
+  {
     "spanish": "tanto por",
     "english": "therefore"
   },
   {
     "spanish": "tanto que",
     "english": "so much so that"
+  },
+  {
+    "spanish": "tendra que",
+    "english": "will have to"
+  },
+  {
+    "spanish": "tenia a",
+    "english": "had"
   },
   {
     "spanish": "tenia de",
@@ -14548,6 +16772,10 @@
     "english": "had the"
   },
   {
+    "spanish": "tenia los",
+    "english": "I had the"
+  },
+  {
     "spanish": "tenia que",
     "english": "I had to"
   },
@@ -14564,12 +16792,36 @@
     "english": "I already had"
   },
   {
+    "spanish": "tenian las",
+    "english": "they had the"
+  },
+  {
+    "spanish": "tenian sellados",
+    "english": "they had sealed"
+  },
+  {
+    "spanish": "tenian un",
+    "english": "they had a"
+  },
+  {
+    "spanish": "tenian una",
+    "english": "They had a"
+  },
+  {
     "spanish": "tenido el",
+    "english": "had the"
+  },
+  {
+    "spanish": "tenido la",
     "english": "had the"
   },
   {
     "spanish": "tenido que",
     "english": "had to"
+  },
+  {
+    "spanish": "teniendo en",
+    "english": "having in"
   },
   {
     "spanish": "tiene el",
@@ -14584,6 +16836,10 @@
     "english": "has the"
   },
   {
+    "spanish": "tiene por",
+    "english": "has by"
+  },
+  {
     "spanish": "tiene que",
     "english": "has to"
   },
@@ -14592,12 +16848,44 @@
     "english": "has a"
   },
   {
+    "spanish": "tiene una",
+    "english": "has a"
+  },
+  {
     "spanish": "tienen por",
     "english": "they have for"
   },
   {
+    "spanish": "tienen que",
+    "english": "they have to"
+  },
+  {
+    "spanish": "tienen un",
+    "english": "They have a"
+  },
+  {
+    "spanish": "tienen una",
+    "english": "They have a"
+  },
+  {
+    "spanish": "tuvieron que",
+    "english": "they had to"
+  },
+  {
     "spanish": "tuvo el",
     "english": "had the"
+  },
+  {
+    "spanish": "tuvo que",
+    "english": "had to"
+  },
+  {
+    "spanish": "un estado",
+    "english": "a state"
+  },
+  {
+    "spanish": "una por",
+    "english": "one per"
   },
   {
     "spanish": "una que",
@@ -14612,8 +16900,16 @@
     "english": "and was"
   },
   {
+    "spanish": "y estuvo",
+    "english": "and was"
+  },
+  {
     "spanish": "y habia",
     "english": "and there was"
+  },
+  {
+    "spanish": "y habiendo",
+    "english": "and having"
   },
   {
     "spanish": "y tenia",
@@ -14624,7 +16920,31 @@
     "english": "and has"
   },
   {
+    "spanish": "ya esta",
+    "english": "that's it"
+  },
+  {
+    "spanish": "ya estaba",
+    "english": "I was already there"
+  },
+  {
+    "spanish": "ya estaban",
+    "english": "They were already there"
+  },
+  {
     "spanish": "ya habia",
     "english": "there already was"
+  },
+  {
+    "spanish": "ya habian",
+    "english": "there were already"
+  },
+  {
+    "spanish": "ya hemos",
+    "english": "we have already"
+  },
+  {
+    "spanish": "ya tenia",
+    "english": "I already had"
   }
 ]
