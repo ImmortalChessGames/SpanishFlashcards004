@@ -1320,7 +1320,7 @@ function getLemma(word) {
                     if (userApproved) {
                       event.stopPropagation(); 
                         const progress = getAllProgress();
-                        const spanishWord = item.split(':')[0];
+                        const spanishWord = item.spanish;
                         if (progress[spanishWord]) {
                             progress[spanishWord].cs = MASTERY_STREAK_NEEDED;
                             progress[spanishWord].tw = 0;
