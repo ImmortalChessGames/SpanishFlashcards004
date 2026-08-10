@@ -311,7 +311,9 @@
     const DEFAULT_SP_KEY = '__PASSPHRASE__';
     const DEFAULT_SP = 'enter-your-secret-passcode-here';
     const ITEMS_PER_PAGE = 20;
-    const MASTERY_STREAK_NEEDED = 4;
+  
+  const MASTERY_STREAK_NEEDED = 1;
+//    const MASTERY_STREAK_NEEDED = 4;
     const QUESTIONS_PER_QUIZ = 30;
     const MINIMUM_VOCAB_WORD_COUNT = 200;
     const WIKIPEDIA_SUGGESTIONS_FILENAME = "wikipedia-suggestions.txt";
@@ -1309,6 +1311,26 @@ function getLemma(word) {
                     processWordHelp(item.spanish);
                 });
                 li.append('[-' + item.tw + '] ');
+                const recycleIcon = document.createElement('i');
+                recycleIcon.textContent = '⬅️'; 
+                recycleIcon.style.cursor = 'pointer'; 
+                recycleIcon.style.marginLeft = '5px'; 
+                recycleIcon.style.marginRight = '10px'; 
+                recycleIcon.addEventListener('click', (event) => {
+                    const userApproved = confirm("Are you sure you know the word " + a.textContent.toUpperCase() + " well enough to remove from this list?");
+                    if (userApproved) {
+                      event.stopPropagation(); 
+                        const progress = getAllProgress();
+                        const spanishWord = item.split(':')[0];
+                        if (progress[spanishWord]) {
+                            progress[spanishWord].cs = MASTERY_STREAK_NEEDED;
+                            progress[spanishWord].tw = 0;
+                            saveAllProgress(progress);
+                            repaintReviewTab();
+                            updateDisplayData();
+                        }
+                    }
+                });
                 li.appendChild(a);
                 li.append(' '+item.english); 
                 ul.appendChild(li);
@@ -1413,7 +1435,28 @@ function getLemma(word) {
                        processWordHelp(event.target.textContent);
                     } 
                 });
-                li.append('✅ ');
+                const recycleIcon = document.createElement('i');
+                recycleIcon.textContent = '⬅️'; 
+                recycleIcon.style.cursor = 'pointer'; 
+                recycleIcon.style.marginLeft = '5px'; 
+                recycleIcon.style.marginRight = '10px'; 
+                recycleIcon.addEventListener('click', (event) => {
+                    const userApproved = confirm("Are you sure you want to undo progress for " + a.textContent.toUpperCase() + "?");
+                    if (userApproved) {
+                      event.stopPropagation(); 
+                        const progress = getAllProgress();
+                        const spanishWord = item.split(':')[0];
+                        if (progress[spanishWord]) {
+                            progress[spanishWord].cs = 0;
+                            progress[spanishWord].tw = 1;
+                            saveAllProgress(progress);
+                            repaintReviewTab();
+                            updateDisplayData();
+                        }
+                    }
+                });
+                li.append('✅');
+                li.appendChild(recycleIcon);
                 li.appendChild(a);
                 li.append(' '+item.split(':')[1]); 
                 ul.appendChild(li);
@@ -3031,6 +3074,81 @@ async function callGemmaToTranslateToEnglish(spanish,englishText) {
     } 
 }
 
+async function callGemmaToSummarizeBookChapter(bookTitle, bookChapter) {
+    const model = 'gemini-3.1-flash-lite';
+    if (!bookTitle || !bookChapter) {
+        return;
+    }
+    consoleLogOnlyIfLocal('Book Chapter summary for: ' + bookTitle + ' chapter: ' + bookChapter);
+    const key = await decrypt(api1KeyEncrypted, true);
+    if (key == null) {
+       showDynamicPopup('Error', 'Please set the correct pass phrase in Settings.', 1500);
+       return;
+    }
+
+    const systemInstructionText = `Provide a comprehensive, highly detailed chronological summary of Chapter ` + bookChapter + ` of Book ` + bookTitle + `. 
+    Start directly with the first event. Do not provide a recap or backstory.
+    You must break the summary down completely into approximately 30-50 sequential, detailed narrative points. 
+    Return results as a JSON array of objects. Each object contains a 'spanish' translation and an 'english' translation of that specific detail.`;
+
+    const maxRetries = 5;
+    let currentDelay = 2000; 
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); 
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/` + model + `:generateContent?key=` + key;
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: systemInstructionText }] }],
+                systemInstruction: { parts: [{ text: systemInstructionText }] },
+                generationConfig: { 
+                  temperature: 0.1,
+                  responseMimeType: "application/json",
+                    responseSchema: {
+                      type: "ARRAY",
+                      description: "A chronological list of approximately 30 highly detailed sequential events from the chapter.",
+                      items: {
+                        type: "OBJECT",
+                        properties: {
+                          spanish: { 
+                            type: "STRING", 
+                            description: "The Spanish translation of this specific narrative event sentence." 
+                          },
+                          english: { 
+                            type: "STRING", 
+                            description: "The English translation of this specific narrative event sentence." 
+                          }
+                        },
+                        required: ["spanish", "english"]
+                      }
+                    }
+                }
+              })
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            return JSON.parse(textResult);
+            
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (attempt === maxRetries) throw error;
+            await new Promise(res => setTimeout(res, currentDelay));
+            currentDelay *= 2; // Exponential backoff
+        }
+    }
+}
+
 function goToWikiBookmarkedArticle() {
   const textToFind = '>> Last Wikipedia Article';
   const dropdown = document.getElementById('sm-chooseDataset');
@@ -4333,6 +4451,8 @@ function handleSwipe() {
     loadWikiSuggestions();
     //buildLibraryCatalog();
     buildDynamicLibraryCatalog();
+
+//callGemmaToSummarizeBookChapter('12 Chairs by Petrov', '5');
 
   document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
     // Check if the pressed key is "Enter"
