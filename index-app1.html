@@ -108,6 +108,9 @@
                     <button id="wikiSearchBtn" onclick="searchWikipedia();" style="margin-top:10px;width:40%;background-color:#5c67f2;color:white;font-weight:bold;font-size:16px;">Search Wikipedia</button>
                     <button id="wikiGotoBtn" onclick="goToWikiBookmarkedArticle();" style="margin-top:10px;width:40%;background-color:#ff4d4d;color:white;font-weight:bold;font-size:16px;">Last Bookmarked</button>
                 </div>
+                <div class="link-container">
+                    <button id="aiGenerateoBtn" onclick="generateArticle();" style="margin-top:10px;width:90%;background-color:green;color:white;font-weight:bold;font-size:16px;">AI Generate Article</button>
+                </div>
                 <div id="wikiSearchResults" class="scroll-wrapper" style="margin-top:10px;">
                     <div id="wikiStatusDiv" style="padding:20px;font-weight:bold;"></div>
                     <div id="wikiResultsDiv" class="cc-search-container"></div>
@@ -220,6 +223,20 @@
                                 <select name="ai-engine" id="ai-engine" class="sm-input">
                                   <option value="gemini-3.1-flash-lite">Model A (Fast)</option>
                                   <option value="gemma-4-31b-it">Model B (Slow)</option>
+                                </select>
+                            </div>
+                            <div class="gsv-form-group" style="margin-bottom:10px;">
+                                <label class="sm-label" for="ai-articlelength">Article Length:</label>
+                                <select name="ai-articlelength" id="ai-articlelength" class="sm-input">
+                                  <option value="15-20">15-20 sentences</option>
+                                  <option value="25-30">25-30 sentences</option>
+                                  <option value="35-40" selected>35-40 sentences</option>
+                                  <option value="45-50">45-50 sentences</option>
+                                  <option value="55-60">55-60 sentences</option>
+                                  <option value="65-70">65-70 sentences</option>
+                                  <option value="75-80">75-80 sentences</option>
+                                  <option value="85-90">85-90 sentences</option>
+                                  <option value="95-100">95-100 sentences</option>
                                 </select>
                             </div>
                             <div class="gsv-form-group" style="margin-bottom:10px;">
@@ -1049,6 +1066,74 @@ function getLemma(word) {
         );
     }
 
+        async function handleDecrypt() {
+            const cipherTextB64 = document.getElementById('cipherText').value;
+            const password = document.getElementById('decPassword').value;
+            const outputDiv = document.getElementById('decryptedOutput');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            outputDiv.innerText = '---';
+            errorDiv.innerText = '';
+            if (!cipherTextB64 || !password) return alert('Please fill in all fields.');
+
+            try {
+              if (!cipherTextB64 || !password) return alert('Please fill in all fields.');
+
+                // 1. Convert the Base64 text back into a clean Uint8Array
+                const combined = new Uint8Array(
+                    atob(cipherTextB64).split("").map(c => c.charCodeAt(0))
+                );
+
+                const saltSize = 16;
+                const ivSize = 12;
+
+                // 2. Extract pieces directly using offsets from the main buffer
+                const salt = new Uint8Array(combined.buffer, 0, saltSize);
+                const iv = new Uint8Array(combined.buffer, saltSize, ivSize);
+                const encryptedData = new Uint8Array(combined.buffer, saltSize + ivSize);
+
+                // 3. Rebuild the key using the password and the recovered salt
+                const key = await getDerivedKey(password, salt);
+
+                // 4. Decrypt the data using AES-GCM
+                const decryptedBuffer = await window.crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv }, 
+                    key, 
+                    encryptedData
+                );
+
+                // 5. Turn the raw bytes back into readable text
+                const decoder = new TextDecoder();
+                const plainText = decoder.decode(decryptedBuffer);
+
+                // FIXED: Print the plainText string directly without decoding it again!
+                outputDiv.innerText = plainText; 
+            } catch (e) {
+                errorDiv.innerText = 'Decryption failed. Incorrect password or broken text.';
+            }
+        }
+
+        async function decrypt(encrypted, showPopup) {
+            try {
+                const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
+                const iv = combined.slice(16, 28);
+                const data = combined.slice(28);
+                const key = await getDerivedKey(salt);
+                const decrypted = await window.crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv }, key, data
+                );
+                localStorage.setItem(DEFAULT_SP_KEY,document.getElementById('sm-secret').value);
+                return new TextDecoder().decode(decrypted);
+            } catch (e) {
+                localStorage.setItem(DEFAULT_SP_KEY, DEFAULT_SP);
+                if(showPopup===true) {
+                    showDynamicPopup('Error','Password is wrong.', 3000);
+                }
+                consoleLogOnlyIfLocal('Decryption failed. Incorrect password or broken text.');
+            }
+            return null;
+        }
+/*
     async function decrypt(encrypted, showPopup) {
         try {
             const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
@@ -1069,7 +1154,7 @@ function getLemma(word) {
         }
         return null;
     }
-
+*/
     function getStorageKey() {
         const storageNameInput = document.getElementById('sm-storageName');
         const storageName = storageNameInput ? storageNameInput.value.trim() : '';
@@ -1745,7 +1830,7 @@ function getLemma(word) {
       const jsonArr = JSON.parse(json);
       generateWikiArticleSuggestionsList(jsonArr);
       const statusDiv = document.getElementById("wikiArticleSuggestiosStatusDiv");
-      statusDiv.innerText = "150+ Interesting Article";
+      statusDiv.innerText = "150+ Interesting Articles";
   }
 
     // 8. Initial Load
@@ -3902,6 +3987,15 @@ function generateTopicMapKey(topicInput) {
     return topicInput;
 }
 
+async function generateArticle() {
+    const queryInputElement = document.getElementById("wikiQueryInput");
+    let query = queryInputElement ? queryInputElement.value.trim() : "";
+    if(query && query.length>0) {
+        document.getElementById('gsv-topic-input').value=query;  
+        document.getElementById('gsv-submit-btn').click();
+    }
+}
+
 async function fetchArticle() {
 
     const key = await decrypt(api3KeyEncrypted, true);
@@ -3911,6 +4005,7 @@ async function fetchArticle() {
         return;
     }
     const MODEL_NAME = document.getElementById('ai-engine').value;
+    const ARTICLE_LENGTH = document.getElementById('ai-articlelength').value;
     const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL_NAME+':generateContent?key='+key;
     document.getElementById('gsv-status').innerText='';
     const topicInput = document.getElementById('gsv-topic-input').value;
@@ -3918,8 +4013,8 @@ async function fetchArticle() {
     if(!languageLevel) {
         languageLevel = 'Intermediate-to-Advanced';
     }
-    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (15-20 sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation. In addition to the array of objects, add a second array of 10-12 English language strings where each string is a related topic suggestion that the user may find interesting. The first array property name should be 'summary' and the second one should be called 'related_topics'.";
-    const userPrompt = `Generate a short (15-20 sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use ` + languageLevel + ` Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
+    const systemInstruction = "You are an expert bilingual translation assistant. Your task is to write a short (" + ARTICLE_LENGTH + " sentence) summary of a historical event provided by the user. Generate the high-quality text in Spanish, but break it down completely into a sentence-by-sentence array. Do not output a separate full article. Output strictly a JSON array of objects, where each object contains a 'spanish' sentence and its direct 'english' translation. In addition to the array of objects, add a second array of 10-12 English language strings where each string is a related topic suggestion that the user may find interesting. The first array property name should be 'summary' and the second one should be called 'related_topics'.";
+    const userPrompt = `Generate a short (` + ARTICLE_LENGTH + ` sentence) summary of a historical event for the following topic broken down sentence-by-sentence into an array:\n\n[TOPIC]: ${topicInput}\n\nEnsure that you return a JSON array of objects where each sentence is modeled as an object with two properties: "spanish" with the spanish text of the sentence (trimmed with no whitespace before or after) and "english" with the english text (also trimmed with no whitespace before or after, and also remove any and all types of quotation characters from text prior to converting to JSON) of the sentence. Ensure the JSON is formatted using single quotes. Do not return full text. Please use ` + languageLevel + ` Spanish. Remove any all end of line \n or single quote or double quote characters from any text inside the resulting JSON.`;
 
     const payload = {
       contents: [{ parts: [{ text: userPrompt }] }],
