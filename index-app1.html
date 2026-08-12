@@ -106,10 +106,10 @@
                 <input id="wikiQueryInput" value="" maxlength="50" placeholder="E.g. Major WWII Battles">
                 <div class="link-container">
                     <button id="wikiSearchBtn" onclick="searchWikipedia();" style="margin-top:10px;width:40%;background-color:#5c67f2;color:white;font-weight:bold;font-size:16px;">Search Wikipedia</button>
-                    <button id="wikiGotoBtn" onclick="goToWikiBookmarkedArticle();" style="margin-top:10px;width:40%;background-color:#ff4d4d;color:white;font-weight:bold;font-size:16px;">Last Bookmarked</button>
+                    <button id="aiGenerateoBtn" onclick="generateArticle();" style="margin-top:10px;width:40%;background-color:#ff4d4d;color:white;font-weight:bold;font-size:16px;">AI Generate Article</button>
                 </div>
                 <div class="link-container">
-                    <button id="aiGenerateoBtn" onclick="generateArticle();" style="margin-top:10px;width:90%;background-color:green;color:white;font-weight:bold;font-size:16px;">AI Generate Article</button>
+                    <button id="wikiGotoBtn" onclick="goToWikiBookmarkedArticle();" style="margin-top:10px;height:55px;width:80%;background-color:green;color:white;font-weight:bold;font-size:16px;">Last Bookmarked</button>
                 </div>
                 <div id="wikiSearchResults" class="scroll-wrapper" style="margin-top:10px;">
                     <div id="wikiStatusDiv" style="padding:20px;font-weight:bold;"></div>
@@ -123,10 +123,7 @@
 
             <!-- PANEL 3 -->
             <div id="panel-3" class="tab-panel" role="tabpanel">
-                <div id="library" class="scroll-wrapper"></div>
-
                 <div id="dynamic-library" class='outliner-tree-widget'></div>
-
             </div>
 
             <!-- PANEL 4 -->
@@ -199,13 +196,15 @@
 
             <!-- PANEL 7 -->
             <div id="panel-7" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-positive-label" for="results-positive" style="margin-left:10px;margin-bottom:10px;">Words you have learned</label>
+                <label id="results-positive-label" for="results-positive" style="display:inline;margin-left:10px;margin-bottom:10px;">Words you have learned</label>
+                <i style="cursor: pointer;margin-left:10px;font-size:20px;" onclick="readWordsYouLearnedOutLoud();">📢</i>
                 <div id="results-positive-paginated"></div>
             </div>
 
             <!-- PANEL 8 -->
             <div id="panel-8" class="tab-panel" style="padding: 0px 0px;" role="tabpanel">
-                <label id="results-negative-label" for="results-negative" style="margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
+                <label id="results-negative-label" for="results-negative" style="display:inline;margin-left:10px;margin-bottom:10px;">Words requiring more study</label>
+                <i style="cursor: pointer;margin-left:10px;font-size:20px;" onclick="readWordsYouStillHaveNotMasteredOutLoud();">📢</i>
                 <div id="results-negative-paginated"></div>
             </div>
 
@@ -271,7 +270,7 @@
                         </div>       
                         <div class="sm-input-group">
                           <label class="sm-label" for="rate-slider">Speech speed:</label>
-                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.5" class="settings-slider">
+                          <input type="range" id="rate-slider" min="0.1" max="1.5" step="0.05" value="0.8" class="settings-slider">
                           <button id="speak-btn" class="gsv-btn">Test Voice Speed</button>
                         </div>
                         <div class="sm-input-group">
@@ -398,24 +397,6 @@
     let deepDiveWarningAlreadyShown;
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/*
-    function getLemma(word) {
-        if (word && word.trim().length > 0) {
-            const doc = esCompromise(word);
-            doc.compute('root');
-            const data = doc.json();
-            if (data && data.length > 0) {
-                const results = data[0].terms.map(term => {
-                    return `${term.root || term.text.toLowerCase()}`;
-                });
-                return results[0]; 
-            }
-        }
-        return null;
-    }
-*/
-
 
 function getLemma(word) {
     if (!word || word.trim().length === 0) return null;
@@ -1000,7 +981,7 @@ function getLemma(word) {
 
       const textToSpeak = document.getElementById('spanishText').innerText.trim();
       const utterance = new SpeechSynthesisUtterance(textToSpeak && textToSpeak.length>0 ? textToSpeak : "Hay esta nada aqui.");
-      utterance.lang = 'es-ES'; 
+      utterance.lang = 'es-US'; 
       utterance.rate = rateSlider.value; 
       window.speechSynthesis.speak(utterance);      
     });
@@ -1888,6 +1869,119 @@ function getLemma(word) {
         } 
     }
 
+    function readWordsYouStillHaveNotMasteredOutLoud() {
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            consoleLogOnlyIfLocal("Speech stopped.");
+        } else {
+            let speechQueue = [];
+            speechQueue.push({ text: 'Here are the words that require more study ... ', lang: 'en-US' });
+
+            let arr = shuffleArray(masterData);
+            if (arr && arr.length > 0) {
+                const progress = getAllProgress() || {};
+                
+                // Filter words that need more study (not mastered)
+                const availableWords = arr.filter(item => {
+                    const itemProgress = progress[item.spanish];
+                    return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+                });
+
+                // Filter words that require review and build the speech queue safely
+                const availableReviewWords = availableWords.filter(item => {
+                    const itemProgress = progress[item.spanish];
+                    const needsReview = itemProgress && itemProgress.tw > 1;
+
+                    if (needsReview) {
+                        speechQueue.push({ text: 'Next word', lang: 'en-US' });
+                        speechQueue.push({ text: item.spanish + ' ... ', lang: 'es-US' });
+                        speechQueue.push({ text: item.english + '\n\n', lang: 'en-US' });
+                    }
+
+                    return needsReview;
+                });
+            }
+
+            // Play the built queue sequentially
+            let queueIndex = 0;
+            function playNextInQueue() {
+                if (queueIndex >= speechQueue.length) return;
+
+                const currentItem = speechQueue[queueIndex];
+                const utterance = new SpeechSynthesisUtterance(currentItem.text);
+                utterance.lang = currentItem.lang;
+                utterance.rate = rateSlider.value;
+
+                utterance.onend = () => {
+                    queueIndex++;
+                    playNextInQueue();
+                };
+
+                utterance.onerror = () => {
+                    queueIndex++;
+                    playNextInQueue();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+
+            playNextInQueue();
+        }
+    }
+
+    function readWordsYouLearnedOutLoud() {
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            consoleLogOnlyIfLocal("Speech stopped.");
+        } else {
+            // 1. Build a sequential queue array of objects
+            let speechQueue = [];
+            
+            speechQueue.push({ text: 'Here are the words you have learned ... ', lang: 'en-US' });
+            
+            let arr = shuffleArray(masterData);
+            if (arr && arr.length > 0) {
+                const progress = getAllProgress();
+                if (progress) {
+                    for (let i = 0; i < arr.length; i++) {
+                        const itemProgress = progress[arr[i].spanish];
+                        if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
+                            speechQueue.push({ text: 'Next words', lang: 'en-US' });
+                            speechQueue.push({ text: arr[i].spanish + ' ... ', lang: 'es-US' });
+                            speechQueue.push({ text: arr[i].english + '\n\n', lang: 'en-US' });
+                        }
+                    }
+                }
+            }
+
+            // 2. Play the queue sequentially using recursion and onend
+            let queueIndex = 0;
+            function playNextInQueue() {
+                if (queueIndex >= speechQueue.length) return;
+
+                const currentItem = speechQueue[queueIndex];
+                const utterance = new SpeechSynthesisUtterance(currentItem.text);
+                utterance.lang = currentItem.lang;
+                utterance.rate = rateSlider.value;
+
+                utterance.onend = () => {
+                    queueIndex++;
+                    playNextInQueue();
+                };
+
+                utterance.onerror = () => {
+                    queueIndex++;
+                    playNextInQueue();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+
+            playNextInQueue();
+        }
+
+    }
+
     function toggleWikiBookmark(clickTheButton) {
          const gotoWikiBtn = document.getElementById('wikiGotoBtn');
          const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
@@ -2291,20 +2385,61 @@ progressBar.addEventListener('mousedown', (e) => {
     }
 
 
-    function readArticleOutloud(articleText) {
+    function readArticleOutloud_OLD(articleText) {
         if (!articleText) {
             return;
         }
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(articleText);
-          utterance.lang = 'es-ES'; 
+          utterance.lang = 'es-US'; 
           utterance.rate = rateSlider.value; 
           window.speechSynthesis.speak(utterance);
         } else {
           alert("Native browser speech synthesis is unsupported on this software platform.");
         }
     }
+
+    function readArticleOutloud_English(articleText) {
+        readArticleOutloud(articleText, 'en-US');
+    }    
+
+    function readArticleOutloud_Spanish(articleText) {
+        readArticleOutloud(articleText, 'es-US');
+    }    
+
+    function readArticleOutloud(articleText, lang = 'es-US') {
+        if (!articleText) return;
+        if (!('speechSynthesis' in window)) {
+            alert("Native browser speech synthesis is unsupported.");
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        // Split text into chunks by sentences (using regex to keep punctuation)
+        const chunks = articleText.match(/[^.!?]+[.!?]+(\s|$)/g) || [articleText];
+        let currentIndex = 0;
+
+        function speakNextChunk() {
+            if (currentIndex >= chunks.length) return;
+
+            const utterance = new SpeechSynthesisUtterance(chunks[currentIndex]);
+            utterance.lang = lang;
+            utterance.rate = rateSlider.value;
+
+            // When this chunk finishes, speak the next one
+            utterance.onend = () => {
+                currentIndex++;
+                speakNextChunk();
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        speakNextChunk();
+    }
+
 
     function speakSlowSpanish() {
         if (!textToSpeak) {
@@ -2313,7 +2448,7 @@ progressBar.addEventListener('mousedown', (e) => {
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(textToSpeak);
-          utterance.lang = 'es-ES'; 
+          utterance.lang = 'es-US'; 
           utterance.rate = rateSlider.value; 
           window.speechSynthesis.speak(utterance);
         } else {
@@ -2328,7 +2463,7 @@ progressBar.addEventListener('mousedown', (e) => {
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(wordToSpeak.trim());
-          utterance.lang = 'es-ES'; 
+          utterance.lang = 'es-US'; 
           utterance.rate = rateSlider.value; 
           window.speechSynthesis.speak(utterance);
         } else {
