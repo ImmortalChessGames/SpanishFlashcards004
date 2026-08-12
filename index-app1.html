@@ -1898,7 +1898,7 @@ function getLemma(word) {
                         const enArr = arr[i].english.split(';');
                         if(enArr) {
                             for(j=0; j<enArr.length; j++) {
-                                en += (enArr[j].trim() + (j<enArr.length-1 ? ' , or ' : ''));
+                                en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
                             }
                         }
                         speechQueue.push({ text: ', meaning ' + en + '... ...', lang: 'en-US' });
@@ -1957,7 +1957,7 @@ function getLemma(word) {
                             const enArr = arr[i].english.split(';');
                             if(enArr) {
                                 for(j=0; j<enArr.length; j++) {
-                                    en += (enArr[j].trim() + (j<enArr.length-1 ? ' , or ' : ''));
+                                    en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
                                 }
                             }
                             speechQueue.push({ text: 'meaning, ' + en + '... ...', lang: 'en-US' });
@@ -2438,7 +2438,7 @@ progressBar.addEventListener('mousedown', (e) => {
 
             const utterance = new SpeechSynthesisUtterance(chunks[currentIndex]);
             utterance.lang = lang;
-            utterance.rate = lang==='en-US' ? 2*(rateSlider.value) : rateSlider.value;
+            utterance.rate = lang==='en-US' ? 3*(rateSlider.value) : rateSlider.value;
 
             // When this chunk finishes, speak the next one
             utterance.onend = () => {
