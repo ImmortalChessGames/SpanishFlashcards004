@@ -1895,7 +1895,7 @@ function getLemma(word) {
                     if (needsReview) {
                         speechQueue.push({ text: item.spanish, lang: 'es-US' });
                         let en = '';
-                        const enArr = arr[i].english.split(';');
+                        const enArr = item.english.split(';');
                         if(enArr) {
                             for(j=0; j<enArr.length; j++) {
                                 en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
