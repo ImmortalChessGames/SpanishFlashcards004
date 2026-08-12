@@ -1893,9 +1893,15 @@ function getLemma(word) {
                     const needsReview = itemProgress && itemProgress.tw > 1;
 
                     if (needsReview) {
-                        speechQueue.push({ text: 'Next', lang: 'en-US' });
-                        speechQueue.push({ text: item.spanish + ' ... ', lang: 'es-US' });
-                        speechQueue.push({ text: item.english + '\n\n', lang: 'en-US' });
+                        speechQueue.push({ text: item.spanish, lang: 'es-US' });
+                        let en = '';
+                        const enArr = arr[i].english.split(';');
+                        if(enArr) {
+                            for(j=0; j<enArr.length; j++) {
+                                en += (enArr[j].trim() + (j<enArr.length-1 ? ' , or ' : ''));
+                            }
+                        }
+                        speechQueue.push({ text: ', meaning ' + en + '... ...', lang: 'en-US' });
                     }
 
                     return needsReview;
@@ -1946,9 +1952,15 @@ function getLemma(word) {
                     for (let i = 0; i < arr.length; i++) {
                         const itemProgress = progress[arr[i].spanish];
                         if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
-                            speechQueue.push({ text: 'Next', lang: 'en-US' });
-                            speechQueue.push({ text: arr[i].spanish + ' ... ', lang: 'es-US' });
-                            speechQueue.push({ text: arr[i].english + '\n\n', lang: 'en-US' });
+                            speechQueue.push({ text: arr[i].spanish, lang: 'es-US' });
+                            let en = '';
+                            const enArr = arr[i].english.split(';');
+                            if(enArr) {
+                                for(j=0; j<enArr.length; j++) {
+                                    en += (enArr[j].trim() + (j<enArr.length-1 ? ' , or ' : ''));
+                                }
+                            }
+                            speechQueue.push({ text: 'meaning, ' + en + '... ...', lang: 'en-US' });
                         }
                     }
                 }
@@ -2426,7 +2438,7 @@ progressBar.addEventListener('mousedown', (e) => {
 
             const utterance = new SpeechSynthesisUtterance(chunks[currentIndex]);
             utterance.lang = lang;
-            utterance.rate = rateSlider.value;
+            utterance.rate = lang==='en-US' ? 2*(rateSlider.value) : rateSlider.value;
 
             // When this chunk finishes, speak the next one
             utterance.onend = () => {
