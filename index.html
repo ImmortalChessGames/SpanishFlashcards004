@@ -328,7 +328,7 @@
     const DEFAULT_SP = 'enter-your-secret-passcode-here';
     const ITEMS_PER_PAGE = 20;
   
-    const MASTERY_STREAK_NEEDED = 4;
+    const MASTERY_STREAK_NEEDED = 0; //4;
     const QUESTIONS_PER_QUIZ = 30;
     const MINIMUM_VOCAB_WORD_COUNT = 200;
     const WIKIPEDIA_SUGGESTIONS_FILENAME = "wikipedia-suggestions.txt";
@@ -1915,7 +1915,7 @@ function getLemma(word) {
         } 
     }
 
-function readWordsYouStillHaveNotMasteredOutLoud() {
+async function readWordsYouStillHaveNotMasteredOutLoud() {
     if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
         stopBackgroundAudio(); // 🛑 Stop hardware lock immediately on manual cancel
@@ -1954,8 +1954,9 @@ function readWordsYouStillHaveNotMasteredOutLoud() {
                 const needsReview = itemProgress && itemProgress.tw > 1;
 
                 if (needsReview) {
-                    speechQueue.push({ text: item.spanish, lang: 'es-MX'});
-                    speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true});
+                    speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
+                    speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
+                    speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                     let en = '';
                     const enArr = item.english.split(';');
                     if(enArr) {
@@ -1964,8 +1965,13 @@ function readWordsYouStillHaveNotMasteredOutLoud() {
                             if(j===1) { break; }
                         }
                     }
-                    speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: true });
-                    speechQueue.push({ text: ' ... ... ... ' + en, lang: 'en-GB', extraSlow: true });
+                    speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: true, wait: 1000});
+                    speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true, wait: 0});
+                    speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: false, wait: 0});
+                    speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: false, wait: 0});
+                    speechQueue.push({ text: ', ' + en, lang: 'en-GB', extraSlow: true, wait: 0});
+                    speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true, wait: 500});
+                    speechQueue.push({ text: ', ' + en, lang: 'en-GB', extraSlow: true, wait: 0});
                 }
 
                 return needsReview;
@@ -1974,16 +1980,19 @@ function readWordsYouStillHaveNotMasteredOutLoud() {
 
         // Play the built queue sequentially
         let queueIndex = 0;
-        function playNextInQueue() {
+        async function playNextInQueue() {
             if (queueIndex >= speechQueue.length) {
                 stopBackgroundAudio(); // 🛑 Session ended naturally, release hardware lock
                 return;
             }
             
             const currentItem = speechQueue[queueIndex];
+            if(currentItem.wait) {
+                await sleep(currentItem.wait);
+            }
             const utterance = new SpeechSynthesisUtterance(currentItem.text);
             utterance.lang = currentItem.lang;
-            let multiplier = 0.85;
+            let multiplier = 0.80;
             if(currentItem.lang.indexOf('es')>-1) {
                 if(currentItem.lang.indexOf('MX')>-1) {
                     utterance.voice = mxVoice;
@@ -2015,7 +2024,7 @@ function readWordsYouStillHaveNotMasteredOutLoud() {
     }
 }
 
-function readWordsYouLearnedOutLoud() {
+async function readWordsYouLearnedOutLoud() {
     if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
         stopBackgroundAudio(); // 🛑 Stop hardware lock immediately on manual cancel
@@ -2046,8 +2055,9 @@ function readWordsYouLearnedOutLoud() {
                 for (let i = 0; i < arr.length; i++) {
                     const itemProgress = progress[arr[i].spanish];
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
-                        speechQueue.push({ text: arr[i].spanish, lang: 'es-MX' });
-                        speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true});
+                        speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                         let en = '';
                         const enArr = arr[i].english.split(';');
                         if(enArr) {
@@ -2056,24 +2066,33 @@ function readWordsYouLearnedOutLoud() {
                                 if(j===1) { break; }
                             }
                         }
-                        speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: true });
-                        speechQueue.push({ text: ' ... ... ... ' + en, lang: 'en-GB', extraSlow: true });
+                        speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: true, wait: 1000});
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true, wait: 0});
+                        speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: false, wait: 0});
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: false, wait: 0});
+                        speechQueue.push({ text: ', ' + en, lang: 'en-GB', extraSlow: true, wait: 0});
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: false, wait: 500});
+                        speechQueue.push({ text: ', ' + en, lang: 'en-GB', extraSlow: true, wait: 0});
                     }
+
                 }
             }
         }
 
         // 2. Play the queue sequentially using recursion and onend
         let queueIndex = 0;
-        function playNextInQueue() {
+        async function playNextInQueue() {
             if (queueIndex >= speechQueue.length) {
                 stopBackgroundAudio(); // 🛑 Session ended naturally, release hardware lock
                 return;
             }
             const currentItem = speechQueue[queueIndex];
+            if(currentItem.wait) {
+                await sleep(currentItem.wait);
+            }
             const utterance = new SpeechSynthesisUtterance(currentItem.text);
             utterance.lang = currentItem.lang;
-            let multiplier = 0.85;
+            let multiplier = 0.80;
             if(currentItem.lang.indexOf('es')>-1) {
                 if(currentItem.extraSlow) {
                     multiplier = 0.70;                                                
@@ -2102,6 +2121,7 @@ function readWordsYouLearnedOutLoud() {
         }
 
         playNextInQueue();
+
     }
 }
 
