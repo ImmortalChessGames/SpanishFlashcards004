@@ -1858,7 +1858,7 @@ function getLemma(word) {
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             let text = '';
-            if(dataset && dataset.length>0 && dataset.length<50) {
+            if(dataset && dataset.length>0) {
                 for (const p of dataset) {
                     //text += (p.spanish + ' ... \n\n');                
                     text += (p.spanish + '\n\n');
@@ -1895,6 +1895,7 @@ function getLemma(word) {
 
                     if (needsReview) {
                         speechQueue.push({ text: item.spanish, lang: 'es-US' });
+                        speechQueue.push({ text: ' ... '+item.spanish, lang: 'es-ES', extraSlow: true});
                         let en = '';
                         const enArr = item.english.split(';');
                         if(enArr) {
@@ -1917,7 +1918,15 @@ function getLemma(word) {
                 const currentItem = speechQueue[queueIndex];
                 const utterance = new SpeechSynthesisUtterance(currentItem.text);
                 utterance.lang = currentItem.lang;
-                utterance.rate = rateSlider.value;
+                let multiplier = 0.90;
+                if(currentItem.lang.indexOf('es')>-1) {
+                    if(currentItem.extraSlow) {
+                        multiplier = 0.70;                                                
+                    } else {
+                        multiplier = 0.80;
+                    }
+                } 
+                utterance.rate = rateSlider.value * multiplier;
 
                 utterance.onend = () => {
                     queueIndex++;
@@ -1975,7 +1984,11 @@ function getLemma(word) {
                 const currentItem = speechQueue[queueIndex];
                 const utterance = new SpeechSynthesisUtterance(currentItem.text);
                 utterance.lang = currentItem.lang;
-                utterance.rate = rateSlider.value;
+                let multiplier = 0.90;
+                if(currentItem.lang.indexOf('es')>-1) {
+                    multiplier = 0.80;
+                }
+                utterance.rate = rateSlider.value * multiplier;
 
                 utterance.onend = () => {
                     queueIndex++;
@@ -2050,7 +2063,7 @@ function getLemma(word) {
             historyIndex = -1;
         }
         const selectDataset = document.getElementById('sm-chooseDataset');
-        const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
+        const speakerMode = true;
         const topRightTextElt = document.getElementById('top-right-text');
         topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('_',' ') + (speakerMode===true ? ' 📢 ' : '');
         if(speakerMode === true) {
@@ -2404,30 +2417,6 @@ progressBar.addEventListener('mousedown', (e) => {
          document.getElementById('englishTranslation').value='';
       }
     }
-
-
-    function readArticleOutloud_OLD(articleText) {
-        if (!articleText) {
-            return;
-        }
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(articleText);
-          utterance.lang = 'es-US'; 
-          utterance.rate = rateSlider.value; 
-          window.speechSynthesis.speak(utterance);
-        } else {
-          alert("Native browser speech synthesis is unsupported on this software platform.");
-        }
-    }
-
-    function readArticleOutloud_English(articleText) {
-        readArticleOutloud(articleText, 'en-US');
-    }    
-
-    function readArticleOutloud_Spanish(articleText) {
-        readArticleOutloud(articleText, 'es-US');
-    }    
 
     function readArticleOutloud(articleText, lang = 'es-US') {
         if (!articleText) return;
