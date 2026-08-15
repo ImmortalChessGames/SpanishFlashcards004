@@ -399,6 +399,10 @@
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+    const voices = window.speechSynthesis.getVoices();
+    const esVoice = voices.find(v => v.lang === 'es-ES' && v.name.includes('Monica'));
+    const mxVoice = voices.find(v => v.lang === 'es-MX' || v.voiceURI.includes('es-MX'));
+
     const iosSilence = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGFtZTMuOTguNlYwLjUAAAD/4xAMAAAAAAAAAAAAAAAAAAAAAABYaW5nAAAADwAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jEAMAAAAAAAbwAAAAAAAAAAAAAAAAAAAAAExhbWUzLjk4LjYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jEAMAAAAAAAewAAAAAAAAAAAAAAAAAAAAAExhbWUzLjk4LjYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jEAMAAAAAAAgwAAAAAAAAAAAAAAAAAAAAAExhbWUzLjk4LjYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw==");
     iosSilence.loop = true;
 
@@ -1950,7 +1954,7 @@ function readWordsYouStillHaveNotMasteredOutLoud() {
                 const needsReview = itemProgress && itemProgress.tw > 1;
 
                 if (needsReview) {
-                    speechQueue.push({ text: item.spanish, lang: 'es-US'});
+                    speechQueue.push({ text: item.spanish, lang: 'es-MX'});
                     speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true});
                     let en = '';
                     const enArr = item.english.split(';');
@@ -1981,6 +1985,11 @@ function readWordsYouStillHaveNotMasteredOutLoud() {
             utterance.lang = currentItem.lang;
             let multiplier = 0.85;
             if(currentItem.lang.indexOf('es')>-1) {
+                if(currentItem.lang.indexOf('MX')>-1) {
+                    utterance.voice = mxVoice;
+                } else {
+                    utterance.voice = esVoice;
+                }
                 if(currentItem.extraSlow) {
                     multiplier = 0.70;                                                
                 } else {
@@ -2037,7 +2046,7 @@ function readWordsYouLearnedOutLoud() {
                 for (let i = 0; i < arr.length; i++) {
                     const itemProgress = progress[arr[i].spanish];
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
-                        speechQueue.push({ text: arr[i].spanish, lang: 'es-US' });
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-MX' });
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true});
                         let en = '';
                         const enArr = arr[i].english.split(';');
@@ -2061,13 +2070,21 @@ function readWordsYouLearnedOutLoud() {
                 stopBackgroundAudio(); // 🛑 Session ended naturally, release hardware lock
                 return;
             }
-
             const currentItem = speechQueue[queueIndex];
             const utterance = new SpeechSynthesisUtterance(currentItem.text);
             utterance.lang = currentItem.lang;
             let multiplier = 0.85;
             if(currentItem.lang.indexOf('es')>-1) {
-                multiplier = 0.80;
+                if(currentItem.extraSlow) {
+                    multiplier = 0.70;                                                
+                } else {
+                    multiplier = 0.80;
+                }
+                if(currentItem.lang.indexOf('MX')>-1) {
+                    utterance.voice = mxVoice;
+                } else {
+                    utterance.voice = esVoice;
+                }
             }
             utterance.rate = rateSlider.value * multiplier;
 
