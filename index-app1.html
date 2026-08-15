@@ -229,8 +229,8 @@
                                 <select name="ai-articlelength" id="ai-articlelength" class="sm-input">
                                   <option value="15-20">15-20 sentences</option>
                                   <option value="25-30">25-30 sentences</option>
-                                  <option value="35-40" selected>35-40 sentences</option>
-                                  <option value="45-50">45-50 sentences</option>
+                                  <option value="35-40">35-40 sentences</option>
+                                  <option value="45-50" selected>45-50 sentences</option>
                                   <option value="55-60">55-60 sentences</option>
                                   <option value="65-70">65-70 sentences</option>
                                   <option value="75-80">75-80 sentences</option>
@@ -388,6 +388,7 @@
     let lastWordHelped;
 
     const WIKI_BOOKMARK_KEY = '___wiki_bookmark___';
+    const AI_BOOKMARK_KEY = '___ai_bookmark___';
     const BOOK_BOOKMARK_KEY = '___bookmark___';
 
     // Scoped variable declarations using the updated IDs
@@ -2051,31 +2052,37 @@ function getLemma(word) {
         const selectDataset = document.getElementById('sm-chooseDataset');
         const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
         const topRightTextElt = document.getElementById('top-right-text');
-        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('>','').replaceAll('_',' ') + (speakerMode===true ? ' 📢 ' : '');
+        topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('_',' ') + (speakerMode===true ? ' 📢 ' : '');
         if(speakerMode === true) {
             topRightTextElt.style='cursor: pointer;';
         } else {
             topRightTextElt.style='cursor: default;';
         }
-        if(topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
+
+        let key = WIKI_BOOKMARK_KEY;
+        if(topRightTextElt.textContent.indexOf('Wiki')<=-1 && topRightTextElt.textContent.indexOf('Word:')<=-1 && topRightTextElt.textContent.indexOf('>>')>-1) {
+            key = AI_BOOKMARK_KEY + ' - ' + topRightTextElt.textContent;
+        }
+        if(topRightTextElt.textContent.indexOf('>>')>-1 ||
+           topRightTextElt.textContent.indexOf('Wiki:')>-1 ||
            topRightTextElt.textContent.indexOf('Last Wikipedia Article')>-1) {
-             const savedWikiPage = localStorage.getItem(WIKI_BOOKMARK_KEY);
+             const savedWikiPage = localStorage.getItem(key);
              if(savedWikiPage) {
                 if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                      for(let i=0; i<=savedWikiPage; i++) {
                          if(i==savedWikiPage) {
                              showNext();
                          } else { 
-                             localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
+                             localStorage.setItem(key, 0);
                              showNext_doNotPaintSlide(); 
                          }
                      } 
                 }  else {
-                    localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
+                    localStorage.setItem(key, 0);
                     showNext();
                 }  
             }  else {
-                localStorage.setItem(WIKI_BOOKMARK_KEY, 0);
+                localStorage.setItem(key, 0);
                 showNext();
             }                
         } else {
@@ -2203,6 +2210,8 @@ function getLemma(word) {
                    localStorage.setItem(WIKI_BOOKMARK_KEY, historyIndex);
             } else if(topRightTextElt.textContent.indexOf('Book:')>-1) {
                 localStorage.setItem(BOOK_BOOKMARK_KEY+' - '+topRightTextElt.textContent, historyIndex);
+            } else if(topRightTextElt.textContent.indexOf('>>')>-1) {
+                localStorage.setItem(AI_BOOKMARK_KEY+' - '+topRightTextElt.textContent, historyIndex);
             }             
         }
     }
@@ -3649,9 +3658,6 @@ async function loadWikiArticle(title, url, flag){
         showDynamicPopup('Wikipedia Article', 'Article loaded successfully.', 500);
         const topRightTextElt = document.getElementById('top-right-text');
         topRightTextElt.textContent='Wiki: '+title.replaceAll('_',' ');
-
-
-
     } catch (error) {
         statusDiv.innerText = "'" + title + "': Error occurred.";
         console.error(error);
