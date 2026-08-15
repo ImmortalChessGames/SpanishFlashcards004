@@ -1895,7 +1895,8 @@ function getLemma(word) {
 
                     if (needsReview) {
                         speechQueue.push({ text: item.spanish, lang: 'es-US' });
-                        speechQueue.push({ text: ' ... '+item.spanish, lang: 'es-ES', extraSlow: true});
+                        speechQueue.push({ text: 'Again more slowly ... ', lang: 'en-US' });
+                        speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true});
                         let en = '';
                         const enArr = item.english.split(';');
                         if(enArr) {
