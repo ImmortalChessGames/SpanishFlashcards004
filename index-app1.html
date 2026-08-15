@@ -405,45 +405,27 @@
 // Global state for the screen lock
 let wakeLockToken = null;
 
-/**
- * Starts background audio AND forces the iPhone screen to stay awake
- */
 async function startBackgroundAudio() {
-    // 1. Fire the silent audio track
     if (iosSilence.paused) {
-        iosSilence.play()
-            .then(() => console.log("Background audio fix activated."))
-            .catch(err => console.log("Background audio unlock failed:", err));
+        iosSilence.play().catch(err => console.log("Audio unlock failed:", err));
     }
-
-    // 2. Lock the screen on so iOS cannot kill the Speech API
+    // MUST BE ALLOWED TO RUN SYNC/PROMPTLY IN THE USER CLICK HANDLER
     if ('wakeLock' in navigator && wakeLockToken === null) {
         try {
             wakeLockToken = await navigator.wakeLock.request('screen');
-            console.log("Screen Wake Lock active. iOS won't sleep.");
+            console.log("Wake Lock active! Screen will stay on.");
         } catch (err) {
-            console.log("Wake Lock failed (normal if app is in background):", err);
+            console.log("Wake lock request failed:", err);
         }
     }
 }
 
-/**
- * Stops background audio and allows the iPhone screen to sleep normally again
- */
 function stopBackgroundAudio() {
-    // 1. Pause the silence track
     if (!iosSilence.paused) {
         iosSilence.pause();
-        console.log("Background audio fix deactivated.");
     }
-
-    // 2. Release the screen lock safely
     if (wakeLockToken !== null) {
-        wakeLockToken.release()
-            .then(() => {
-                wakeLockToken = null;
-                console.log("Wake Lock released. Screen can now sleep.");
-            });
+        wakeLockToken.release().then(() => { wakeLockToken = null; });
     }
 }
 
@@ -1929,151 +1911,183 @@ function getLemma(word) {
         } 
     }
 
-    function readWordsYouStillHaveNotMasteredOutLoud() {
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            stopBackgroundAudio();
-            consoleLogOnlyIfLocal("Speech stopped.");
-        } else {
-            let speechQueue = [];
-            speechQueue.push({ text: 'Here are the words that require more study ... ', lang: 'en-US' });
+function readWordsYouStillHaveNotMasteredOutLoud() {
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        stopBackgroundAudio(); // 🛑 Stop hardware lock immediately on manual cancel
+        consoleLogOnlyIfLocal("Speech stopped.");
+    } else {
+        // 🚀 CRITICAL FIX: Trigger hardware permissions immediately inside user action stack
+        startBackgroundAudio();
 
-            let arr = shuffleArray(masterData);
-            if (arr && arr.length > 0) {
-                const progress = getAllProgress() || {};
-                
-                // Filter words that need more study (not mastered)
-                const availableWords = arr.filter(item => {
-                    const itemProgress = progress[item.spanish];
-                    return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
-                });
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: 'Review: Words Not Mastered',
+                artist: 'Spanish PWA App'
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+                window.speechSynthesis.cancel();
+                stopBackgroundAudio();
+            });
+        }
 
-                // Filter words that require review and build the speech queue safely
-                const availableReviewWords = availableWords.filter(item => {
-                    const itemProgress = progress[item.spanish];
-                    const needsReview = itemProgress && itemProgress.tw > 1;
+        let speechQueue = [];
+        speechQueue.push({ text: 'Here are the words that require more study ... ', lang: 'en-US' });
 
-                    if (needsReview) {
-                        speechQueue.push({ text: item.spanish, lang: 'es-US' });
-                        speechQueue.push({ text: 'Again ... ', lang: 'en-US' });
-                        speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true});
+        let arr = shuffleArray(masterData);
+        if (arr && arr.length > 0) {
+            const progress = getAllProgress() || {};
+            
+            // Filter words that need more study (not mastered)
+            const availableWords = arr.filter(item => {
+                const itemProgress = progress[item.spanish];
+                return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
+            });
+
+            // Filter words that require review and build the speech queue safely
+            const availableReviewWords = availableWords.filter(item => {
+                const itemProgress = progress[item.spanish];
+                const needsReview = itemProgress && itemProgress.tw > 1;
+
+                if (needsReview) {
+                    speechQueue.push({ text: item.spanish, lang: 'es-US'});
+                    speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true});
+                    let en = '';
+                    const enArr = item.english.split(';');
+                    if(enArr) {
+                        for(let j=0; j<enArr.length; j++) {
+                            en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
+                            if(j===1) { break; }
+                        }
+                    }
+                    speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: true });
+                    speechQueue.push({ text: ' ... ... ... ' + en, lang: 'en-GB', extraSlow: true });
+                }
+
+                return needsReview;
+            });
+        }
+
+        // Play the built queue sequentially
+        let queueIndex = 0;
+        function playNextInQueue() {
+            if (queueIndex >= speechQueue.length) {
+                stopBackgroundAudio(); // 🛑 Session ended naturally, release hardware lock
+                return;
+            }
+            
+            const currentItem = speechQueue[queueIndex];
+            const utterance = new SpeechSynthesisUtterance(currentItem.text);
+            utterance.lang = currentItem.lang;
+            let multiplier = 0.85;
+            if(currentItem.lang.indexOf('es')>-1) {
+                if(currentItem.extraSlow) {
+                    multiplier = 0.70;                                                
+                } else {
+                    multiplier = 0.80;
+                }
+            } 
+            utterance.rate = rateSlider.value * multiplier;
+
+            utterance.onend = () => {
+                queueIndex++;
+                playNextInQueue(); // FIXED: Removed aggressive stop/start noise
+            };
+
+            utterance.onerror = () => {
+                queueIndex++;
+                playNextInQueue(); // FIXED: Handled errors smoothly without toggling audio
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        playNextInQueue();
+    }
+}
+
+function readWordsYouLearnedOutLoud() {
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        stopBackgroundAudio(); // 🛑 Stop hardware lock immediately on manual cancel
+        consoleLogOnlyIfLocal("Speech stopped.");
+    } else {
+        // 🚀 CRITICAL FIX: Trigger hardware permissions immediately inside user action stack
+        startBackgroundAudio();
+
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: 'Review: Mastered Words',
+                artist: 'Spanish PWA App'
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+                window.speechSynthesis.cancel();
+                stopBackgroundAudio();
+            });
+        }
+
+        // 1. Build a sequential queue array of objects
+        let speechQueue = [];
+        speechQueue.push({ text: 'Here are the words you have learned ... ', lang: 'en-US' });
+        
+        let arr = shuffleArray(masterData);
+        if (arr && arr.length > 0) {
+            const progress = getAllProgress();
+            if (progress) {
+                for (let i = 0; i < arr.length; i++) {
+                    const itemProgress = progress[arr[i].spanish];
+                    if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-US' });
+                        speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true});
                         let en = '';
-                        const enArr = item.english.split(';');
+                        const enArr = arr[i].english.split(';');
                         if(enArr) {
                             for(let j=0; j<enArr.length; j++) {
                                 en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
+                                if(j===1) { break; }
                             }
                         }
-                        speechQueue.push({ text: ', meaning ' + en + '... ...', lang: 'en-US' });
-                    }
-
-                    return needsReview;
-                });
-            }
-
-            // Play the built queue sequentially
-            let queueIndex = 0;
-            function playNextInQueue() {
-                if (queueIndex >= speechQueue.length) return;
-                startBackgroundAudio();
-                const currentItem = speechQueue[queueIndex];
-                const utterance = new SpeechSynthesisUtterance(currentItem.text);
-                utterance.lang = currentItem.lang;
-                let multiplier = 0.90;
-                if(currentItem.lang.indexOf('es')>-1) {
-                    if(currentItem.extraSlow) {
-                        multiplier = 0.70;                                                
-                    } else {
-                        multiplier = 0.80;
-                    }
-                } 
-                utterance.rate = rateSlider.value * multiplier;
-
-                utterance.onend = () => {
-                    queueIndex++;
-                    stopBackgroundAudio();
-                    playNextInQueue();
-                };
-
-                utterance.onerror = () => {
-                    queueIndex++;
-                    stopBackgroundAudio();
-                    playNextInQueue();
-                };
-
-                window.speechSynthesis.speak(utterance);
-            }
-
-            playNextInQueue();
-        }
-    }
-
-    function readWordsYouLearnedOutLoud() {
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            stopBackgroundAudio();
-            consoleLogOnlyIfLocal("Speech stopped.");
-        } else {
-            // 1. Build a sequential queue array of objects
-            let speechQueue = [];
-            
-            speechQueue.push({ text: 'Here are the words you have learned ... ', lang: 'en-US' });
-            
-            let arr = shuffleArray(masterData);
-            if (arr && arr.length > 0) {
-                const progress = getAllProgress();
-                if (progress) {
-                    for (let i = 0; i < arr.length; i++) {
-                        const itemProgress = progress[arr[i].spanish];
-                        if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
-                            speechQueue.push({ text: arr[i].spanish, lang: 'es-US' });
-                            let en = '';
-                            const enArr = arr[i].english.split(';');
-                            if(enArr) {
-                                for(let j=0; j<enArr.length; j++) {
-                                    en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
-                                }
-                            }
-                            speechQueue.push({ text: 'meaning, ' + en + '... ...', lang: 'en-US' });
-                        }
+                        speechQueue.push({ text: ', ' + en, lang: 'en-US', extraSlow: true });
+                        speechQueue.push({ text: ' ... ... ... ' + en, lang: 'en-GB', extraSlow: true });
                     }
                 }
             }
-
-            // 2. Play the queue sequentially using recursion and onend
-            let queueIndex = 0;
-            function playNextInQueue() {
-                if (queueIndex >= speechQueue.length) return;
-                startBackgroundAudio();
-
-                const currentItem = speechQueue[queueIndex];
-                const utterance = new SpeechSynthesisUtterance(currentItem.text);
-                utterance.lang = currentItem.lang;
-                let multiplier = 0.90;
-                if(currentItem.lang.indexOf('es')>-1) {
-                    multiplier = 0.80;
-                }
-                utterance.rate = rateSlider.value * multiplier;
-
-                utterance.onend = () => {
-                    queueIndex++;
-                    stopBackgroundAudio();
-                    playNextInQueue();
-                };
-
-                utterance.onerror = () => {
-                    queueIndex++;
-                    stopBackgroundAudio();
-                    playNextInQueue();
-                };
-
-                window.speechSynthesis.speak(utterance);
-            }
-
-            playNextInQueue();
         }
 
+        // 2. Play the queue sequentially using recursion and onend
+        let queueIndex = 0;
+        function playNextInQueue() {
+            if (queueIndex >= speechQueue.length) {
+                stopBackgroundAudio(); // 🛑 Session ended naturally, release hardware lock
+                return;
+            }
+
+            const currentItem = speechQueue[queueIndex];
+            const utterance = new SpeechSynthesisUtterance(currentItem.text);
+            utterance.lang = currentItem.lang;
+            let multiplier = 0.85;
+            if(currentItem.lang.indexOf('es')>-1) {
+                multiplier = 0.80;
+            }
+            utterance.rate = rateSlider.value * multiplier;
+
+            utterance.onend = () => {
+                queueIndex++;
+                playNextInQueue(); // FIXED: Removed aggressive stop/start noise
+            };
+
+            utterance.onerror = () => {
+                queueIndex++;
+                playNextInQueue(); // FIXED: Handled errors smoothly without toggling audio
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        playNextInQueue();
     }
+}
+
 
     function toggleWikiBookmark(clickTheButton) {
          const gotoWikiBtn = document.getElementById('wikiGotoBtn');
