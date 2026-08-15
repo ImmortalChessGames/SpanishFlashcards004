@@ -399,6 +399,63 @@
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+    const iosSilence = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGFtZTMuOTguNlYwLjUAAAD/4xAMAAAAAAAAAAAAAAAAAAAAAABYaW5nAAAADwAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jEAMAAAAAAAbwAAAAAAAAAAAAAAAAAAAAAExhbWUzLjk4LjYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jEAMAAAAAAAewAAAAAAAAAAAAAAAAAAAAAExhbWUzLjk4LjYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jEAMAAAAAAAgwAAAAAAAAAAAAAAAAAAAAAExhbWUzLjk4LjYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw==");
+    iosSilence.loop = true;
+
+// Global state for the screen lock
+let wakeLockToken = null;
+
+/**
+ * Starts background audio AND forces the iPhone screen to stay awake
+ */
+async function startBackgroundAudio() {
+    // 1. Fire the silent audio track
+    if (iosSilence.paused) {
+        iosSilence.play()
+            .then(() => console.log("Background audio fix activated."))
+            .catch(err => console.log("Background audio unlock failed:", err));
+    }
+
+    // 2. Lock the screen on so iOS cannot kill the Speech API
+    if ('wakeLock' in navigator && wakeLockToken === null) {
+        try {
+            wakeLockToken = await navigator.wakeLock.request('screen');
+            console.log("Screen Wake Lock active. iOS won't sleep.");
+        } catch (err) {
+            console.log("Wake Lock failed (normal if app is in background):", err);
+        }
+    }
+}
+
+/**
+ * Stops background audio and allows the iPhone screen to sleep normally again
+ */
+function stopBackgroundAudio() {
+    // 1. Pause the silence track
+    if (!iosSilence.paused) {
+        iosSilence.pause();
+        console.log("Background audio fix deactivated.");
+    }
+
+    // 2. Release the screen lock safely
+    if (wakeLockToken !== null) {
+        wakeLockToken.release()
+            .then(() => {
+                wakeLockToken = null;
+                console.log("Wake Lock released. Screen can now sleep.");
+            });
+    }
+}
+
+// 3. Handle when the user manually minimizes the app or switches tabs
+document.addEventListener('visibilitychange', async () => {
+    if (wakeLockToken !== null && document.visibilityState === 'visible') {
+        // Re-request the lock if the user left the app and came back
+        wakeLockToken = await navigator.wakeLock.request('screen');
+    }
+});
+
+
 function getLemma(word) {
     if (!word || word.trim().length === 0) return null;
     
@@ -1270,7 +1327,7 @@ function getLemma(word) {
         const progress = getAllProgress();
         if(progress) {
             let count = 0;
-            for(i=0;i<masterData.length;i++) {
+            for(let i=0;i<masterData.length;i++) {
                 const itemProgress = progress[masterData[i].spanish];
                 if(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                   masteredWords.push(masterData[i].spanish + ':' + masterData[i].english);
@@ -1855,16 +1912,18 @@ function getLemma(word) {
     function readArticle() {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
+            stopBackgroundAudio();
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             let text = '';
-            if(dataset && dataset.length>0 && dataset.length<50) {
+            if(dataset && dataset.length>0) {
                 for (const p of dataset) {
                     //text += (p.spanish + ' ... \n\n');                
                     text += (p.spanish + '\n\n');
                 }        
             }
             if(text) {
+                startBackgroundAudio();
                 readArticleOutloud(text);
             }
         } 
@@ -1873,6 +1932,7 @@ function getLemma(word) {
     function readWordsYouStillHaveNotMasteredOutLoud() {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
+            stopBackgroundAudio();
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             let speechQueue = [];
@@ -1895,10 +1955,12 @@ function getLemma(word) {
 
                     if (needsReview) {
                         speechQueue.push({ text: item.spanish, lang: 'es-US' });
+                        speechQueue.push({ text: 'Again ... ', lang: 'en-US' });
+                        speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true});
                         let en = '';
                         const enArr = item.english.split(';');
                         if(enArr) {
-                            for(j=0; j<enArr.length; j++) {
+                            for(let j=0; j<enArr.length; j++) {
                                 en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
                             }
                         }
@@ -1913,19 +1975,29 @@ function getLemma(word) {
             let queueIndex = 0;
             function playNextInQueue() {
                 if (queueIndex >= speechQueue.length) return;
-
+                startBackgroundAudio();
                 const currentItem = speechQueue[queueIndex];
                 const utterance = new SpeechSynthesisUtterance(currentItem.text);
                 utterance.lang = currentItem.lang;
-                utterance.rate = rateSlider.value;
+                let multiplier = 0.90;
+                if(currentItem.lang.indexOf('es')>-1) {
+                    if(currentItem.extraSlow) {
+                        multiplier = 0.70;                                                
+                    } else {
+                        multiplier = 0.80;
+                    }
+                } 
+                utterance.rate = rateSlider.value * multiplier;
 
                 utterance.onend = () => {
                     queueIndex++;
+                    stopBackgroundAudio();
                     playNextInQueue();
                 };
 
                 utterance.onerror = () => {
                     queueIndex++;
+                    stopBackgroundAudio();
                     playNextInQueue();
                 };
 
@@ -1939,6 +2011,7 @@ function getLemma(word) {
     function readWordsYouLearnedOutLoud() {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
+            stopBackgroundAudio();
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             // 1. Build a sequential queue array of objects
@@ -1957,7 +2030,7 @@ function getLemma(word) {
                             let en = '';
                             const enArr = arr[i].english.split(';');
                             if(enArr) {
-                                for(j=0; j<enArr.length; j++) {
+                                for(let j=0; j<enArr.length; j++) {
                                     en += (enArr[j].trim() + (j<enArr.length-1 ? ', ' : ''));
                                 }
                             }
@@ -1971,19 +2044,26 @@ function getLemma(word) {
             let queueIndex = 0;
             function playNextInQueue() {
                 if (queueIndex >= speechQueue.length) return;
+                startBackgroundAudio();
 
                 const currentItem = speechQueue[queueIndex];
                 const utterance = new SpeechSynthesisUtterance(currentItem.text);
                 utterance.lang = currentItem.lang;
-                utterance.rate = rateSlider.value;
+                let multiplier = 0.90;
+                if(currentItem.lang.indexOf('es')>-1) {
+                    multiplier = 0.80;
+                }
+                utterance.rate = rateSlider.value * multiplier;
 
                 utterance.onend = () => {
                     queueIndex++;
+                    stopBackgroundAudio();
                     playNextInQueue();
                 };
 
                 utterance.onerror = () => {
                     queueIndex++;
+                    stopBackgroundAudio();
                     playNextInQueue();
                 };
 
@@ -2014,7 +2094,7 @@ function getLemma(word) {
         wordhelp = null;
         let articleDataset = [];
         let relatedTopicDataset = [];
-        for(i=0;i<d.length;i++) {
+        for(let i=0;i<d.length;i++) {
             if(d[i].spanish.startsWith('RELATED_')) {
                 relatedTopicDataset.push(d[i].english);
             } else {
@@ -2025,7 +2105,7 @@ function getLemma(word) {
         addlTopicLinks.innerHTML="";
         document.getElementById('topicSuggestionsLabel').classList.add('hidden');
         if(relatedTopicDataset && relatedTopicDataset.length>0) {
-            for(i=0; i<relatedTopicDataset.length; i++) {
+            for(let i=0; i<relatedTopicDataset.length; i++) {
                 const dynamicLink = document.createElement('a');
                 dynamicLink.textContent = relatedTopicDataset[i];
                 dynamicLink.href='#';
@@ -2050,7 +2130,7 @@ function getLemma(word) {
             historyIndex = -1;
         }
         const selectDataset = document.getElementById('sm-chooseDataset');
-        const speakerMode = dataset.length < 100; // if < 100 slides then it's a story
+        const speakerMode = true;
         const topRightTextElt = document.getElementById('top-right-text');
         topRightTextElt.textContent=selectDataset.options[selectDataset.selectedIndex].text.replaceAll('_',' ') + (speakerMode===true ? ' 📢 ' : '');
         if(speakerMode === true) {
@@ -2095,7 +2175,7 @@ function getLemma(word) {
         wordhelp = null;
         let articleDataset = [];
         let relatedTopicDataset = [];
-        for(i=0;i<d.length;i++) {
+        for(let i=0;i<d.length;i++) {
             if(d[i].spanish.startsWith('RELATED_')) {
                 relatedTopicDataset.push(d[i].english);
             } else {
@@ -2106,7 +2186,7 @@ function getLemma(word) {
         addlTopicLinks.innerHTML="";
         document.getElementById('topicSuggestionsLabel').classList.add('hidden');
         if(relatedTopicDataset && relatedTopicDataset.length>0) {
-            for(i=0; i<relatedTopicDataset.length; i++) {
+            for(let i=0; i<relatedTopicDataset.length; i++) {
                 const dynamicLink = document.createElement('a');
                 dynamicLink.textContent = relatedTopicDataset[i];
                 dynamicLink.href='#';
@@ -2404,30 +2484,6 @@ progressBar.addEventListener('mousedown', (e) => {
          document.getElementById('englishTranslation').value='';
       }
     }
-
-
-    function readArticleOutloud_OLD(articleText) {
-        if (!articleText) {
-            return;
-        }
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(articleText);
-          utterance.lang = 'es-US'; 
-          utterance.rate = rateSlider.value; 
-          window.speechSynthesis.speak(utterance);
-        } else {
-          alert("Native browser speech synthesis is unsupported on this software platform.");
-        }
-    }
-
-    function readArticleOutloud_English(articleText) {
-        readArticleOutloud(articleText, 'en-US');
-    }    
-
-    function readArticleOutloud_Spanish(articleText) {
-        readArticleOutloud(articleText, 'es-US');
-    }    
 
     function readArticleOutloud(articleText, lang = 'es-US') {
         if (!articleText) return;
@@ -3699,7 +3755,7 @@ async function generateClozures() {
         "JSON properties should be named exactly as spanish, english, distractors, explanation. Constraints: The sentences must be completely original. Never repeat a sentence structure you have used previously. Also do not return the same words even if there are multiple meanings for such a word." + 
         "CRITICAL: Do not return any other information exception except the JSON array of objects.";
      let wordsAsString = '';
-     for(i=0; i<words.length; i++) {
+     for(let i=0; i<words.length; i++) {
         const cleanWordMatch = words[i].spanish.match(/[\s0-9A-Za-zÁÉÍÓÚáéíóúÜüÑñ]+/);
         consoleLogOnlyIfLocal('Clozure word: ' + cleanWordMatch);
         if (cleanWordMatch) {
@@ -4209,7 +4265,7 @@ async function fetchArticle() {
                 let responseObj = JSON.parse(responseText);
                 if(responseObj.summary) {
                     if(responseObj.related_topics) {
-                        for(i=0; i<responseObj.related_topics.length; i++) {
+                        for(let i=0; i<responseObj.related_topics.length; i++) {
                             responseObj.summary.push({ spanish: "RELATED_TOPIC_"+(i+1), english: responseObj.related_topics[i] });
                         }
                     }
