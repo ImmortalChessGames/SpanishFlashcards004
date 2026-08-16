@@ -1902,6 +1902,11 @@ function getLemma(word) {
         } 
     }
 
+function spellOut(text) {
+  if (!text) return [''];
+  return text.toUpperCase().split('');
+}
+
 async function readWordsYouStillHaveNotMasteredOutLoud() {
     if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
@@ -1943,6 +1948,18 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                 if (needsReview) {
                     speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
                     speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
+                    const spelledOut = spellOut(item.spanish);
+                    if(spelledOut && spelledOut.length>0) {
+                        let waitFor = 10;
+                        for(let i=0; i<spelledOut.length; i++) {
+                            if(spelledOut[i] === ' ') {                                
+                                waitFor += 10;
+                            } else {
+                                speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: false, wait: waitFor});                        
+                                waitFor = 10;
+                            }
+                        }
+                    }
                     speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                     let en = '';
                     const enArr = item.english.split(';');
@@ -2044,6 +2061,18 @@ async function readWordsYouLearnedOutLoud() {
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                         speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
+                        const spelledOut = spellOut(item.spanish);
+                        if(spelledOut && spelledOut.length>0) {
+                            let waitFor = 10;
+                            for(let i=0; i<spelledOut.length; i++) {
+                                if(spelledOut[i] === ' ') {                                
+                                    waitFor += 10;
+                                } else {
+                                    speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: false, wait: waitFor});                        
+                                    waitFor = 10;
+                                }
+                            }
+                        }
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                         let en = '';
                         const enArr = arr[i].english.split(';');
