@@ -663,23 +663,18 @@ function getLemma(word) {
         currentQuestionIndex = -1;
 
         const learnedWords = semicolonStringToArray(getMasteredWordList());
-        if('learned' === chosenLevel) {
+        const strugglingWords = getStrugglingWordList();
+
+        if('learned' === chosenLevel && (learnedWords && learnedWords.length>0)) {
             allWords = learnedWords;      
-        } else if('struggling' === chosenLevel) {
+        } else if('struggling' === chosenLevel && (strugglingWords && strugglingWords.length>0)) {
             allWords = getStrugglingWordList();
         } else {
             const learnedWordsSet = new Set(learnedWords.map(item => item.spanish));
             allWords = masterData.filter(
               item => !learnedWordsSet.has(item.spanish)
             );
-        }
-
-        if(('learned' === chosenLevel || 'struggling' === chosenLevel) && (!allWords || allWords.length<1)) {
-            showDynamicPopup('No Results','Re-loading the quiz with default data.', 2000);
-            levelSelector.value = 'default';
-            levelSelector.dispatchEvent(new Event('change'));
-            return [];
-        }      
+        }   
 
         if (!Array.isArray(allWords) || allWords.length === 0) return [];
         const uniqueByMapFirst = [...new Map(allWords.map(item => [item.spanish, item]).reverse()).values()].reverse();
@@ -759,32 +754,6 @@ function getLemma(word) {
         quizBox.classList.remove("hidden");
         quizVocab = generateQuizWords();
         loadNextQuestion(); 
-    }
-
-    // totalStreak = ts
-    // totalIncorrect = tw
-
-    // 3. WEIGHTED SELECTION LOGIC
-    function getWordWeight(streak, tw, level) {
-        let weight = 1.0; 
-
-        switch(level) {
-            case 'easy':
-                weight = 1.0 + (tw * 3.0) - (streak * 0.3);
-                break;
-            case 'intermediate':
-                weight = 1.0 + (tw * 1.5) - (streak * 0.2);
-                break;
-            case 'advanced':
-                weight = 1.0 + (streak * 1.5) - (tw * 0.5);
-                break;
-            case 'random':
-            default:
-                weight = 1.0;
-                break;
-        }
-
-        return Math.max(0.1, weight);
     }
 
     function findEnglishTranslation(word) {
@@ -1223,7 +1192,7 @@ function getLemma(word) {
         return array.sort((a, b) => a.spanish.localeCompare(b.spanish, 'es', { sensitivity: 'base' }));
     }
 
-    function getRandomSubset(arr, maxReturn = 30) {
+    function getRandomSubset(arr, maxReturn = QUESTIONS_PER_QUIZ) {
       if (!Array.isArray(arr)) return [];
       const targetLength = arr.length>=maxReturn ? maxReturn : arr.length;
       const shuffled = [...arr];
