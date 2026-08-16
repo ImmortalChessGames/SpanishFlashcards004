@@ -661,7 +661,7 @@ function getLemma(word) {
 
         let allWords = [];
         currentQuestionIndex = -1;
-alert(chosenLevel);
+
         if('learned' === chosenLevel) {
             allWords = semicolonStringToArray(getMasteredWordList());      
         } else if('struggling' === chosenLevel) {
@@ -676,6 +676,11 @@ alert(chosenLevel);
             levelSelector.dispatchEvent(new Event('change'));
             return [];
         }      
+
+        setTimeout(() => {
+            levelSelector.blur(); // Force close/blur the select component on iOS
+            levelSelector.dispatchEvent(new Event('change', { bubbles: true }));
+        }, 0);
 
         if (!Array.isArray(allWords) || allWords.length === 0) return [];
         const uniqueByMapFirst = [...new Map(allWords.map(item => [item.spanish, item]).reverse()).values()].reverse();
