@@ -661,7 +661,7 @@ function getLemma(word) {
 
         let allWords = [];
         currentQuestionIndex = -1;
-
+alert(chosenLevel);
         if('learned' === chosenLevel) {
             allWords = semicolonStringToArray(getMasteredWordList());      
         } else if('struggling' === chosenLevel) {
