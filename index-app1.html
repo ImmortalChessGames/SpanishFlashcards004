@@ -1948,6 +1948,7 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                 if (needsReview) {
                     speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
                     speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
+                    /*
                     const spelledOut = spellOut(item.spanish);
                     if(spelledOut && spelledOut.length>0) {
                         let waitFor = 30;
@@ -1960,6 +1961,7 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                             }
                         }
                     }
+                    */
                     speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                     let en = '';
                     const enArr = item.english.split(';');
@@ -2061,6 +2063,7 @@ async function readWordsYouLearnedOutLoud() {
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                         speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
+/*
                         const spelledOut = spellOut(arr[i].spanish);
                         if(spelledOut && spelledOut.length>0) {
                             let waitFor = 30;
@@ -2073,6 +2076,7 @@ async function readWordsYouLearnedOutLoud() {
                                 }
                             }
                         }
+*/
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                         let en = '';
                         const enArr = arr[i].english.split(';');
