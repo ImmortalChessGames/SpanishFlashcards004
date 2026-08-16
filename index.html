@@ -144,6 +144,7 @@
                               <option value="default">Default</option> 
                               <option value="learned">Learned</option> 
                               <option value="struggling">Struggling</option> 
+                              <option value="dummy" disabled></option>
                             </select> 
                           </div> 
                         </div>
@@ -677,11 +678,6 @@ function getLemma(word) {
             return [];
         }      
 
-        setTimeout(() => {
-            levelSelector.blur(); // Force close/blur the select component on iOS
-            levelSelector.dispatchEvent(new Event('change', { bubbles: true }));
-        }, 0);
-
         if (!Array.isArray(allWords) || allWords.length === 0) return [];
         const uniqueByMapFirst = [...new Map(allWords.map(item => [item.spanish, item]).reverse()).values()].reverse();
         const shuffled = [...uniqueByMapFirst].sort(() => 0.5 - Math.random());
@@ -1010,6 +1006,7 @@ function getLemma(word) {
             currentQuestionIndex = QUESTIONS_PER_QUIZ;    
             resetQuizProgress();
         });
+
         masterData = vocabularyDatabase;
         
         const restartBtn = document.getElementById('restart-btn');
