@@ -144,7 +144,6 @@
                               <option value="default">Default</option> 
                               <option value="learned">Learned</option> 
                               <option value="struggling">Struggling</option> 
-                              <option value="dummy" disabled></option>
                             </select> 
                           </div> 
                         </div>
@@ -666,7 +665,7 @@ function getLemma(word) {
         if('learned' === chosenLevel) {
             allWords = semicolonStringToArray(getMasteredWordList());      
         } else if('struggling' === chosenLevel) {
-            allWords = semicolonStringToArray(getStrugglingWordList());
+            allWords = getStrugglingWordList();
         } else {
             allWords = masterData;
         }
