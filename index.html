@@ -1950,13 +1950,13 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                     speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
                     const spelledOut = spellOut(item.spanish);
                     if(spelledOut && spelledOut.length>0) {
-                        let waitFor = 10;
+                        let waitFor = 30;
                         for(let i=0; i<spelledOut.length; i++) {
                             if(spelledOut[i] === ' ') {                                
-                                waitFor += 10;
+                                waitFor += 30;
                             } else {
-                                speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: false, wait: waitFor});                        
-                                waitFor = 10;
+                                speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: true, wait: waitFor});                        
+                                waitFor = 30;
                             }
                         }
                     }
@@ -2063,13 +2063,13 @@ async function readWordsYouLearnedOutLoud() {
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
                         const spelledOut = spellOut(arr[i].spanish);
                         if(spelledOut && spelledOut.length>0) {
-                            let waitFor = 10;
+                            let waitFor = 30;
                             for(let i=0; i<spelledOut.length; i++) {
                                 if(spelledOut[i] === ' ') {                                
-                                    waitFor += 10;
+                                    waitFor += 30;
                                 } else {
-                                    speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: false, wait: waitFor});                        
-                                    waitFor = 10;
+                                    speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: true, wait: waitFor});                        
+                                    waitFor = 30;
                                 }
                             }
                         }
