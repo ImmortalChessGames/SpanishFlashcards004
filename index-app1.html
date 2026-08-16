@@ -140,11 +140,10 @@
                           <div id="streak-counter" style="text-align: center; font-size: 16px; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;"></div> 
                           <!-- Right Column: Level Select Dropdown -->
                           <div style="display: flex; align-items: center; justify-content: flex-end; height: 100%;"> 
-                            <select id="level-select" style="width: 100px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px;" class="sm-input" onchange="loadNextQuestion()"> 
-                              <option value="random">Random</option> 
-                              <option value="easy">Easy</option> 
-                              <option value="intermediate">Intermediate</option> 
-                              <option value="advanced">Advanced</option> 
+                            <select id="level-select" style="width: 100px; height: 32px; box-sizing: border-box; margin: 0; padding: 4px 8px; font-size: 14px;" class="sm-input"> 
+                              <option value="default">Default</option> 
+                              <option value="learned">Learned</option> 
+                              <option value="unlearned">Struggling</option> 
                             </select> 
                           </div> 
                         </div>
@@ -380,7 +379,6 @@
     const speakBtn = document.getElementById('speak-btn');
 
     let phrasesData = [];
-    let quizData = [];
     let currentQuestionIndex = -1;
     let score = 0;
     let currentSlide = 0;
@@ -643,10 +641,42 @@ function getLemma(word) {
         return prevRow[b.length];
     }
 
+    function semicolonStringToArray(arr) {
+        let newarr = [];
+        if(arr) {
+            for(let i=0; i<arr.length; i++) {
+                let x = arr[i].split(':');
+                const o = {'spanish':x[0],'english':x[1]};
+                newarr.push(o);
+            }
+        }
+        return newarr;
+    }
+
     function generateQuizWords() {
       try {
+
+        const levelSelector = document.getElementById('level-select');
+        const chosenLevel = levelSelector ? levelSelector.value : 'default'; 
+
+        let allWords = [];
         currentQuestionIndex = -1;
-        const allWords = masterData;
+
+        if('learned' === chosenLevel) {
+            allWords = semicolonStringToArray(getMasteredWordList());      
+        } else if('unlearned' === chosenLevel) {
+            allWords = semicolonStringToArray(getStrugglingWordList());
+        } else {
+            allWords = masterData;
+        }
+
+        if(('learned' === chosenLevel || 'unlearned' === chosenLevel) && (!allWords || allWords.length<1)) {
+            showDynamicPopup('No Results','Re-loading the quiz with default data.', 2000);
+            levelSelector.value = 'default';
+            levelSelector.dispatchEvent(new Event('change'));
+            return [];
+        }      
+
         if (!Array.isArray(allWords) || allWords.length === 0) return [];
         const uniqueByMapFirst = [...new Map(allWords.map(item => [item.spanish, item]).reverse()).values()].reverse();
         const shuffled = [...uniqueByMapFirst].sort(() => 0.5 - Math.random());
@@ -753,35 +783,6 @@ function getLemma(word) {
         return Math.max(0.1, weight);
     }
 
-    function pickNextSpanishWord(data, level = 'random') {
-        const progress = getAllProgress();
-
-        // Remove any word that has achieved 3 consecutive correct streaks
-        const availableWords = data.filter(item => {
-            const itemProgress = progress[item.spanish];
-            return !(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED);
-        });
-
-        if (availableWords.length === 0) return null; // Win state reached
-
-        let totalWeight = 0;
-        const weightedItems = availableWords.map(item => {
-            const itemProgress = progress[item.spanish] || { cs: 0, tw: 0 };
-            const weight = getWordWeight(itemProgress.cs, itemProgress.tw, level);
-            totalWeight += weight;
-            return { item, weight };
-        });
-
-        let randomRoll = Math.random() * totalWeight;
-        for (const entry of weightedItems) {
-            randomRoll -= entry.weight;
-            if (randomRoll <= 0) {
-                return entry.item;
-            }
-        }
-        return weightedItems[weightedItems.length - 1].item;
-    }
-
     function findEnglishTranslation(word) {
         const w = masterData.filter(item => {
             return word.toLowerCase()===item.spanish.toLowerCase();
@@ -833,11 +834,7 @@ function getLemma(word) {
 
         isProcessingAnswer = false; 
 
-        const levelSelector = document.getElementById('level-select');
-        const chosenLevel = levelSelector ? levelSelector.value : 'random'; 
-
-        const nextWordItem = pickNextSpanishWord(masterData, chosenLevel);
-
+        const nextWordItem = quizVocab[currentQuestionIndex];
         if (!nextWordItem) {
             document.getElementById('question').innerText = "🎉 ¡Felicidades!";
             document.getElementById('choices-container').innerHTML = "";
@@ -1004,6 +1001,10 @@ function getLemma(word) {
 
     // 7. INITIALIZATION HOOK
     function initQuizApplication(vocabularyDatabase) {
+        document.getElementById('level-select').addEventListener('change', () => {
+            currentQuestionIndex = QUESTIONS_PER_QUIZ;    
+            resetQuizProgress();
+        });
         masterData = vocabularyDatabase;
         
         const restartBtn = document.getElementById('restart-btn');
@@ -1310,21 +1311,27 @@ function getLemma(word) {
         const masteredWordsDiv = document.getElementById(containerId);
         masteredWordsDiv.style='max-width:345px;margin-left:20px;display:flex;gap:20px;width:100%;margin:0 auto;';
         masteredWordsDiv.innerHTML='';
+        const progress = getAllProgress();
+        if(progress) {
+            const masteredWords = getMasteredWordList();
+            label.innerText = label.innerText + ' ['+masteredWords.length+']';
+            new PositiveListPaginator(containerId, masteredWords, 16);
+        } 
+    }
+
+    function getMasteredWordList() {
         let masteredWords = [];
         const progress = getAllProgress();
         if(progress) {
-            let count = 0;
             for(let i=0;i<masterData.length;i++) {
                 const itemProgress = progress[masterData[i].spanish];
                 if(itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                   masteredWords.push(masterData[i].spanish + ':' + masterData[i].english);
-                  count++;
                 }
             }
-            label.innerText = label.innerText + ' ['+masteredWords.length+']';
             masteredWords = masteredWords.sort((a, b) => a.localeCompare(b));
-            new PositiveListPaginator(containerId, masteredWords, 16);
-        } 
+        }
+        return masteredWords;
     }
 
     function repaintWordsNeedingMoreWork() {
@@ -1334,6 +1341,13 @@ function getLemma(word) {
         const wordsThatNeedMoreWorkDiv = document.getElementById(containerId);
         wordsThatNeedMoreWorkDiv.style='max-width:345px;margin-left:20px;display:flex;gap:20px;width:100%;margin:0 auto;';
         wordsThatNeedMoreWorkDiv.innerHTML='';
+        const progress = getAllProgress();
+        const words = getStrugglingWordList();
+        label.innerText = label.innerText + ' ['+words.length+']';
+        new NegativeListPaginator(containerId, words, 16);
+    }
+
+    function getStrugglingWordList() {
         const progress = getAllProgress();
         let words = [];
         const availableWords = masterData.filter(item => {
@@ -1347,11 +1361,9 @@ function getLemma(word) {
             }
             return itemProgress && itemProgress.tw > 0;
         });
-        label.innerText = label.innerText + ' ['+words.length+']';
         words = words.sort((a, b) => b.tw - a.tw || a.spanish.localeCompare(b.spanish));
-        new NegativeListPaginator(containerId, words, 16);
+        return words;
     }
-
 
     let negtouchStartX = 0;
     let negtouchEndX = 0;
@@ -3958,45 +3970,10 @@ async function generateClozures() {
     const finalScoreEl = document.getElementById("final-score");
     const restartBtn = document.getElementById("restart-btn");
 
-    function handleAnswer(selectedButton, selectedChoice) {
-      const currentQuizItem = quizData[currentQuestionIndex];
-      const allButtons = choicesContainer.querySelectorAll("button");
-      // Disable all buttons immediately to block double clicking
-      allButtons.forEach(btn => btn.disabled = true);
-
-      let pauseMillis = 1000;
-
-      if (selectedChoice === currentQuizItem.answer) {
-        score++;
-        selectedButton.classList.add("correct-choice");
-      } else {
-        pauseMillis = 5000;
-        selectedButton.classList.add("incorrect-choice");
-        
-        // Find and highlight the correct button so the user learns from their mistake
-        allButtons.forEach(btn => {
-            if (btn.dataset.choiceValue === currentQuizItem.answer) {
-                btn.classList.add("correct-choice");
-            }
-        });
-      }
-
-      currentQuestionIndex++;
-
-      // Pause for 1.2 seconds so user can process the animations/feedback
-      setTimeout(() => {
-          if (currentQuestionIndex < quizData.length) {
-            loadNextQuestion();
-          } else {
-            showResults();
-          }
-      }, pauseMillis);
-    }
-
     function showResults() {
       quizBox.classList.add("hidden");
       scoreBox.classList.remove("hidden");
-      finalScoreEl.innerText = `You scored ${score} out of ${quizData.length}!`;
+      finalScoreEl.innerText = `You scored ${score} out of ${quizVocab.length}!`;
     }
 
     restartBtn.addEventListener("click", resetQuizProgress);
