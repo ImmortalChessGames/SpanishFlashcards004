@@ -2061,7 +2061,7 @@ async function readWordsYouLearnedOutLoud() {
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                         speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
-                        const spelledOut = spellOut(item.spanish);
+                        const spelledOut = spellOut(arr[i].spanish);
                         if(spelledOut && spelledOut.length>0) {
                             let waitFor = 10;
                             for(let i=0; i<spelledOut.length; i++) {
