@@ -1904,7 +1904,7 @@ function getLemma(word) {
 
 function spellOut(text) {
   if (!text) return [''];
-  return text.toUpperCase().split('');
+  return text.toLowerCase().split('');
 }
 
 async function readWordsYouStillHaveNotMasteredOutLoud() {
