@@ -2,6 +2,7 @@
   "name": "Rapid Spanish Vocabulary Builder",
   "short_name": "Rapid SVB",
   "start_url": "/SpanishFlashcards004/",
+  "scope": "/SpanishFlashcards004/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
