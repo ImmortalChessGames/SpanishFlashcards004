@@ -1946,7 +1946,7 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                 const needsReview = itemProgress && itemProgress.tw > 1;
 
                 if (needsReview) {
-                    speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
+                    speechQueue.push({ text: 'Next Word', lang: 'en-US', extraSlow: false, wait: 500});
                     speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
                     /*
                     const spelledOut = spellOut(item.spanish);
@@ -1983,7 +1983,7 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                 return needsReview;
             });
         }
-
+        speechQueue.push({ text: 'Finished. Thanks for listening.', lang: 'en-US', extraSlow: false, wait: 3000});
         // Play the built queue sequentially
         let queueIndex = 0;
         async function playNextInQueue() {
@@ -2061,7 +2061,7 @@ async function readWordsYouLearnedOutLoud() {
                 for (let i = 0; i < arr.length; i++) {
                     const itemProgress = progress[arr[i].spanish];
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
-                        speechQueue.push({ text: 'New Word', lang: 'en-US', extraSlow: false, wait: 500});
+                        speechQueue.push({ text: 'Next Word', lang: 'en-US', extraSlow: false, wait: 500});
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
 /*
                         const spelledOut = spellOut(arr[i].spanish);
@@ -2096,6 +2096,7 @@ async function readWordsYouLearnedOutLoud() {
                     }
 
                 }
+                speechQueue.push({ text: 'Finished. Thanks for listening.', lang: 'en-US', extraSlow: false, wait: 3000});
             }
         }
 
