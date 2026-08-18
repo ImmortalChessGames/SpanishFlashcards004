@@ -1553,7 +1553,6 @@ function getLemma(word) {
             prevBtn.disabled = this.currentPage === 1;
             prevBtn.onclick = () => this.renderPage(this.currentPage - 1);
             this.controlsContainer.appendChild(prevBtn);
-
             // Current Page Indicator
             const indicator = document.createElement('span');
             indicator.className = 'custom-paginator-indicator';
@@ -1869,44 +1868,131 @@ function getLemma(word) {
             stopBackgroundAudio();
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
-            let text = '';
             if(dataset && dataset.length>0) {
-                for (const p of dataset) {
-                    //text += (p.spanish + ' ... \n\n');                
-                    text += (p.spanish + '\n\n');
-                }        
-            }
-            if(text) {
                 startBackgroundAudio();
-                consoleLogOnlyIfLocal("After start bg audio called, about to start reading article out load.");
-                readArticleOutloud(text);
-                consoleLogOnlyIfLocal("Finished reading article out loud. Before stop bg audio is called.");
-                stopBackgroundAudio();
-                consoleLogOnlyIfLocal("After stop bg audio is called (article).");
+                readDatasetOutloud(dataset);
             }
         } 
     }
 
     function readSentence(sentence) {
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            stopBackgroundAudio();
-            consoleLogOnlyIfLocal("Speech stopped.");
-        } else {
-            if(sentence && sentence.length>0) {
-                startBackgroundAudio();
-                consoleLogOnlyIfLocal("After start bg audio called, about to start reading sentence out load.");
-                readArticleOutloud(sentence);
-                consoleLogOnlyIfLocal("Finished reading sentence out loud. Before stop bg audio is called.");
+        if(sentence && sentence.length>0) {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
                 stopBackgroundAudio();
-                consoleLogOnlyIfLocal("After stop bg audio is called (sentence).");
-            }
-        } 
+                consoleLogOnlyIfLocal("Speech stopped.");
+            } else {
+                const tempdataset = [{'spanish':sentence,'english':''}];
+                if(tempdataset && tempdataset.length>0) {
+                    startBackgroundAudio();
+                    readDatasetOutloud(tempdataset);
+                }
+            } 
+        }
     }
 
-function spellOut(text) {
-  if (!text) return [''];
-  return text.toLowerCase().split('');
+let isSpeechCancelled = false;
+async function readDatasetOutloud() { 
+    if (window.speechSynthesis.speaking) { 
+        // Force an immediate manual stop
+        isSpeechCancelled = true;
+        window.speechSynthesis.cancel(); 
+        stopBackgroundAudio(); 
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = "paused";
+        }
+        consoleLogOnlyIfLocal("Speech stopped."); 
+        return; // Exit execution block completely
+    } 
+
+    // Reset cancel flag upon initiating a fresh sequence
+    isSpeechCancelled = false;
+    startBackgroundAudio(); 
+    
+    if ('mediaSession' in navigator) { 
+        navigator.mediaSession.playbackState = "playing";
+        navigator.mediaSession.metadata = new MediaMetadata({ 
+            title: "Article to be read.", 
+            artist: "Spanish PWA App" 
+        }); 
+        
+        // Map the OS hardware controls back to this exact function
+        navigator.mediaSession.setActionHandler('pause', () => { 
+            readDatasetOutloud(); // Recursively call the top toggle to cancel safely
+        });
+        navigator.mediaSession.setActionHandler('stop', () => { 
+            readDatasetOutloud(); 
+        });
+    } 
+
+    let speechQueue = []; 
+    if (dataset) { 
+        const startingIndex = (currentPage&&currentPage>=1&&currentPage<dataset.length ? currentPage : 1) - 1;
+        for(let i = startingIndex; i < dataset.length; i++) { 
+            const esText = dataset[i].spanish; 
+            const enText = dataset[i].english; 
+            if(enText && enText.length > 0) { 
+                speechQueue.push({ text: '', lang: 'en-GB', extraSlow: false, wait: 2000, gotoNextPage: false, multiplier: 0.92}); 
+                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: true, wait: 0, gotoNextPage: false, multiplier: 0.70}); 
+                speechQueue.push({ text: 'Again', lang: 'en-GB', extraSlow: false, wait: 500, gotoNextPage: false, multiplier: 1.10, volume: 0.50}); 
+                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.80}); 
+                speechQueue.push({ text: enText, lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.88, volume: 0.80}); 
+                speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
+            } else { 
+                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.80}); 
+            } 
+        } 
+    } 
+    speechQueue.push({ text: "Finished. Thanks for listening.", lang: 'en-GB', extraSlow: false, gotoNextPage: false, multiplier: 1.0}); 
+
+    let queueIndex = 0; 
+
+    async function playNextInQueue() { 
+        // 2. Safety Check: Break queue loop immediately if user clicked cancel
+        if (isSpeechCancelled) return;
+
+        if (queueIndex >= speechQueue.length) { 
+            stopBackgroundAudio(); 
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = "none";
+            }
+            return; 
+        } 
+
+        const currentItem = speechQueue[queueIndex]; 
+        if(currentItem.wait) { 
+            await sleep(currentItem.wait); 
+            // 3. Safety Check: Verify user didn't cancel during the sleep() delay period
+            if (isSpeechCancelled) return;
+        } 
+
+        const utterance = new SpeechSynthesisUtterance(currentItem.text); 
+        utterance.lang = currentItem.lang;         
+        utterance.rate = rateSlider.value * currentItem.multiplier;
+        utterance.volume = currentItem.volume ? currentItem.volume : 1.0;
+        utterance.onstart = () => {
+            if(currentItem&&currentItem.gotoNextPage&&currentItem.gotoNextPage===true) {
+                document.getElementById('nextBtn').click();
+            }
+        };
+
+        utterance.onend = () => {
+            queueIndex++;
+            playNextInQueue(); // Advance down the chain naturally
+        };
+
+        utterance.onerror = (event) => {
+            // Only throw error logs if it wasn't a deliberate user cancellation
+            if (event.error !== 'interrupted') {
+                console.error("SpeechSynthesisUtterance error:", event);
+                stopBackgroundAudio();
+            }
+        };
+
+        window.speechSynthesis.speak(utterance);
+    } 
+
+    playNextInQueue();
 }
 
 async function readWordsYouStillHaveNotMasteredOutLoud() {
@@ -2127,7 +2213,8 @@ async function readWordsYouLearnedOutLoud() {
          if(savedWikiPage) {
             if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                  gotoWikiBtn.disabled=false;
-                 if(clickTheButton && clickTheButton===true) {                    
+                 if(clickTheButton && clickTheButton===true) { 
+                    currentPage = 1+savedWikiPage;                   
                     goToWikiBookmarkedArticle();
                  }                 
                  return;
@@ -2197,6 +2284,7 @@ async function readWordsYouLearnedOutLoud() {
                 if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                      for(let i=0; i<=savedWikiPage; i++) {
                          if(i==savedWikiPage) {
+                             currentPage=i+1;
                              showNext();
                          } else { 
                              localStorage.setItem(key, 0);
@@ -2264,6 +2352,7 @@ async function readWordsYouLearnedOutLoud() {
                 if(savedPage>=0 && savedPage<dataset.length) {    
                      for(let i=0; i<=savedPage; i++) {
                          if(i==savedPage) {
+                             currentPage=i+1;
                              showNext();
                          } else { 
                              localStorage.setItem(bookmark, 0);
@@ -2530,39 +2619,6 @@ progressBar.addEventListener('mousedown', (e) => {
          document.getElementById('englishTranslation').value='';
       }
     }
-
-    function readArticleOutloud(articleText, lang = 'es-US') {
-        if (!articleText) return;
-        if (!('speechSynthesis' in window)) {
-            alert("Native browser speech synthesis is unsupported.");
-            return;
-        }
-
-        window.speechSynthesis.cancel();
-
-        // Split text into chunks by sentences (using regex to keep punctuation)
-        const chunks = articleText.match(/[^.!?]+[.!?]+(\s|$)/g) || [articleText];
-        let currentIndex = 0;
-
-        function speakNextChunk() {
-            if (currentIndex >= chunks.length) return;
-
-            const utterance = new SpeechSynthesisUtterance(chunks[currentIndex]);
-            utterance.lang = lang;
-            utterance.rate = lang==='en-US' ? 3*(rateSlider.value) : rateSlider.value;
-
-            // When this chunk finishes, speak the next one
-            utterance.onend = () => {
-                currentIndex++;
-                speakNextChunk();
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        speakNextChunk();
-    }
-
 
     function speakSlowSpanish() {
         if (!textToSpeak) {
