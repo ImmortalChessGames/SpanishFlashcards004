@@ -328,9 +328,9 @@
     const DEFAULT_SP = 'enter-your-secret-passcode-here';
     const ITEMS_PER_PAGE = 20;
   
-    const MASTERY_STREAK_NEEDED = 4;
-    const QUESTIONS_PER_QUIZ = 30;
-    const MINIMUM_VOCAB_WORD_COUNT = 200;
+    const MASTERY_STREAK_NEEDED = 1;
+    const QUESTIONS_PER_QUIZ = 2;
+    const MINIMUM_VOCAB_WORD_COUNT = 5;
     const WIKIPEDIA_SUGGESTIONS_FILENAME = "wikipedia-suggestions.txt";
     const PROCESSING_TRANSLATION_MSG = "<em>Processing translation and parsing metadata...</em>";
     const ES_API = "https://es.wikipedia.org/w/api.php?origin=*";
@@ -744,7 +744,7 @@ function getLemma(word) {
 
     // THE RESET FUNCTION: Clears metrics and forces a layout refresh
     function resetQuizProgress() {
-        if(currentQuestionIndex>=0 && currentQuestionIndex<QUESTIONS_PER_QUIZ) {
+        if(currentQuestionIndex>=0 && currentQuestionIndex<quizVocab.length) {
             consoleLogOnlyIfLocal('Quiz in progress, returning.');
             return;
         }
@@ -1640,6 +1640,8 @@ function getLemma(word) {
         quizVocab = quizVocab.filter(item => item.spanish !== wordToDelete);
         masterData = masterData.filter(item => item.spanish !== wordToDelete);
 
+        currentQuestionIndex--;
+
         if (currentVocab.length > 0) {
             localStorage.setItem(getStorageKey(), JSON.stringify(currentVocab));
         } else {
@@ -1946,52 +1948,73 @@ async function readDatasetOutloud() {
     } 
     speechQueue.push({ text: "Finished. Thanks for listening.", lang: 'en-GB', extraSlow: false, gotoNextPage: false, multiplier: 1.0}); 
 
-    let queueIndex = 0; 
-
-    async function playNextInQueue() { 
-        // 2. Safety Check: Break queue loop immediately if user clicked cancel
+    let queueIndex = 0;
+    async function playNextInQueue() {
         if (isSpeechCancelled) return;
-
-        if (queueIndex >= speechQueue.length) { 
-            stopBackgroundAudio(); 
+        
+        if (queueIndex >= speechQueue.length) {
+            stopBackgroundAudio();
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.playbackState = "none";
             }
-            return; 
-        } 
+            return;
+        }
 
-        const currentItem = speechQueue[queueIndex]; 
-        if(currentItem.wait) { 
-            await sleep(currentItem.wait); 
-            // 3. Safety Check: Verify user didn't cancel during the sleep() delay period
+        const currentItem = speechQueue[queueIndex];
+        
+        if(currentItem.wait) {
+            await sleep(currentItem.wait);
             if (isSpeechCancelled) return;
-        } 
+            
+            // 🚀 BLUETOOTH ANCHOR 1: Re-wake media channel after sleeping
+            if (typeof startBackgroundAudio === 'function') {
+                startBackgroundAudio();
+            }
+        }
 
-        const utterance = new SpeechSynthesisUtterance(currentItem.text); 
-        utterance.lang = currentItem.lang;         
+        // Catch edge-case empty speech blocks to prevent TTS engine freezes
+        const speechText = (currentItem.text && currentItem.text.trim().length > 0) ? currentItem.text : " ";
+
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.lang = currentItem.lang;
         utterance.rate = rateSlider.value * currentItem.multiplier;
         utterance.volume = currentItem.volume ? currentItem.volume : 1.0;
+
         utterance.onstart = () => {
-            if(currentItem&&currentItem.gotoNextPage&&currentItem.gotoNextPage===true) {
+            if (isSpeechCancelled) return; // 🛑 Gate check
+            
+            if(currentItem && currentItem.gotoNextPage && currentItem.gotoNextPage === true) {
                 document.getElementById('nextBtn').click();
+                
+                setTimeout(() => {
+                    if (typeof startBackgroundAudio === 'function' && !isSpeechCancelled) {
+                        startBackgroundAudio();
+                    }
+                }, 50); 
             }
         };
 
         utterance.onend = () => {
+            // 🛑 CRITICAL FIX: If cancelled, do not advance the queue or loop again
+            if (isSpeechCancelled) return; 
+
             queueIndex++;
-            playNextInQueue(); // Advance down the chain naturally
+            playNextInQueue();
         };
 
         utterance.onerror = (event) => {
-            // Only throw error logs if it wasn't a deliberate user cancellation
-            if (event.error !== 'interrupted') {
-                console.error("SpeechSynthesisUtterance error:", event);
-                stopBackgroundAudio();
-            }
+            // 🛑 CRITICAL FIX: Ignore and exit if this error was caused by manual cancellation
+            if (isSpeechCancelled || event.error === 'interrupted') return;
+
+            console.error("SpeechSynthesisUtterance error:", event);
+            stopBackgroundAudio();
+            
+            queueIndex++;
+            playNextInQueue();
         };
 
         window.speechSynthesis.speak(utterance);
-    } 
+    }
 
     playNextInQueue();
 }
