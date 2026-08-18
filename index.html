@@ -1934,7 +1934,7 @@ async function readDatasetOutloud() {
             if(enText && enText.length > 0) { 
                 speechQueue.push({ text: '', lang: 'en-GB', extraSlow: false, wait: 2000, gotoNextPage: false, multiplier: 0.92}); 
                 speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: true, wait: 0, gotoNextPage: false, multiplier: 0.70}); 
-                speechQueue.push({ text: 'Again', lang: 'en-GB', extraSlow: false, wait: 500, gotoNextPage: false, multiplier: 1.10, volume: 0.50}); 
+                speechQueue.push({ text: 'Again', lang: 'en-GB', extraSlow: false, wait: 500, gotoNextPage: false, multiplier: 1.10, volume: 0.35}); 
                 speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.80}); 
                 speechQueue.push({ text: enText, lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.88, volume: 0.80}); 
                 speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
