@@ -289,7 +289,7 @@
                             <button type="button" class="sm-btn sm-btn-primary" onclick="smExportLocalStorage()">Export Local Storage</button>
                         </div>
                         <div class="sm-button-group">                      
-                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load 10K Word Vocabulary</button>
+                            <button type="button" class="sm-btn sm-load-default-vocab-color" style="background-color:#800080" onclick="smLoadDefaultVocabulary();">Load Default Vocabulary</button>
                         </div>
                         <div class="sm-button-group">                      
                             <button type="button" class="sm-btn sm-delete-all-vocab-color" style="background-color:#ff0000" onclick="smDeleteAllVocabulary();">Delete All Vocabulary</button>
@@ -1192,20 +1192,8 @@ function getLemma(word) {
         return array.sort((a, b) => a.spanish.localeCompare(b.spanish, 'es', { sensitivity: 'base' }));
     }
 
-    function getRandomSubset(arr, maxReturn = QUESTIONS_PER_QUIZ) {
-      if (!Array.isArray(arr)) return [];
-      const targetLength = arr.length>=maxReturn ? maxReturn : arr.length;
-      const shuffled = [...arr];
-      for (let i = 0; i < targetLength; i++) {
-        const randomIdx = i + Math.floor(Math.random() * (shuffled.length - i));
-        [shuffled[i], shuffled[randomIdx]] = [shuffled[randomIdx], shuffled[i]];
-      }
-      return shuffled.slice(0, targetLength);
-    }
-
     // 3. Process data (Filter by search query, then paginate)
     function updateDisplayData() {
-        quizVocab=[];
         const fullList = getVocabFromStorage();
         const searchQuery = searchBar.value.toLowerCase().trim();
         // Filter based on search input
@@ -1254,14 +1242,8 @@ function getLemma(word) {
         if(filteredList) {
             if (filteredList.length === 0) {
                 wordList.innerHTML = '<li style="color: #888; justify-content: center;">No words found</li>';
-            } else {
-                filteredList.forEach((item) => {
-                    let quizItem = { spanish: item.spanish, english: parseAndGetFirst(item.english)};
-                    quizVocab.push(quizItem);
-                });
             }
         }
-        quizVocab = getRandomSubset(quizVocab);
 
         // Update pagination buttons and text
         pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} total entries)`;
@@ -1269,7 +1251,6 @@ function getLemma(word) {
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages || totalItems === 0;
 
-        resetQuizProgress();
         repaintWordsLeftToMaster();
     }
 
@@ -1897,7 +1878,28 @@ function getLemma(word) {
             }
             if(text) {
                 startBackgroundAudio();
+                consoleLogOnlyIfLocal("After start bg audio called, about to start reading article out load.");
                 readArticleOutloud(text);
+                consoleLogOnlyIfLocal("Finished reading article out loud. Before stop bg audio is called.");
+                stopBackgroundAudio();
+                consoleLogOnlyIfLocal("After stop bg audio is called (article).");
+            }
+        } 
+    }
+
+    function readSentence(sentence) {
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            stopBackgroundAudio();
+            consoleLogOnlyIfLocal("Speech stopped.");
+        } else {
+            if(sentence && sentence.length>0) {
+                startBackgroundAudio();
+                consoleLogOnlyIfLocal("After start bg audio called, about to start reading sentence out load.");
+                readArticleOutloud(sentence);
+                consoleLogOnlyIfLocal("Finished reading sentence out loud. Before stop bg audio is called.");
+                stopBackgroundAudio();
+                consoleLogOnlyIfLocal("After stop bg audio is called (sentence).");
             }
         } 
     }
@@ -1948,20 +1950,6 @@ async function readWordsYouStillHaveNotMasteredOutLoud() {
                 if (needsReview) {
                     speechQueue.push({ text: 'Next Word', lang: 'en-US', extraSlow: false, wait: 500});
                     speechQueue.push({ text: item.spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
-                    /*
-                    const spelledOut = spellOut(item.spanish);
-                    if(spelledOut && spelledOut.length>0) {
-                        let waitFor = 30;
-                        for(let i=0; i<spelledOut.length; i++) {
-                            if(spelledOut[i] === ' ') {                                
-                                waitFor += 30;
-                            } else {
-                                speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: true, wait: waitFor});                        
-                                waitFor = 30;
-                            }
-                        }
-                    }
-                    */
                     speechQueue.push({ text: item.spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                     let en = '';
                     const enArr = item.english.split(';');
@@ -2063,20 +2051,6 @@ async function readWordsYouLearnedOutLoud() {
                     if (itemProgress && itemProgress.cs >= MASTERY_STREAK_NEEDED) {
                         speechQueue.push({ text: 'Next Word', lang: 'en-US', extraSlow: false, wait: 500});
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-MX', extraSlow: true, wait: 2500});
-/*
-                        const spelledOut = spellOut(arr[i].spanish);
-                        if(spelledOut && spelledOut.length>0) {
-                            let waitFor = 30;
-                            for(let i=0; i<spelledOut.length; i++) {
-                                if(spelledOut[i] === ' ') {                                
-                                    waitFor += 30;
-                                } else {
-                                    speechQueue.push({ text: spelledOut[i], lang: 'es-ES', extraSlow: true, wait: waitFor});                        
-                                    waitFor = 30;
-                                }
-                            }
-                        }
-*/
                         speechQueue.push({ text: arr[i].spanish, lang: 'es-ES', extraSlow: true, wait: 0});
                         let en = '';
                         const enArr = arr[i].english.split(';');
@@ -2594,15 +2568,7 @@ progressBar.addEventListener('mousedown', (e) => {
         if (!textToSpeak) {
             return;
         }
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(textToSpeak);
-          utterance.lang = 'es-US'; 
-          utterance.rate = rateSlider.value; 
-          window.speechSynthesis.speak(utterance);
-        } else {
-          alert("Native browser speech synthesis is unsupported on this software platform.");
-        }
+        readSentence(textToSpeak);
     }
 
     function speakWordSpanish(wordToSpeak) {
