@@ -359,11 +359,11 @@
     /* --- Dynamic Landscape Mode Adjustments --- */
     @media (orientation: landscape) {
         .clickable-word {
-            font-size: 32px; 
+            font-size: 24px; 
         }
         
         .sm-wrapper {
-            font-size: 32px; 
+            font-size: 24px; 
         }
     }
 
