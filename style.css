@@ -190,7 +190,6 @@
         border-radius: 12px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         width: 100%;
-        max-width: 375px; /* Centers and limits content */
         margin: 0 auto;    /* Keeps content centered on larger screens */
         padding: 0 16px;   /* Prevents text from touching the screen edges */
         box-sizing: border-box; 
@@ -526,7 +525,7 @@
 
 
 body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; color: #333; }
-.container { max-width: 375px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.container { margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 label { font-weight: bold; display: block; margin-top: 10px; }
 input { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; }
 button { width: 100%; padding: 10px; background-color: #5c67f2; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
@@ -570,7 +569,6 @@ li { background: #f9f9fb; border-radius: 4px; }
 }
 
 .tabs-wrapper {
-  max-width: 375px;
   font-family: system-ui, sans-serif;
 }
 
