@@ -1885,7 +1885,6 @@ function getLemma(word) {
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             if(dataset && dataset.length>0) {
-                startBackgroundAudio();
                 readDatasetOutloud(dataset);
             }
         } 
@@ -1909,6 +1908,7 @@ function getLemma(word) {
 
 let isSpeechCancelled = false;
 async function readDatasetOutloud() { 
+    startBackgroundAudio();
     if (window.speechSynthesis.speaking) { 
         // Force an immediate manual stop
         isSpeechCancelled = true;
