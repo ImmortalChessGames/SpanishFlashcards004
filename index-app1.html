@@ -65,6 +65,10 @@
                         <button id="nextBtn" class="btn-nav">Next →</button>
                     </div> 
                     <div class="display-card">
+                        <div id="landscape-popup-overlay" class="landscape-popup-overlay" style="display:none;">
+                            <div id="landscape-popup-text-box" class="landscape-popup-text-box">
+                            </div>
+                        </div>
                         <div id="wordBox" class="word-box"></div>
                         <progress id="article-progress"></progress>
                         <div id="englishText" class="english-text hidden"></div>
@@ -421,6 +425,7 @@ async function startBackgroundAudio() {
             console.log("Wake lock request failed:", err);
         }
     }
+    toggleLandscapePopup(true);
 }
 
 function stopBackgroundAudio() {
@@ -430,6 +435,7 @@ function stopBackgroundAudio() {
     if (wakeLockToken !== null) {
         wakeLockToken.release().then(() => { wakeLockToken = null; });
     }
+    toggleLandscapePopup(false);
 }
 
 // 3. Handle when the user manually minimizes the app or switches tabs
@@ -569,6 +575,14 @@ function getLemma(word) {
         const displayValue = show ? 'block' : 'none';
         document.getElementById('translationResponse').style.display = displayValue;
         document.getElementById('dictionaryLookupPopupOverlay').style.display = displayValue;
+    }
+
+    function toggleLandscapePopup(show) {
+        const myDiv = document.getElementById("wordBox");
+        const isPanel1Visible = document.querySelector('[data-target="#panel-1"]').getAttribute('aria-selected') === 'true';
+        const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+        const displayValue = (isPanel1Visible && show && isLandscape) ? 'flex' : 'none';
+        document.getElementById('landscape-popup-overlay').style.display = displayValue;
     }
 
     // Close modal via click on 'x'
@@ -3160,15 +3174,16 @@ function mergePhrases(words, phrasesArray) {
 function processSentence(input) {
 
     const wordBox = document.getElementById('wordBox');
-
+    const landscapeWordBox = document.getElementById('landscape-popup-text-box');
     // Clear previous results
     wordBox.innerHTML = '';
-
+    landscapeWordBox.innerHTML = '';
+    
     if (input === '') {
         alert('Por favor, ingresa una frase primero.');
         return;
     }
-
+    landscapeWordBox.innerText=input;
     // Split by spaces to find raw components
     let rawWords = input.split(/\s+/);
     rawWords = mergePhrases(rawWords, phrasesData);
@@ -4838,7 +4853,7 @@ function handleSwipe() {
     loadWikiSuggestions();
     //buildLibraryCatalog();
     buildDynamicLibraryCatalog();
-
+    toggleLandscapePopup(false);
 //callGemmaToSummarizeBookChapter('12 Chairs by Petrov', '5');
 
   document.getElementById('wikiQueryInput').addEventListener("keydown", function(event) {
@@ -4850,6 +4865,22 @@ function handleSwipe() {
       document.getElementById('wikiSearchBtn').click(); 
     }
   });
+
+    // 1. Create a media query list for landscape orientation
+    const mediaQueryList = window.matchMedia("(orientation: landscape)");
+    function handleOrientationChange(event) {
+      if (event.matches) {
+        toggleLandscapePopup(isSpeechCancelled!==false);
+      } else {
+        toggleLandscapePopup(false);
+      }
+    }
+
+    // 3. Register the listener immediately
+    mediaQueryList.addEventListener("change", handleOrientationChange);
+
+    // 4. Run the check once manually on page load to catch initial state
+    handleOrientationChange(mediaQueryList);
 
 </script>
 </body>

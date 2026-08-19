@@ -10,7 +10,6 @@
       display: flex;
       justify-content: center; /* Centers horizontally on desktop */
       align-items: center;     /* Centers vertically on desktop */
-      -webkit-text-size-adjust: 100%; /* Fixes the iOS Safari orientation bug */
       margin: 0;
       padding: 0;
       background-color: white; /* Optional: Desktop background color */
@@ -353,17 +352,6 @@
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
-}
-
-/* --- Dynamic Landscape Mode Adjustments --- */
-@media (orientation: landscape) {
-    .clickable-word {
-        font-size: 2.0rem; 
-    }
-    
-    .sm-wrapper {
-        font-size: 2.0rem; 
-    }
 }
 
     .sm-wrapper * {
@@ -2391,6 +2379,35 @@ h2 {
   z-index: 9998;
 }
 
+.landscape-popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(236,236,236,1);
+  z-index: 9998;
+  /* Flexbox automatically centers the inner text box */
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
+
+.landscape-popup-text-box {
+  -webkit-text-size-adjust: 100%; /* Fixes the iOS Safari orientation bug */
+  font-size: 3.0rem;
+  color: #055770;
+  text-align: left;
+  font-weight: plain;
+  padding: 20px;
+}
+
+@media (orientation: landscape) {
+  .landscape-popup-overlay {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+  }
+}
 
 
 /* Unique container namespace to prevent global CSS pollution */
