@@ -1878,10 +1878,13 @@ function getLemma(word) {
       return null;
     }
 
+    let isSpeechCancelled = false;
+
     function readArticle() {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
             stopBackgroundAudio();
+            isSpeechCancelled = true;
             consoleLogOnlyIfLocal("Speech stopped.");
         } else {
             if(dataset && dataset.length>0) {
@@ -1906,7 +1909,6 @@ function getLemma(word) {
         }
     }
 
-let isSpeechCancelled = false;
 async function readDatasetOutloud() { 
     if (window.speechSynthesis.speaking) { 
         // Force an immediate manual stop
