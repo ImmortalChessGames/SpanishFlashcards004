@@ -306,66 +306,65 @@
         margin-bottom: 0px;
     }
 
-    /* --- Base Styles & Portrait Mode --- */
+/* --- Base Styles & Portrait Mode --- */
+.clickable-word {
+    display: inline-block;
+    padding: 3px 3px;
+    margin: 0px;
+    background-color: #f8f9fa;
+    border: 0px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+.clickable-word.underlined {
+    color: #055770;
+    text-decoration: underline dashed;
+    text-decoration-color: darkGray;
+    text-decoration-line: underline;
+    text-decoration-thickness: 3px; 
+    text-underline-offset: 6px;
+}
+
+.clickable-word:hover {
+    background-color: blue;
+    color: white;
+}
+
+.sm-wrapper {
+    --sm-bg-color: #f8f9fa;
+    --sm-card-bg: #ffffff;
+    --sm-border-color: #ddd;
+    --sm-primary-color: #007bff;
+    --sm-primary-hover: #0056b3;
+    --sm-success-color: #28a745;
+    --sm-success-hover: #218838;
+    --sm-delete-all-vocab-color: #ff0000;
+    --sm-load-default-vocab-color: #800080;
+    --sm-text-main: #333;
+    --sm-text-muted: #666;
+    --sm-error-color: #dc3545;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* --- Dynamic Landscape Mode Adjustments --- */
+@media (orientation: landscape) {
     .clickable-word {
-        display: inline-block;
-        padding: 3px 3px;
-        margin: 0px;
-        background-color: #f8f9fa;
-        border: 0px solid #dee2e6;
-        border-radius: 4px;
-        cursor: pointer;
-        user-select: none;
-        transition: all 0.2s;
+        font-size: 2.0rem; 
     }
-
-    .clickable-word.underlined {
-        color: #055770;
-        text-decoration: underline dashed;
-        text-decoration-color: darkGray;
-        text-decoration-line: underline;
-        text-decoration-thickness: 3px; 
-        text-underline-offset: 6px;
-    }
-
-    .clickable-word:hover {
-        background-color: blue;
-        color: white;
-    }
-
+    
     .sm-wrapper {
-        --sm-bg-color: #f8f9fa;
-        --sm-card-bg: #ffffff;
-        --sm-border-color: #ddd;
-        --sm-primary-color: #007bff;
-        --sm-primary-hover: #0056b3;
-        --sm-success-color: #28a745;
-        --sm-success-hover: #218838;
-        --sm-delete-all-vocab-color: #ff0000;
-        --sm-load-default-vocab-color: #800080;
-        --sm-text-main: #333;
-        --sm-text-muted: #666;
-        --sm-error-color: #dc3545;
-
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        box-sizing: border-box;
-        font-size: 16px; 
+        font-size: 2.0rem; 
     }
-
-    /* --- Dynamic Landscape Mode Adjustments --- */
-    @media (orientation: landscape) {
-        .clickable-word {
-            font-size: 24px; 
-        }
-        
-        .sm-wrapper {
-            font-size: 24px; 
-        }
-    }
+}
 
     .sm-wrapper * {
         box-sizing: border-box;
@@ -2517,4 +2516,5 @@ h2 {
     background-color: var(--otw-link-hover);
     text-decoration: none !important; /* Guarantees no underline on hover */
 }
+
 
