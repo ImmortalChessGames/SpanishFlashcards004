@@ -2384,10 +2384,10 @@ h2 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  max-height: none;
+  right: 0;   /* Forces edge-to-edge stretching */
+  bottom: 0;  /* Forces top-to-bottom stretching */
+  max-width: none !important;  /* Overrides any inherited max-width limits */
+  min-width: 100vw;            /* Forces viewport mapping */
   background: rgba(255, 255, 255, 1);
   z-index: 9998;
   display: flex;
@@ -2398,12 +2398,12 @@ h2 {
 .landscape-popup-text-box {
   -webkit-text-size-adjust: 100%;
   font-size: 3.0rem;
+  font-weight: bold;
   color: #055770;
   text-align: left;
   font-weight: normal;
   padding: 20px;
 }
-
 
 @media (orientation: landscape) {
   .landscape-popup-overlay {
@@ -2413,7 +2413,6 @@ h2 {
     left: 0;
   }
 }
-
 
 /* Unique container namespace to prevent global CSS pollution */
 .outliner-tree-widget {
