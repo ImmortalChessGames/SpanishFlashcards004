@@ -306,6 +306,7 @@
         margin-bottom: 0px;
     }
 
+    /* --- Base Styles & Portrait Mode --- */
     .clickable-word {
         display: inline-block;
         padding: 3px 3px;
@@ -316,6 +317,7 @@
         cursor: pointer;
         user-select: none;
         transition: all 0.2s;
+        /* Default portrait font size */
     }
 
     .clickable-word.underlined {
@@ -327,10 +329,13 @@
         text-underline-offset: 6px;
     }
 
+    /* FIXED: Added missing closing bracket here */
     .clickable-word:hover {
         background-color: blue;
         color: white;
-        .sm-wrapper {
+    }
+
+    .sm-wrapper {
         --sm-bg-color: #f8f9fa;
         --sm-card-bg: #ffffff;
         --sm-border-color: #ddd;
@@ -350,6 +355,21 @@
         align-items: center;
         padding: 20px;
         box-sizing: border-box;
+        /* Default portrait font size */
+        font-size: 16px; 
+    }
+
+    /* --- Dynamic Landscape Mode Adjustments --- */
+    @media (orientation: landscape) {
+        .clickable-word {
+            /* Bumper size for words in landscape */
+            font-size: 24px; 
+        }
+        
+        .sm-wrapper {
+            /* Bumper size for wrapper text in landscape */
+            font-size: 24px; 
+        }
     }
 
     .sm-wrapper * {
