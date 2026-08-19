@@ -10,7 +10,7 @@
       display: flex;
       justify-content: center; /* Centers horizontally on desktop */
       align-items: center;     /* Centers vertically on desktop */
-      
+      -webkit-text-size-adjust: 100%; /* Fixes the iOS Safari orientation bug */
       margin: 0;
       padding: 0;
       background-color: white; /* Optional: Desktop background color */
@@ -317,7 +317,6 @@
         cursor: pointer;
         user-select: none;
         transition: all 0.2s;
-        /* Default portrait font size */
     }
 
     .clickable-word.underlined {
@@ -329,7 +328,6 @@
         text-underline-offset: 6px;
     }
 
-    /* FIXED: Added missing closing bracket here */
     .clickable-word:hover {
         background-color: blue;
         color: white;
@@ -355,20 +353,17 @@
         align-items: center;
         padding: 20px;
         box-sizing: border-box;
-        /* Default portrait font size */
         font-size: 16px; 
     }
 
     /* --- Dynamic Landscape Mode Adjustments --- */
     @media (orientation: landscape) {
         .clickable-word {
-            /* Bumper size for words in landscape */
-            font-size: 24px; 
+            font-size: 32px; 
         }
         
         .sm-wrapper {
-            /* Bumper size for wrapper text in landscape */
-            font-size: 24px; 
+            font-size: 32px; 
         }
     }
 
