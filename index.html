@@ -342,6 +342,7 @@
     const WIKI_THUMB_SIZE_PX = 300;
 
     let currentPage = 1;
+    let currArticlePage = 1;
     let filteredList = []; // Holds items after search filter is applied
 
     const wordForm = document.getElementById('wordForm');
@@ -1881,31 +1882,18 @@ function getLemma(word) {
     let isSpeechCancelled = false;
 
     function readArticle() {
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-            stopBackgroundAudio();
-            isSpeechCancelled = true;
-            consoleLogOnlyIfLocal("Speech stopped.");
-        } else {
-            if(dataset && dataset.length>0) {
-                readDatasetOutloud(dataset);
-            }
-        } 
+        if(dataset && dataset.length>0) {
+            readDatasetOutloud(dataset);
+        }
     }
 
     function readSentence(sentence) {
         if(sentence && sentence.length>0) {
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-                stopBackgroundAudio();
-                consoleLogOnlyIfLocal("Speech stopped.");
-            } else {
-                const tempdataset = [{'spanish':sentence,'english':''}];
-                if(tempdataset && tempdataset.length>0) {
-                    startBackgroundAudio();
-                    readDatasetOutloud(tempdataset);
-                }
-            } 
+            const tempdataset = [{'spanish':sentence,'english':''}];
+            if(tempdataset && tempdataset.length>0) {
+                startBackgroundAudio();
+                readDatasetOutloud(tempdataset);
+            }
         }
     }
 
@@ -1944,12 +1932,11 @@ async function readDatasetOutloud() {
 
     let speechQueue = []; 
     if (dataset) { 
-        const startingIndex = (currentPage&&currentPage>=1&&currentPage<dataset.length ? currentPage : 1) - 1;
+        const startingIndex = (currArticlePage&&currArticlePage>=1&&currArticlePage<=dataset.length ? currArticlePage : 1) - 1;
         for(let i = startingIndex; i < dataset.length; i++) { 
             const esText = dataset[i].spanish; 
             const enText = dataset[i].english; 
             if(enText && enText.length > 0) { 
-                speechQueue.push({ text: '', lang: 'en-GB', extraSlow: false, wait: 2000, gotoNextPage: false, multiplier: 0.92}); 
                 speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: true, wait: 0, gotoNextPage: false, multiplier: 0.70}); 
                 speechQueue.push({ text: 'Again', lang: 'en-GB', extraSlow: false, wait: 500, gotoNextPage: false, multiplier: 1.10, volume: 0.35}); 
                 speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.75}); 
@@ -2253,7 +2240,7 @@ async function readWordsYouLearnedOutLoud() {
             if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                  gotoWikiBtn.disabled=false;
                  if(clickTheButton && clickTheButton===true) { 
-                    currentPage = 1+savedWikiPage;                   
+                    currArticlePage = 1+savedWikiPage;                   
                     goToWikiBookmarkedArticle();
                  }                 
                  return;
@@ -2323,7 +2310,7 @@ async function readWordsYouLearnedOutLoud() {
                 if(savedWikiPage>=0 && savedWikiPage<dataset.length) {    
                      for(let i=0; i<=savedWikiPage; i++) {
                          if(i==savedWikiPage) {
-                             currentPage=i+1;
+                             currArticlePage=i+1;
                              showNext();
                          } else { 
                              localStorage.setItem(key, 0);
@@ -2391,7 +2378,7 @@ async function readWordsYouLearnedOutLoud() {
                 if(savedPage>=0 && savedPage<dataset.length) {    
                      for(let i=0; i<=savedPage; i++) {
                          if(i==savedPage) {
-                             currentPage=i+1;
+                             currArticlePage=i+1;
                              showNext();
                          } else { 
                              localStorage.setItem(bookmark, 0);
@@ -2531,6 +2518,7 @@ async function readWordsYouLearnedOutLoud() {
         }
         const progressBar = document.getElementById('article-progress');
         progressBar.value = newValue;
+        currArticlePage=(v+1);
         progressBar.title = 'Page ' + (v+1) + ' of ' + (max+1);
     }
 
@@ -2557,6 +2545,7 @@ function updateProgress(e) {
   if(y<x) {
      for(let i=y; i<=x; i++) {
          if(i==x) {
+             currArticlePage=(i+1);
              showNext();
          }
          else { 
@@ -2566,6 +2555,7 @@ function updateProgress(e) {
   } else if(x<y) {
      for(let i=y; i>=x; i--) {
          if(i==x) {
+             currArticlePage=(i+1);
              showPrevious();
          }
          else { 
@@ -2693,10 +2683,19 @@ translateBtn.addEventListener('click', async function() {
     translateBtn.disabled=true;
 });
 
-nextBtn.addEventListener('click', showNext);
-prevBtn.addEventListener('click', showPrevious); 
-nextBtn2.addEventListener('click', showNext);
-prevBtn2.addEventListener('click', showPrevious); 
+nextBtn.addEventListener('click', () => {
+    showNext(); 
+});
+nextBtn2.addEventListener('click', () => {
+    showNext(); 
+});
+prevBtn.addEventListener('click', () => {
+    showPrevious(); 
+});
+prevBtn2.addEventListener('click', () => {
+    showPrevious(); 
+});
+ 
 speakSlowBtn.addEventListener('click', speakSlowSpanish);
 
 function adaptGoogleToITranslate(googleResponse, targetLang) {
