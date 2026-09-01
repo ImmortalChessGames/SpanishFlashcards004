@@ -2393,6 +2393,16 @@ h2 {
   justify-content: center;
 }
 
+/* New styles for the page number */
+.landscape-popup-overlay-page-counter {
+    position: absolute;
+    top: 16px;       /* Spacing from the top edge */
+    right: 9px;     /* Spacing from the right edge */
+    font-size: 12px; /* Small letters */
+    color: #666666;  /* Subtle grey color (adjust as needed) */
+    font-family: sans-serif; 
+}
+
 .landscape-popup-text-box {
   -webkit-text-size-adjust: 100%;
   font-size: 3.0rem;
@@ -2400,7 +2410,7 @@ h2 {
   color: #055770;
   text-align: left;
   font-weight: normal;
-  padding: 20px;
+  padding: 10px;
 }
 
 @media (orientation: landscape) {

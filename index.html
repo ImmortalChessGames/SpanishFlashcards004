@@ -2683,16 +2683,33 @@ translateBtn.addEventListener('click', async function() {
     translateBtn.disabled=true;
 });
 
+function cancelSpeech() {
+    if (window.speechSynthesis.speaking) { 
+        // Force an immediate manual stop
+        isSpeechCancelled = true;
+        window.speechSynthesis.cancel(); 
+        stopBackgroundAudio(); 
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = "paused";
+        }
+        consoleLogOnlyIfLocal("Speech stopped."); 
+    } 
+}
+
 nextBtn.addEventListener('click', () => {
+  //  cancelSpeech();
     showNext(); 
 });
 nextBtn2.addEventListener('click', () => {
+  //  cancelSpeech();
     showNext(); 
 });
 prevBtn.addEventListener('click', () => {
+  //  cancelSpeech();
     showPrevious(); 
 });
 prevBtn2.addEventListener('click', () => {
+  //  cancelSpeech();
     showPrevious(); 
 });
  
@@ -3177,13 +3194,15 @@ function processSentence(input) {
     const landscapeWordBox = document.getElementById('landscape-popup-text-box');
     // Clear previous results
     wordBox.innerHTML = '';
-    landscapeWordBox.innerHTML = '';
+
+    let pageCountSpan = '<span class="landscape-popup-overlay-page-counter">'+(currArticlePage + ' / ' + dataset.length)+'</span>';
+    landscapeWordBox.innerHTML = pageCountSpan;
     
     if (input === '') {
         alert('Por favor, ingresa una frase primero.');
         return;
     }
-    landscapeWordBox.innerText=input;
+    landscapeWordBox.innerHTML+=input;
     // Split by spaces to find raw components
     let rawWords = input.split(/\s+/);
     rawWords = mergePhrases(rawWords, phrasesData);
