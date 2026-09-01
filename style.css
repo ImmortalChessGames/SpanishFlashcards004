@@ -2377,22 +2377,6 @@ h2 {
   z-index: 9998;
 }
 
-.landscape-popup-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;   /* Forces edge-to-edge stretching */
-  bottom: 0;  /* Forces top-to-bottom stretching */
-  max-width: none !important;  /* Overrides any inherited max-width limits */
-  min-width: 100vw;            /* Forces viewport mapping */
-  background: rgba(255, 255, 255, 1);
-  z-index: 9998;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* New styles for the page number */
 .landscape-popup-overlay-page-counter {
     position: absolute;
@@ -2403,14 +2387,36 @@ h2 {
     font-family: sans-serif; 
 }
 
+.landscape-popup-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;  
+  bottom: 0; 
+  max-width: none !important; 
+  min-width: 100vw;           
+  background: rgba(255, 255, 255, 1);
+  z-index: 9998;
+  flex-direction: column;    /* Forces items to stack vertically, enabling text wrapping */
+  box-sizing: border-box;
+  padding: 40px 20px;        /* Keeps content safe from the absolute-positioned page counter */
+}
+
 .landscape-popup-text-box {
   -webkit-text-size-adjust: 100%;
   font-size: 3.0rem;
-  font-weight: bold;
   color: #055770;
   text-align: left;
-  font-weight: normal;
+  font-weight: normal;       /* Removed the duplicate font-weight: bold conflict */
   padding: 10px;
+  max-width: 90%;            /* Prevents horizontal overflow */
+  max-height: 80vh;          /* Prevents vertical overflow on short screens */
+  overflow-y: auto;          /* Adds a clean scrollbar if the text is taller than the screen */
+  box-sizing: border-box; 
+  word-break: break-word;    /* Forces long links or unbroken words to wrap */
 }
 
 @media (orientation: landscape) {
