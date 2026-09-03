@@ -1943,7 +1943,7 @@ async function readDatasetOutloud() {
                 speechQueue.push({ text: enText, lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.88, volume: 0.80}); 
                 speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
             } else { 
-                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.80}); 
+                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 1000, gotoNextPage: false, multiplier: 0.75}); 
                 speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
             } 
         } 

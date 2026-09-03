@@ -2382,7 +2382,7 @@ h2 {
     position: absolute;
     top: 16px;       /* Spacing from the top edge */
     right: 9px;     /* Spacing from the right edge */
-    font-size: 12px; /* Small letters */
+    font-size: 16px; /* Small letters */
     color: #666666;  /* Subtle grey color (adjust as needed) */
     font-family: sans-serif; 
 }
