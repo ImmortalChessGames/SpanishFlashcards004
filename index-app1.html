@@ -3459,7 +3459,8 @@ function splitIntoSentences(text) {
 async function callGemmaToTranslateToEnglish(spanish,englishText) {
     englishText.classList.remove('hidden');
     englishText.innerHTML='Loading translation <img style="color:red;vertical-align:bottom;" src="loading.gif"/>';
-    const model = 'gemma-4-31b-it';
+    //const model = 'gemma-4-31b-it';
+    const model = 'gemini-3.1-flash-lite';
     if (!spanish) {
         return;
     }
