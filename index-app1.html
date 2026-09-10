@@ -224,8 +224,8 @@
                             <div class="gsv-form-group" style="margin-bottom:10px;">
                                 <label class="sm-label" for="ai-engine">Model to use:</label>
                                 <select name="ai-engine" id="ai-engine" class="sm-input">
-                                  <option value="gemini-3.1-flash-lite">Model A (Fast)</option>
-                                  <option value="gemma-4-31b-it">Model B (Slow)</option>
+                                  <option value="gemini-3.1-flash-lite">Model A</option>
+                                  <option value="gemini-3.5-flash-lite">Model B</option>
                                 </select>
                             </div>
                             <div class="gsv-form-group" style="margin-bottom:10px;">
@@ -2674,7 +2674,7 @@ progressBar.addEventListener('mousedown', (e) => {
 translateBtn.addEventListener('click', async function() {
     if(!englishText.textContent || englishText.textContent.length<1) {
         if(spanishText.textContent && spanishText.textContent.length>0) {
-            englishText.textContent=await callGemmaToTranslateToEnglish(spanishText.textContent, englishText);
+            englishText.textContent=await callGemini35ToTranslateToEnglish(spanishText.textContent, englishText);
        }
     } else {
         englishText.classList.remove('hidden');
@@ -3456,10 +3456,11 @@ function splitIntoSentences(text) {
   });
 }
 
-async function callGemmaToTranslateToEnglish(spanish,englishText) {
+async function callGemini35ToTranslateToEnglish(spanish,englishText) {
     englishText.classList.remove('hidden');
     englishText.innerHTML='Loading translation <img style="color:red;vertical-align:bottom;" src="loading.gif"/>';
-    const model = 'gemma-4-31b-it';
+    //const model = 'gemma-4-31b-it';
+    const model = 'gemini-3.5-flash-lite';
     if (!spanish) {
         return;
     }
@@ -3496,7 +3497,7 @@ async function callGemmaToTranslateToEnglish(spanish,englishText) {
             if (data.error) {
               throw new Error(data.error.message);
             }
-            const translation = data.candidates[0].content.parts[1].text;
+            const translation = data.candidates[0].content.parts[0].text;
             englishText.textContent=translation;
             return translation;
         } catch (error) {
