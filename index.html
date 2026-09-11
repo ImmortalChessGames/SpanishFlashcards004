@@ -413,7 +413,7 @@
 // Global state for the screen lock
 let wakeLockToken = null;
 
-async function startBackgroundAudio() {
+async function startBackgroundAudio(toggleLandscapePopupFlag = true) {
     if (iosSilence.paused) {
         iosSilence.play().catch(err => console.log("Audio unlock failed:", err));
     }
@@ -426,7 +426,7 @@ async function startBackgroundAudio() {
             console.log("Wake lock request failed:", err);
         }
     }
-    toggleLandscapePopup(true);
+    toggleLandscapePopup(toggleLandscapePopupFlag);
 }
 
 function stopBackgroundAudio() {
@@ -4901,6 +4901,9 @@ function handleSwipe() {
 
     // 4. Run the check once manually on page load to catch initial state
     handleOrientationChange(mediaQueryList);
+
+    const startBackgroundAudioFlag = false;
+    startBackgroundAudio(startBackgroundAudioFlag);
 
 </script>
 </body>
