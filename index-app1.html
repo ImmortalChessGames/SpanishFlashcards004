@@ -413,7 +413,7 @@
 // Global state for the screen lock
 let wakeLockToken = null;
 
-async function startBackgroundAudio(toggleLandscapePopupFlag = true) {
+async function startBackgroundAudio() {
     if (iosSilence.paused) {
         iosSilence.play().catch(err => console.log("Audio unlock failed:", err));
     }
@@ -426,7 +426,7 @@ async function startBackgroundAudio(toggleLandscapePopupFlag = true) {
             console.log("Wake lock request failed:", err);
         }
     }
-    toggleLandscapePopup(toggleLandscapePopupFlag);
+    toggleLandscapePopup(true);
 }
 
 function stopBackgroundAudio() {
@@ -1897,129 +1897,136 @@ function getLemma(word) {
         }
     }
 
-async function readDatasetOutloud() { 
-    if (window.speechSynthesis.speaking) { 
-        // Force an immediate manual stop
-        isSpeechCancelled = true;
-        window.speechSynthesis.cancel(); 
-        stopBackgroundAudio(); 
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = "paused";
+    async function readDatasetOutloud() { 
+        if (window.speechSynthesis.speaking) { 
+            isSpeechCancelled = true;
+            window.speechSynthesis.cancel(); 
+            stopBackgroundAudio(); 
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = "paused";
+            }
+            consoleLogOnlyIfLocal("Speech stopped."); 
+            return; 
+        } 
+
+        // 🔥 FIX 1: iOS SAFARI GESTURE PRIMING & COLD-START
+        // Speak a completely silent utterance immediately in the main execution thread.
+        // This unlocks the speech engine using the current user tap before any async delays.
+        try {
+            const primaryUnlock = new SpeechSynthesisUtterance(" ");
+            primaryUnlock.volume = 0;
+            window.speechSynthesis.speak(primaryUnlock);
+        } catch (e) {
+            console.error("Failed to prime synthesis engine", e);
         }
-        consoleLogOnlyIfLocal("Speech stopped."); 
-        return; // Exit execution block completely
-    } 
 
-    // Reset cancel flag upon initiating a fresh sequence
-    isSpeechCancelled = false;
-    startBackgroundAudio(); 
-    
-    if ('mediaSession' in navigator) { 
-        navigator.mediaSession.playbackState = "playing";
-        navigator.mediaSession.metadata = new MediaMetadata({ 
-            title: "Article to be read.", 
-            artist: "Spanish PWA App" 
-        }); 
+        isSpeechCancelled = false;
+        startBackgroundAudio(); 
         
-        // Map the OS hardware controls back to this exact function
-        navigator.mediaSession.setActionHandler('pause', () => { 
-            readDatasetOutloud(); // Recursively call the top toggle to cancel safely
-        });
-        navigator.mediaSession.setActionHandler('stop', () => { 
-            readDatasetOutloud(); 
-        });
-    } 
+        if ('mediaSession' in navigator) { 
+            navigator.mediaSession.playbackState = "playing";
+            navigator.mediaSession.metadata = new MediaMetadata({ 
+                title: "Article to be read.", 
+                artist: "Spanish PWA App" 
+            }); 
+            
+            navigator.mediaSession.setActionHandler('pause', () => { 
+                readDatasetOutloud(); 
+            });
+            navigator.mediaSession.setActionHandler('stop', () => { 
+                readDatasetOutloud(); 
+            });
+        } 
 
-    let speechQueue = []; 
-    if (dataset) { 
-        const startingIndex = (currArticlePage&&currArticlePage>=1&&currArticlePage<=dataset.length ? currArticlePage : 1) - 1;
-        for(let i = startingIndex; i < dataset.length; i++) { 
-            const esText = dataset[i].spanish; 
-            const enText = dataset[i].english; 
-            if(enText && enText.length > 0) { 
-                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: true, wait: 0, gotoNextPage: false, multiplier: 0.70}); 
-                speechQueue.push({ text: 'Again', lang: 'en-GB', extraSlow: false, wait: 500, gotoNextPage: false, multiplier: 1.10, volume: 0.35}); 
-                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.75}); 
-                speechQueue.push({ text: enText, lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.88, volume: 0.80}); 
-                speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
-            } else { 
-                speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 1000, gotoNextPage: false, multiplier: 0.75}); 
-                speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
+        let speechQueue = []; 
+        if (dataset) { 
+            const startingIndex = (currArticlePage&&currArticlePage>=1&&currArticlePage<=dataset.length ? currArticlePage : 1) - 1;
+            for(let i = startingIndex; i < dataset.length; i++) { 
+                const esText = dataset[i].spanish; 
+                const enText = dataset[i].english; 
+                if(enText && enText.length > 0) { 
+                    speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: true, wait: 0, gotoNextPage: false, multiplier: 0.70}); 
+                    speechQueue.push({ text: 'Again', lang: 'en-GB', extraSlow: false, wait: 500, gotoNextPage: false, multiplier: 1.10, volume: 0.35}); 
+                    speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.75}); 
+                    speechQueue.push({ text: enText, lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: false, multiplier: 0.88, volume: 0.80}); 
+                    speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
+                } else { 
+                    speechQueue.push({ text: esText, lang: 'es-MX', extraSlow: false, wait: 1000, gotoNextPage: false, multiplier: 0.75}); 
+                    speechQueue.push({ text: ' ', lang: 'en-GB', extraSlow: false, wait: 0, gotoNextPage: true, multiplier: 0.92}); 
+                } 
             } 
         } 
-    } 
-    speechQueue.push({ text: "Finished. Thanks for listening.", lang: 'en-GB', extraSlow: false, gotoNextPage: false, multiplier: 1.0}); 
+        speechQueue.push({ text: "Finished. Thanks for listening.", lang: 'en-GB', extraSlow: false, gotoNextPage: false, multiplier: 1.0}); 
 
-    let queueIndex = 0;
-    async function playNextInQueue() {
-        if (isSpeechCancelled) return;
-        
-        if (queueIndex >= speechQueue.length) {
-            stopBackgroundAudio();
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.playbackState = "none";
-            }
-            return;
-        }
-
-        const currentItem = speechQueue[queueIndex];
-        
-        if(currentItem.wait) {
-            await sleep(currentItem.wait);
+        let queueIndex = 0;
+        async function playNextInQueue() {
             if (isSpeechCancelled) return;
             
-            // 🚀 BLUETOOTH ANCHOR 1: Re-wake media channel after sleeping
-            if (typeof startBackgroundAudio === 'function') {
-                startBackgroundAudio();
+            if (queueIndex >= speechQueue.length) {
+                stopBackgroundAudio();
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.playbackState = "none";
+                }
+                return;
             }
+
+            const currentItem = speechQueue[queueIndex];
+            
+            if(currentItem.wait) {
+                await sleep(currentItem.wait);
+                if (isSpeechCancelled) return;
+                
+                if (typeof startBackgroundAudio === 'function') {
+                    startBackgroundAudio();
+                }
+            }
+
+            const speechText = (currentItem.text && currentItem.text.trim().length > 0) ? currentItem.text : " ";
+
+            const utterance = new SpeechSynthesisUtterance(speechText);
+            utterance.lang = currentItem.lang;
+            utterance.rate = rateSlider.value * currentItem.multiplier;
+            utterance.volume = currentItem.volume ? currentItem.volume : 1.0;
+
+            utterance.onstart = () => {
+                if (isSpeechCancelled) return; 
+                
+                if(currentItem && currentItem.gotoNextPage && currentItem.gotoNextPage === true) {
+                    document.getElementById('nextBtn').click();
+                    
+                    setTimeout(() => {
+                        if (typeof startBackgroundAudio === 'function' && !isSpeechCancelled) {
+                            startBackgroundAudio();
+                        }
+                    }, 50); 
+                }
+            };
+
+            utterance.onend = () => {
+                if (isSpeechCancelled) return; 
+
+                queueIndex++;
+                playNextInQueue();
+            };
+
+            utterance.onerror = (event) => {
+                if (isSpeechCancelled || event.error === 'interrupted') return;
+
+                console.error("SpeechSynthesisUtterance error:", event);
+                stopBackgroundAudio();
+                
+                queueIndex++;
+                playNextInQueue();
+            };
+
+            window.speechSynthesis.speak(utterance);
         }
 
-        // Catch edge-case empty speech blocks to prevent TTS engine freezes
-        const speechText = (currentItem.text && currentItem.text.trim().length > 0) ? currentItem.text : " ";
-
-        const utterance = new SpeechSynthesisUtterance(speechText);
-        utterance.lang = currentItem.lang;
-        utterance.rate = rateSlider.value * currentItem.multiplier;
-        utterance.volume = currentItem.volume ? currentItem.volume : 1.0;
-
-        utterance.onstart = () => {
-            if (isSpeechCancelled) return; // 🛑 Gate check
-            
-            if(currentItem && currentItem.gotoNextPage && currentItem.gotoNextPage === true) {
-                document.getElementById('nextBtn').click();
-                
-                setTimeout(() => {
-                    if (typeof startBackgroundAudio === 'function' && !isSpeechCancelled) {
-                        startBackgroundAudio();
-                    }
-                }, 50); 
-            }
-        };
-
-        utterance.onend = () => {
-            // 🛑 CRITICAL FIX: If cancelled, do not advance the queue or loop again
-            if (isSpeechCancelled) return; 
-
-            queueIndex++;
-            playNextInQueue();
-        };
-
-        utterance.onerror = (event) => {
-            // 🛑 CRITICAL FIX: Ignore and exit if this error was caused by manual cancellation
-            if (isSpeechCancelled || event.error === 'interrupted') return;
-
-            console.error("SpeechSynthesisUtterance error:", event);
-            stopBackgroundAudio();
-            
-            queueIndex++;
-            playNextInQueue();
-        };
-
-        window.speechSynthesis.speak(utterance);
+        // 🔥 FIX 2: PREVENT GESTURE TIMEOUT
+        // If your first element in the array has a `wait` time, iOS will timeout the user gesture 
+        // during the sleep period. We run the queue instantly, forcing the speech to buffer.
+        playNextInQueue();
     }
-
-    playNextInQueue();
-}
 
 async function readWordsYouStillHaveNotMasteredOutLoud() {
     if (window.speechSynthesis.speaking) {
@@ -4901,9 +4908,6 @@ function handleSwipe() {
 
     // 4. Run the check once manually on page load to catch initial state
     handleOrientationChange(mediaQueryList);
-
-    const startBackgroundAudioFlag = false;
-    startBackgroundAudio(startBackgroundAudioFlag);
 
 </script>
 </body>
